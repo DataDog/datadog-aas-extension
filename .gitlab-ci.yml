@@ -54,9 +54,9 @@ move-extracts:
   stage: package
   script:
     - echo "Moving agent executables and tracer binaries"
-	- mv -v tracer-download/extract/* $TRACER_CONTENT_DIR
-	- mv download-agent/extract/bin/agent/dogstatsd.exe $AGENT_CONTENT_DIR/dogstatsd.exe
-	- mv download-agent/extract/bin/agent/trace-agent.exe $AGENT_CONTENT_DIR/datadog-trace-agent.exe
+    - mv -v tracer-download/extract/* $TRACER_CONTENT_DIR
+    - mv download-agent/extract/bin/agent/dogstatsd.exe $AGENT_CONTENT_DIR/dogstatsd.exe
+    - mv download-agent/extract/bin/agent/trace-agent.exe $AGENT_CONTENT_DIR/datadog-trace-agent.exe
 
 nuget-pack:
   tags: [ "runner:main", "size:2xlarge" ]
