@@ -1,33 +1,53 @@
 image: mcr.microsoft.com/dotnet/core/sdk:3.1
 
 stages:
+  - dependencies
   - download
   - package
 
 variables:
-  DOTNET_TRACER_VERSION: "1.11.1"
   AGENT_DOWNLOAD_URL: "http://s3.amazonaws.com/ddagent-windows-unstable/cf-windows-7.17.0-rc.4.git.35.7bd7ba0-1-x86_64.zip"
+  TRACER_DOWNLOAD_URL: "https://github.com/DataDog/dd-trace-dotnet/archive/v1.11.1-prerelease.zip"
+  TRACER_VERSION: "1.11.1"
 
+install-dependencies:
+  stage: dependencies
+  script:
+    - dotnet version
+    - echo "Installing dependencies"
+    - apt-get update
+    - apt-get install unzip
+	  
 download-agent:
   stage: download
   script:
-    - dotnet version
-    - ls
     - echo "Downloading agent from ${AGENT_DOWNLOAD_URL}"
     - mkdir agent-download
+    - cd agent-download
+    - wget -O agent.zip $AGENT_DOWNLOAD_URL
+	- unzip agent.zip -d extract
+	- ls
   artifacts:
     paths:
-      - agent-download
+      - agent-download\extract
 
 download-tracer:
   stage: download
   script:
-    - ls
-    - echo "Downloading tracer version ${DOTNET_TRACER_VERSION}"
+    - echo "Downloading tracer from ${TRACER_DOWNLOAD_URL}"
     - mkdir tracer-download
+    - cd tracer-download
+    - wget -O tracer.zip $TRACER_DOWNLOAD_URL
+	- unzip tracer.zip -d extract
+	- ls
   artifacts:
     paths:
-      - agent-download
+      - tracer-download\extract
+	  
+move-extracts:
+  stage: package
+  script:
+    - echo "Moving agent executables and tracer binaries"
 
 nuget-pack:
   stage: package
@@ -35,6 +55,3 @@ nuget-pack:
     - dotnet nuget
     - ls
     - echo "dotnet nuget pack Datadog.AzureAppServices.nuspec"
-  artifacts:
-    paths:
-      - agent-download
