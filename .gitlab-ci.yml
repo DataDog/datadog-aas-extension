@@ -8,33 +8,33 @@ variables:
   DOTNET_TRACER_VERSION: "1.11.1"
   AGENT_DOWNLOAD_URL: "http://s3.amazonaws.com/ddagent-windows-unstable/cf-windows-7.17.0-rc.4.git.35.7bd7ba0-1-x86_64.zip"
 
-  download-agent:
-    stage: download
-    script:
-        - dotnet version
-        - ls
-        - echo "Downloading agent from ${AGENT_DOWNLOAD_URL}"
-        - mkdir agent-download
-    artifacts:
-        paths:
-            - agent-download
+download-agent:
+  stage: download
+  script:
+    - dotnet version
+    - ls
+    - echo "Downloading agent from ${AGENT_DOWNLOAD_URL}"
+    - mkdir agent-download
+  artifacts:
+    paths:
+      - agent-download
 
 download-tracer:
-    stage: download
-    script:
-        - ls
-        - echo "Downloading tracer version ${DOTNET_TRACER_VERSION}"
-        - mkdir tracer-download
-    artifacts:
-        paths:
-            - agent-download
+  stage: download
+  script:
+    - ls
+    - echo "Downloading tracer version ${DOTNET_TRACER_VERSION}"
+    - mkdir tracer-download
+  artifacts:
+    paths:
+      - agent-download
 
 nuget-pack:
-    stage: package
-    script:
-        - dotnet nuget
-        - ls
-        - echo "dotnet nuget pack Datadog.AzureAppServices.nuspec"
-    artifacts:
-        paths:
-            - agent-download
+  stage: package
+  script:
+    - dotnet nuget
+    - ls
+    - echo "dotnet nuget pack Datadog.AzureAppServices.nuspec"
+  artifacts:
+    paths:
+      - agent-download
