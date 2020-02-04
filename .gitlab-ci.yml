@@ -8,9 +8,12 @@ stages:
 variables:
   AGENT_DOWNLOAD_URL: "http://s3.amazonaws.com/ddagent-windows-unstable/cf-windows-7.17.0-rc.4.git.35.7bd7ba0-1-x86_64.zip"
   TRACER_DOWNLOAD_URL: "https://github.com/DataDog/dd-trace-dotnet/archive/v1.11.1-prerelease.zip"
-  TRACER_VERSION: "1.11.1"
+  TRACER_CONTENT_DIR: $CI_PROJECT_DIR/content/Tracer
+  AGENT_CONTENT_DIR: $CI_PROJECT_DIR/content/Agent
+  NUSPEC_FILE: $CI_PROJECT_DIR/Datadog.AzureAppServices.nuspec
 
 install-dependencies:
+  tags: [ "runner:main", "size:2xlarge" ]
   stage: dependencies
   script:
     - dotnet version
@@ -19,6 +22,7 @@ install-dependencies:
     - apt-get install unzip
 
 download-agent:
+  tags: [ "runner:main", "size:2xlarge" ]
   stage: download
   script:
     - echo "Downloading agent from ${AGENT_DOWNLOAD_URL}"
@@ -29,9 +33,10 @@ download-agent:
     - ls
   artifacts:
     paths:
-      - agent-download\extract
+      - agent-download/extract
 
 download-tracer:
+  tags: [ "runner:main", "size:2xlarge" ]
   stage: download
   script:
     - echo "Downloading tracer from ${TRACER_DOWNLOAD_URL}"
@@ -42,14 +47,19 @@ download-tracer:
     - ls
   artifacts:
     paths:
-      - tracer-download\extract
+      - tracer-download/extract
 
 move-extracts:
+  tags: [ "runner:main", "size:2xlarge" ]
   stage: package
   script:
     - echo "Moving agent executables and tracer binaries"
+	- mv -v tracer-download/extract/* $TRACER_CONTENT_DIR
+	- mv download-agent/extract/bin/agent/dogstatsd.exe $AGENT_CONTENT_DIR/dogstatsd.exe
+	- mv download-agent/extract/bin/agent/trace-agent.exe $AGENT_CONTENT_DIR/datadog-trace-agent.exe
 
 nuget-pack:
+  tags: [ "runner:main", "size:2xlarge" ]
   stage: package
   script:
     - dotnet nuget
