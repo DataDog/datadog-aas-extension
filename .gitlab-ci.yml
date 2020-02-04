@@ -16,7 +16,7 @@ install-dependencies:
   tags: [ "runner:main", "size:2xlarge" ]
   stage: dependencies
   script:
-    - dotnet version
+    - dotnet --info
     - echo "Installing dependencies"
     - apt-get update
     - apt-get install unzip
