@@ -17,7 +17,7 @@ install-dependencies:
     - echo "Installing dependencies"
     - apt-get update
     - apt-get install unzip
-	  
+
 download-agent:
   stage: download
   script:
@@ -25,8 +25,8 @@ download-agent:
     - mkdir agent-download
     - cd agent-download
     - wget -O agent.zip $AGENT_DOWNLOAD_URL
-	- unzip agent.zip -d extract
-	- ls
+    - unzip agent.zip -d extract
+    - ls
   artifacts:
     paths:
       - agent-download\extract
@@ -38,12 +38,12 @@ download-tracer:
     - mkdir tracer-download
     - cd tracer-download
     - wget -O tracer.zip $TRACER_DOWNLOAD_URL
-	- unzip tracer.zip -d extract
-	- ls
+    - unzip tracer.zip -d extract
+    - ls
   artifacts:
     paths:
       - tracer-download\extract
-	  
+
 move-extracts:
   stage: package
   script:
