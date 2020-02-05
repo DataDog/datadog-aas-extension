@@ -41,7 +41,7 @@
         <add name="DD_TRACE_LOG_PATH" value="%HOME%\LogFiles\datadog\v0_1_0\dotnet-profiler.log" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 		
         <add name="DD_AZURE_APP_SERVICES" value="1" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="DD_TRACE_AGENT_PATH" value="%HOME%\datadog\tracer\v0_1_0\agent\datadog_trace_agent.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_TRACE_AGENT_PATH" value="%HOME%\datadog\tracer\v0_1_0\agent\datadog-trace-agent.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
         <add name="DD_TRACE_AGENT_ARGS" value="--config %HOME%\datadog\tracer\v0_1_0\agent\datadog.yaml" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
         <add name="DD_DOGSTATSD_PATH" value="%HOME%\datadog\tracer\v0_1_0\agent\dogstatsd.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
         <add name="DD_DOGSTATSD_ARGS" value="start -c %HOME%\datadog\tracer\v0_1_0\agent" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
