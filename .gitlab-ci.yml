@@ -22,8 +22,8 @@ create-site-extension-package:
     - unzip tracer.zip -d tracer-extract
     - echo "Moving agent executables and tracer binaries"
     - mv -v tracer-extract/* $TRACER_CONTENT_DIR
-    - mv download-agent/extract/bin/agent/dogstatsd.exe $AGENT_CONTENT_DIR/dogstatsd.exe
-    - mv download-agent/extract/bin/agent/trace-agent.exe $AGENT_CONTENT_DIR/datadog-trace-agent.exe
+    - mv agent-extract/bin/agent/dogstatsd.exe $AGENT_CONTENT_DIR/dogstatsd.exe
+    - mv agent-extract/bin/agent/trace-agent.exe $AGENT_CONTENT_DIR/datadog-trace-agent.exe
     - echo "Creating nuget package"
     - echo "Packing ${NUSPEC_FILE} via arcane roundabout csproj process"
     - dotnet pack Datadog.AzureAppServices.csproj -p:NoBuild=true -p:NoDefaultExcludes=true -o package
