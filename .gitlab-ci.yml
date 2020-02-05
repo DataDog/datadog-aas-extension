@@ -21,6 +21,7 @@ create-site-extension-package:
     - wget -O tracer.zip $TRACER_DOWNLOAD_URL
     - unzip tracer.zip -d tracer-extract
     - echo "Moving agent executables and tracer binaries"
+    - ls
     - mv -v tracer-extract/* $TRACER_CONTENT_DIR
     - ls
     - mv agent-extract/bin/agent/dogstatsd.exe $AGENT_CONTENT_DIR/dogstatsd.exe
