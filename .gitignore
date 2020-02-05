@@ -1,4 +1,4 @@
 content/Tracer/
-content/Agent/
+content/Agent/*.exe
 content.zip
 obj/
