@@ -24,9 +24,9 @@ create-site-extension-package:
     - ls
     - mv -v tracer-extract/* $TRACER_CONTENT_DIR
     - ls
-    - mv agent-extract/bin/agent/dogstatsd.exe $AGENT_CONTENT_DIR/dogstatsd.exe
+    - mv -v agent-extract/bin/agent/dogstatsd.exe $AGENT_CONTENT_DIR/dogstatsd.exe
     - ls
-    - mv agent-extract/bin/agent/trace-agent.exe $AGENT_CONTENT_DIR/datadog-trace-agent.exe
+    - mv -v agent-extract/bin/agent/trace-agent.exe $AGENT_CONTENT_DIR/datadog-trace-agent.exe
     - ls
     - echo "Creating nuget package"
     - echo "Packing ${NUSPEC_FILE} via arcane roundabout csproj process"
