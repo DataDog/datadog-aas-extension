@@ -2,7 +2,7 @@ image: mcr.microsoft.com/dotnet/core/sdk:3.1
 
 variables:
   AGENT_DOWNLOAD_URL: "http://s3.amazonaws.com/ddagent-windows-unstable/cf-windows-7.17.0-rc.4.git.35.7bd7ba0-1-x86_64.zip"
-  TRACER_DOWNLOAD_URL: "https://docs.google.com/uc?export=download&id=1uzNAg6onphWcELS4hiwTg_wnNFuth2oY"
+  TRACER_DOWNLOAD_URL: "https://docs.google.com/uc?export=download&id=1iva7pyq3JHMeSSBsE6KQ5uhjx1Eikoyj"
   TRACER_CONTENT_DIR: $CI_PROJECT_DIR/content/Tracer
   AGENT_CONTENT_DIR: $CI_PROJECT_DIR/content/Agent
   NUSPEC_FILE: $CI_PROJECT_DIR/Datadog.AzureAppServices.nuspec
@@ -10,7 +10,6 @@ variables:
 create-site-extension-package:
   tags: [ "runner:main", "size:2xlarge" ]
   script:
-    - dotnet --info
     - echo "Installing dependencies"
     - apt-get update
     - apt-get install unzip
