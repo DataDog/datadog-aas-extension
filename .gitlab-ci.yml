@@ -5,7 +5,6 @@ variables:
   TRACER_DOWNLOAD_URL: "https://docs.google.com/uc?export=download&id=1iva7pyq3JHMeSSBsE6KQ5uhjx1Eikoyj"
   TRACER_CONTENT_DIR: $CI_PROJECT_DIR/content/Tracer
   AGENT_CONTENT_DIR: $CI_PROJECT_DIR/content/Agent
-  NUSPEC_FILE: $CI_PROJECT_DIR/Datadog.AzureAppServices.nuspec
 
 create-site-extension-package:
   tags: [ "runner:main", "size:2xlarge" ]
@@ -20,12 +19,13 @@ create-site-extension-package:
     - wget -O tracer.zip $TRACER_DOWNLOAD_URL
     - unzip tracer.zip -d tracer-extract
     - echo "Moving agent executables and tracer binaries"
+    - mkdir $TRACER_CONTENT_DIR
     - mv -v tracer-extract/* $TRACER_CONTENT_DIR
     - mv agent-extract/bin/agent/dogstatsd.exe $AGENT_CONTENT_DIR
     - mv agent-extract/bin/agent/trace-agent.exe agent-extract/bin/agent/datadog-trace-agent.exe
     - mv agent-extract/bin/agent/datadog-trace-agent.exe $AGENT_CONTENT_DIR
     - echo "Creating nuget package"
-    - echo "Packing ${NUSPEC_FILE} via arcane roundabout csproj process"
+    - echo "Packing nuspec file via arcane roundabout csproj process"
     - dotnet pack Datadog.AzureAppServices.csproj -p:NoBuild=true -p:NoDefaultExcludes=true -o package
   artifacts:
     expire_in: 2 weeks
