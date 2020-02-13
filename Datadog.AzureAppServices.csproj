@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <NuspecFile>Datadog.Development.AzureAppServices.nuspec</NuspecFile>
+    <!-- <NuspecFile>Datadog.Development.AzureAppServices.nuspec</NuspecFile> -->
+    <NuspecFile>Datadog.AzureAppServices.nuspec</NuspecFile>
   </PropertyGroup>
 </Project>
