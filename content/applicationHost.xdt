@@ -3,49 +3,51 @@
   <system.webServer>
     <runtime xdt:Transform="InsertIfMissing" >
       <environmentVariables xdt:Transform="InsertIfMissing">	
-        <add name="COR_ENABLE_PROFILING" xdt:Locator="Matchname" xdt:Transform="RemoveAll"/>
+        <add name="COR_ENABLE_PROFILING" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="COR_PROFILER" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="COR_PROFILER_PATH" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="COR_PROFILER_PATH_32" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="COR_PROFILER_PATH_64" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+
+        <add name="CORECLR_ENABLE_PROFILING" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="CORECLR_PROFILER" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="CORECLR_PROFILER_PATH_32" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="CORECLR_PROFILER_PATH_64" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+
+        <add name="DD_DOTNET_TRACER_HOME" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_INTEGRATIONS" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_TRACE_LOG_PATH" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+		
+        <add name="DD_AZURE_APP_SERVICES" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+		
+        <add name="DD_TRACE_AGENT_PATH" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_TRACE_AGENT_ARGS" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_DOGSTATSD_PATH" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_DOGSTATSD_ARGS" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+		
+        <add name="DD_TRACE_METRICS_ENABLED" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+		
         <add name="COR_ENABLE_PROFILING" value="1" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="COR_PROFILER" xdt:Locator="Matchname" xdt:Transform="RemoveAll"/>
         <add name="COR_PROFILER" value="{846F5F1C-F9AE-4B07-969E-05C26BC060D8}" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="COR_PROFILER_PATH" xdt:Locator="Matchname" xdt:Transform="RemoveAll"/>
-        <add name="COR_PROFILER_PATH" value="%HOME%\datadog\tracer\v0_1_4\x64\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="COR_PROFILER_PATH_32" xdt:Locator="Matchname" xdt:Transform="RemoveAll"/>
-        <add name="COR_PROFILER_PATH_32" value="%HOME%\datadog\tracer\v0_1_4\x86\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="COR_PROFILER_PATH_64" xdt:Locator="Matchname" xdt:Transform="RemoveAll"/>
-        <add name="COR_PROFILER_PATH_64" value="%HOME%\datadog\tracer\v0_1_4\x64\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-
-        <add name="CORECLR_ENABLE_PROFILING" xdt:Locator="Matchname" xdt:Transform="RemoveAll"/>
+        <add name="COR_PROFILER_PATH" value="%HOME%\datadog\tracer\v0_1_5\x64\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="COR_PROFILER_PATH_32" value="%HOME%\datadog\tracer\v0_1_5\x86\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="COR_PROFILER_PATH_64" value="%HOME%\datadog\tracer\v0_1_5\x64\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+		
         <add name="CORECLR_ENABLE_PROFILING" value="1" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="CORECLR_PROFILER" xdt:Locator="Matchname" xdt:Transform="RemoveAll"/>
         <add name="CORECLR_PROFILER" value="{846F5F1C-F9AE-4B07-969E-05C26BC060D8}" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="CORECLR_PROFILER_PATH_32" xdt:Locator="Matchname" xdt:Transform="RemoveAll"/>
-        <add name="CORECLR_PROFILER_PATH_32" value="%HOME%\datadog\tracer\v0_1_4\x86\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="CORECLR_PROFILER_PATH_64" xdt:Locator="Matchname" xdt:Transform="RemoveAll"/>
-        <add name="CORECLR_PROFILER_PATH_64" value="%HOME%\datadog\tracer\v0_1_4\x64\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-
-        <add name="DD_DOTNET_TRACER_HOME" xdt:Locator="Matchname" xdt:Transform="RemoveAll"/>
-        <add name="DD_DOTNET_TRACER_HOME" value="%HOME%\datadog\tracer\v0_1_4" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="DD_INTEGRATIONS" xdt:Locator="Matchname" xdt:Transform="RemoveAll"/>
-        <add name="DD_INTEGRATIONS" value="%HOME%\datadog\tracer\v0_1_4\integrations.json" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="DD_TRACE_LOG_PATH" xdt:Locator="Matchname" xdt:Transform="RemoveAll"/>
-        <add name="DD_TRACE_LOG_PATH" value="%HOME%\LogFiles\datadog\v0_1_4\dotnet-profiler.log" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="CORECLR_PROFILER_PATH_32" value="%HOME%\datadog\tracer\v0_1_5\x86\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 		
-        <add name="DD_AZURE_APP_SERVICES" xdt:Locator="Matchname" xdt:Transform="RemoveAll"/>
+        <add name="DD_DOTNET_TRACER_HOME" value="%HOME%\datadog\tracer\v0_1_5" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_INTEGRATIONS" value="%HOME%\datadog\tracer\v0_1_5\integrations.json" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_TRACE_LOG_PATH" value="%HOME%\LogFiles\datadog\v0_1_5\dotnet-profiler.log" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+		
         <add name="DD_AZURE_APP_SERVICES" value="1" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_TRACE_AGENT_PATH" value="%HOME%\datadog\tracer\v0_1_5\agent\datadog-trace-agent.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_TRACE_AGENT_ARGS" value="--config %HOME%\datadog\tracer\v0_1_5\agent\datadog.yaml" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_DOGSTATSD_PATH" value="%HOME%\datadog\tracer\v0_1_5\agent\dogstatsd.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_DOGSTATSD_ARGS" value="start -c %HOME%\datadog\tracer\v0_1_5\agent" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 		
-        <add name="DD_TRACE_AGENT_PATH" xdt:Locator="Matchname" xdt:Transform="RemoveAll"/>
-        <add name="DD_TRACE_AGENT_PATH" value="%HOME%\datadog\tracer\v0_1_4\agent\datadog-trace-agent.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="DD_TRACE_AGENT_ARGS" xdt:Locator="Matchname" xdt:Transform="RemoveAll"/>
-        <add name="DD_TRACE_AGENT_ARGS" value="--config %HOME%\datadog\tracer\v0_1_4\agent\datadog.yaml" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-		
-        <add name="DD_DOGSTATSD_PATH" xdt:Locator="Matchname" xdt:Transform="RemoveAll"/>
-        <add name="DD_DOGSTATSD_PATH" value="%HOME%\datadog\tracer\v0_1_4\agent\dogstatsd.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="DD_DOGSTATSD_ARGS" xdt:Locator="Matchname" xdt:Transform="RemoveAll"/>
-        <add name="DD_DOGSTATSD_ARGS" value="start -c %HOME%\datadog\tracer\v0_1_4\agent" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-		
-        <add name="DD_TRACE_METRICS_ENABLED" xdt:Locator="Matchname" xdt:Transform="RemoveAll"/>
         <add name="DD_TRACE_METRICS_ENABLED" value="1" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-		
       </environmentVariables>
     </runtime>
   </system.webServer>
