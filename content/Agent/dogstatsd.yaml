@@ -1,3 +1,2 @@
 use_dogstatsd: true
-dogstatsd_port: 8112
 log_file: D:\home\LogFiles\datadog\v0_1_3\dogstatsd.txt
