@@ -2,7 +2,7 @@
 REM Set these version variables and run the script to change all the files which need version updates
 set major=0
 set minor=2
-set patch=0
+set patch=1
 set version_postfix=-prerelease
 set tracer_version=1.13.0
 REM All of the below code changes the actual files, no touch!
