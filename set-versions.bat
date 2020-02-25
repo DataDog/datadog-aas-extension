@@ -4,12 +4,15 @@ set major=0
 set minor=2
 set patch=1
 set version_postfix=-prerelease
+set agent_version=7.18.0-rc.1
 set tracer_version=1.13.0
 REM All of the below code changes the actual files, no touch!
 
-set version_regex=[0-9]+\.[0-9]+\.[0-9]+[\-a-zA-Z]*
 set gitlab_yml=.gitlab-ci.yml
+set version_regex=[0-9]+\.[0-9]+\.[0-9]+[\-a-zA-Z]*
 powershell -Command "(gc .\%gitlab_yml%) -replace '%version_regex%.+windows-tracer-home.zip', '%tracer_version%/windows-tracer-home.zip' | Out-File -encoding ASCII .\%gitlab_yml%"
+set version_regex=[0-9]+\.[0-9]+\.[0-9]+[\-\.a-zA-Z0-9]*
+powershell -Command "(gc .\%gitlab_yml%) -replace 'agent-binaries-%version_regex%-1-x86_64.zip', 'agent-binaries-%agent_version%-1-x86_64.zip' | Out-File -encoding ASCII .\%gitlab_yml%"
 
 set nuget_replacement=%major%.%minor%.%patch%%version_postfix%
 
