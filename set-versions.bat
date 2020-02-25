@@ -26,7 +26,7 @@ set nuget_files=Datadog.Development.AzureAppServices.nuspec Datadog.AzureAppServ
 set path_regex=[0-9]+_[0-9]+_[0-9]+
 set path_replacement=%major%_%minor%_%patch%
 
-set path_files=content\applicationHost.xdt content\install.cmd
+set path_files=content\applicationHost.xdt content\install.cmd content\Agent\datadog.yaml content\Agent\dogstatsd.yaml
 
 (for %%f in (%path_files%) do (
 	powershell -Command "(gc .\%%f) -replace '%path_regex%', '%path_replacement%' | Out-File -encoding ASCII .\%%f"
