@@ -50,7 +50,7 @@
         <add name="DD_DOGSTATSD_ARGS" value="start -c %HOME%\datadog\tracer\v0_2_5\agent" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 		
         <add name="DD_TRACE_METRICS_ENABLED" value="1" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="DD_PROFILER_EXCLUDE_PROCESSES" value="SnapshotUploader.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_PROFILER_EXCLUDE_PROCESSES" value="SnapshotUploader.exe;workerforwarder.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
       </environmentVariables>
     </runtime>
   </system.webServer>
