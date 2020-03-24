@@ -4,7 +4,7 @@ set major=0
 set minor=2
 set patch=5
 set version_postfix=-prerelease
-set agent_version=7.18.0-rc.1
+set agent_version=7.18.1
 set tracer_version=1.15.0
 REM All of the below code changes the actual files, no touch!
 
