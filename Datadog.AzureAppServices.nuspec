@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>Datadog.AzureAppServices</id>
-    <version>0.2.5-prerelease</version>
+    <version>0.2.6-prerelease</version>
     <title>.NET Datadog APM [Beta]</title>
     <authors>Datadog</authors>
     <icon>icon.png</icon>
