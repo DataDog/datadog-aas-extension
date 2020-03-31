@@ -5,7 +5,7 @@ set minor=2
 set patch=5
 set version_postfix=-prerelease
 set agent_version=7.18.1
-set tracer_version=1.15.0
+set tracer_version=1.15.1-prerelease
 REM All of the below code changes the actual files, no touch!
 
 set gitlab_yml=.gitlab-ci.yml
