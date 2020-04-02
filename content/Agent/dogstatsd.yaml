@@ -1,2 +1,2 @@
 use_dogstatsd: true
-log_file: D:\home\LogFiles\datadog\v0_2_6\dogstatsd.txt
+log_file: D:\home\LogFiles\datadog\v0_2_7\dogstatsd.txt
