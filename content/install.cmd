@@ -8,7 +8,7 @@ echo Extension directory is %extensionBaseDir%
 echo Site root directory is %siteHome%
 
 REM Create home directory for tracer version
-SET tracerDir=%siteHome%\datadog\tracer\v0_2_7
+SET tracerDir=%siteHome%\datadog\tracer\v0_2_8
 if not exist %tracerDir% mkdir %tracerDir%
 
 REM Copy tracer home directory to version specific directory
