@@ -2,10 +2,10 @@
 REM Set these version variables and run the script to change all the files which need version updates
 set major=0
 set minor=2
-set patch=7
+set patch=8
 set version_postfix=-prerelease
 set agent_version=7.18.1
-set tracer_version=1.16.0
+set tracer_version=1.16.1
 REM All of the below code changes the actual files, no touch!
 
 set gitlab_yml=.gitlab-ci.yml
