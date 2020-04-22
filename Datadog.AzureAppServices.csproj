@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <!-- <NuspecFile>Datadog.Development.AzureAppServices.nuspec</NuspecFile> -->
-    <NuspecFile>Datadog.AzureAppServices.nuspec</NuspecFile>
+    <!-- <NuspecFile>Datadog.AzureAppServices.nuspec</NuspecFile> -->
+    <NuspecFile>Datadog.Development.AzureAppServices.nuspec</NuspecFile>
   </PropertyGroup>
 </Project>
