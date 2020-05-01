@@ -31,13 +31,13 @@
 		
         <add name="COR_ENABLE_PROFILING" value="1" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
         <add name="COR_PROFILER" value="{846F5F1C-F9AE-4B07-969E-05C26BC060D8}" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="COR_PROFILER_PATH" value="%HOME%\datadog\tracer\v0_2_8\x64\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="COR_PROFILER_PATH_32" value="%HOME%\datadog\tracer\v0_2_8\x86\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="COR_PROFILER_PATH_64" value="%HOME%\datadog\tracer\v0_2_8\x64\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="COR_PROFILER_PATH" value="%HOME%\datadog\tracer\v0_2_8\win-x64\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="COR_PROFILER_PATH_32" value="%HOME%\datadog\tracer\v0_2_8\win-x86\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="COR_PROFILER_PATH_64" value="%HOME%\datadog\tracer\v0_2_8\win-x64\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 		
         <add name="CORECLR_ENABLE_PROFILING" value="1" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
         <add name="CORECLR_PROFILER" value="{846F5F1C-F9AE-4B07-969E-05C26BC060D8}" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="CORECLR_PROFILER_PATH_32" value="%HOME%\datadog\tracer\v0_2_8\x86\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="CORECLR_PROFILER_PATH_32" value="%HOME%\datadog\tracer\v0_2_8\win-x86\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 		
         <add name="DD_DOTNET_TRACER_HOME" value="%HOME%\datadog\tracer\v0_2_8" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
         <add name="DD_INTEGRATIONS" value="%HOME%\datadog\tracer\v0_2_8\integrations.json" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
