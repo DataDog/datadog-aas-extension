@@ -1,2 +1,4 @@
 use_dogstatsd: true
-log_file: D:\home\LogFiles\datadog\v0_2_8\dogstatsd.txt
+log_file: D:\home\LogFiles\datadog\v0_3_0\dogstatsd.txt
+## log_level: debug
+## hostname: examplehost
