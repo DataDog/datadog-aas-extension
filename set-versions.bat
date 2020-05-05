@@ -1,12 +1,21 @@
 
 REM Set these version variables and run the script to change all the files which need version updates
+
+REM The site extension version
 set major=0
-set minor=2
-set patch=8
+set minor=3
+set patch=0
 set version_postfix=-prerelease
+
+REM The agent version
 set agent_version=7.18.1
-set tracer_version=1.16.1
-REM All of the below code changes the actual files, no touch!
+
+REM The dotnet tracer version
+set tracer_version=1.16.2
+
+REM *************************************************************
+REM All of the below code updates versions in files, do not touch
+REM *************************************************************
 
 set gitlab_yml=.gitlab-ci.yml
 set version_regex=[0-9]+\.[0-9]+\.[0-9]+[\-a-zA-Z]*
