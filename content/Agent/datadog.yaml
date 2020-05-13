@@ -2,5 +2,5 @@
 hostname: none
 apm_config:
   enabled: true
-  log_file: D:\home\LogFiles\datadog\v0_3_0\trace-log.txt
+  log_file: D:\home\LogFiles\datadog\v0_3_1\trace-log.txt
 ## log_level: debug
