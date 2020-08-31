@@ -2,7 +2,7 @@ image: mcr.microsoft.com/dotnet/core/sdk:3.1
 
 variables:
   AGENT_DOWNLOAD_URL: "http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.18.1-1-x86_64.zip"
-  TRACER_DOWNLOAD_URL: "https://github.com/DataDog/dd-trace-dotnet/releases/download/v1.19.0/windows-tracer-home.zip"
+  TRACER_DOWNLOAD_URL: "https://github.com/DataDog/dd-trace-dotnet/releases/download/v1.19.2/windows-tracer-home.zip"
   TRACER_CONTENT_DIR: $CI_PROJECT_DIR/content/Tracer
   AGENT_CONTENT_DIR: $CI_PROJECT_DIR/content/Agent
 
