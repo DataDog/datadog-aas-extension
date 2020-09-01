@@ -4,14 +4,14 @@ REM Set these version variables and run the script to change all the files which
 REM The site extension version
 set major=0
 set minor=3
-set patch=8
+set patch=9
 set version_postfix=-prerelease
 
 REM The agent version
-set agent_version=7.18.1
+set agent_version=7.22.0
 
 REM The dotnet tracer version
-set tracer_version=1.19.0
+set tracer_version=1.19.2
 
 REM *************************************************************
 REM All of the below code updates versions in files, do not touch
