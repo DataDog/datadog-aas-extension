@@ -1,5 +1,5 @@
 ## hostname: none is required for special billing considerations
 hostname: none
 use_dogstatsd: true
-log_file: D:\home\LogFiles\datadog\v0_3_10\dogstatsd.txt
+log_file: D:\home\LogFiles\datadog\v0_3_11\dogstatsd.txt
 ## log_level: debug
