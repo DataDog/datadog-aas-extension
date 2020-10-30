@@ -21,4 +21,6 @@ if not exist %agentDir% mkdir %agentDir%
 REM Copy all agent files
 ROBOCOPY %extensionBaseDir%Agent %agentDir% /E /purge
 
+POWERSHELL .\install.ps1
+
 echo Finished install
