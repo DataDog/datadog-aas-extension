@@ -30,6 +30,9 @@
         <add name="DD_TRACE_METRICS_ENABLED" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_PROFILER_EXCLUDE_PROCESSES" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
 
+        <add name="DD_DOGSTATSD_WINDOWS_PIPE_NAME" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_APM_WINDOWS_PIPE_NAME" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+
         <!-- We're unable to instrument domain-neutral assemblies when our managed assemblies are not in the GAC, so force LoaderOptimization to be LoaderOptimization.SingleDomain -->
         <add name="COMPLUS_LoaderOptimization" value="1" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
         <add name="COR_ENABLE_PROFILING" value="1" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
@@ -55,7 +58,15 @@
 
         <add name="DD_TRACE_METRICS_ENABLED" value="1" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
         <add name="DD_PROFILER_EXCLUDE_PROCESSES" value="SnapshotUploader.exe;workerforwarder.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+		
+        <add name="DD_DOGSTATSD_WINDOWS_PIPE_NAME" value="dogstatsd-uniqueStatsPipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_APM_WINDOWS_PIPE_NAME" value="datadogtrace-uniqueTracePipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+		
       </environmentVariables>
     </runtime>
   </system.webServer>
 </configuration>
+
+
+
+
