@@ -8,18 +8,12 @@ echo Extension directory is %extensionBaseDir%
 echo Site root directory is %siteHome%
 
 REM Create home directory for tracer version
-SET tracerDir=%siteHome%\datadog\tracer\v0_3_15
-if not exist %tracerDir% mkdir %tracerDir%
+SET installDir=%siteHome%\datadog\v0_3_15
+if not exist %installDir% mkdir %installDir%
 
-REM Copy tracer home directory to version specific directory
-ROBOCOPY %extensionBaseDir%Tracer %tracerDir% /E /purge
-
-REM Create directory for agent to live
-SET agentDir=%tracerDir%\agent
-if not exist %agentDir% mkdir %agentDir%
-
-REM Copy all agent files
-ROBOCOPY %extensionBaseDir%Agent %agentDir% /E /purge
+REM Move tracer dlls and agent exes to version specific directory
+move "%extensionBaseDir%Tracer" "%installDir%"
+move "%extensionBaseDir%Agent" "%installDir%"
 
 POWERSHELL .\install.ps1
 
