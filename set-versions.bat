@@ -11,7 +11,7 @@ REM The agent version
 set agent_version=7.22.1
 
 REM The dotnet tracer version
-set tracer_version=1.20.0
+set tracer_version=1.21.0
 
 REM *************************************************************
 REM All of the below code updates versions in files, do not touch
