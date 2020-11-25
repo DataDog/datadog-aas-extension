@@ -4,7 +4,7 @@ REM Set these version variables and run the script to change all the files which
 REM The site extension version
 set major=0
 set minor=3
-set patch=13
+set patch=14
 set version_postfix=-prerelease
 
 REM The agent version
