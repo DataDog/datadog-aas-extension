@@ -1,7 +1,12 @@
 image: mcr.microsoft.com/dotnet/core/sdk:3.1
 
+# Named pipes temporary hosting for agent:
+# https://docs.google.com/uc?export=download&id=1GfkHkjbZ30IONYVUGuY90hEtx-8Uw3Vx
+# Original URL format for agent artifact:
+# http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.22.1-1-x86_64.zip
+
 variables:
-  AGENT_DOWNLOAD_URL: "http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.22.1-1-x86_64.zip"
+  AGENT_DOWNLOAD_URL: "https://docs.google.com/uc?export=download&id=1GfkHkjbZ30IONYVUGuY90hEtx-8Uw3Vx" 
   TRACER_DOWNLOAD_URL: "https://github.com/DataDog/dd-trace-dotnet/releases/download/v1.21.1/windows-tracer-home.zip"
   TRACER_CONTENT_DIR: $CI_PROJECT_DIR/content/Tracer
   AGENT_CONTENT_DIR: $CI_PROJECT_DIR/content/Agent
