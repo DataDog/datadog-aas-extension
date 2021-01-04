@@ -4,3 +4,5 @@ apm_config:
   enabled: true
   log_file: D:\home\LogFiles\datadog\v0_3_15\trace-log.txt
 ## log_level: debug
+cloud_provider_metadata:
+  - "azure"

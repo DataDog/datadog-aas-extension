@@ -3,3 +3,4 @@ content/Agent/*.exe
 content.zip
 obj/
 /set-versions-log.txt
+/bin/*
