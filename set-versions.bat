@@ -8,7 +8,7 @@ set patch=15
 set version_postfix=-prerelease
 
 REM The agent version
-set agent_version=7.22.1
+set agent_version=7.25.0
 
 REM The dotnet tracer version
 set tracer_version=1.21.1

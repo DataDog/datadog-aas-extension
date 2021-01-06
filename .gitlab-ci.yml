@@ -1,7 +1,7 @@
 image: mcr.microsoft.com/dotnet/core/sdk:3.1
 
 # Original URL format for agent artifact:
-# http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.22.1-1-x86_64.zip
+# http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.25.0-1-x86_64.zip
 
 # Original URL format for windows tracer home:
 # https://github.com/DataDog/dd-trace-dotnet/releases/download/v1.21.1/windows-tracer-home.zip
