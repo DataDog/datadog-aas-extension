@@ -32,6 +32,7 @@ create-site-extension-package:
     - mv agent-extract/bin/agent/datadog-trace-agent.exe $AGENT_CONTENT_DIR
     - echo "Creating nuget package"
     - echo "Packing nuspec file via arcane roundabout csproj process"
+    - dotnet pack Datadog.Development.AzureAppServices.csproj -p:NoBuild=true -p:NoDefaultExcludes=true -o package
     - dotnet pack Datadog.AzureAppServices.csproj -p:NoBuild=true -p:NoDefaultExcludes=true -o package
   artifacts:
     expire_in: 2 weeks
