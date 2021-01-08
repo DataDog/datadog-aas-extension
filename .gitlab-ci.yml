@@ -7,8 +7,8 @@ image: mcr.microsoft.com/dotnet/core/sdk:3.1
 # https://github.com/DataDog/dd-trace-dotnet/releases/download/v1.21.1/windows-tracer-home.zip
 
 variables:
-  AGENT_DOWNLOAD_URL: "http://apm-dotnet-throughput-cannon.eastus.cloudapp.azure.com/Builds/Custom/NamedPipesAAS/V20210106/agent-binaries-named-pipes-7.24.0.git.2.49f4f6c-1-x86_64.zip" 
-  TRACER_DOWNLOAD_URL: "http://apm-dotnet-throughput-cannon.eastus.cloudapp.azure.com/Builds/Custom/NamedPipesAAS/V20210106/windows-tracer-home.zip"
+  AGENT_DOWNLOAD_URL: "http://apm-dotnet-throughput-cannon.eastus.cloudapp.azure.com/Builds/Custom/NamedPipesAAS/v20210108/agent-binaries-named-pipes-7.24.0.git.2.49f4f6c-1-x86_64.zip" 
+  TRACER_DOWNLOAD_URL: "http://apm-dotnet-throughput-cannon.eastus.cloudapp.azure.com/Builds/Custom/NamedPipesAAS/v20210108/windows-tracer-home.zip"
   TRACER_CONTENT_DIR: $CI_PROJECT_DIR/content/Tracer
   AGENT_CONTENT_DIR: $CI_PROJECT_DIR/content/Agent
 

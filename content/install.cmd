@@ -8,7 +8,7 @@ echo Extension directory is %extensionBaseDir%
 echo Site root directory is %siteHome%
 
 REM Create home directory for tracer version
-SET installDir=%siteHome%\datadog\v100_3_17
+SET installDir=%siteHome%\datadog\v100_3_18
 if not exist %installDir% mkdir %installDir%
 
 REM Move tracer dlls and agent exes to version specific directory

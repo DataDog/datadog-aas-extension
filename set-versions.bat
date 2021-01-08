@@ -2,9 +2,9 @@
 REM Set these version variables and run the script to change all the files which need version updates
 
 REM The site extension version
-set major=0
+set major=100
 set minor=3
-set patch=15
+set patch=18
 set version_postfix=-prerelease
 
 REM The agent version
