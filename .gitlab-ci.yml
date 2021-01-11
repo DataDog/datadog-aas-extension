@@ -9,6 +9,7 @@ image: mcr.microsoft.com/dotnet/core/sdk:3.1
 variables:
   DOTNET_AGENT_DOWNLOAD_URL: "http://apm-dotnet-throughput-cannon.eastus.cloudapp.azure.com/Builds/Custom/NamedPipesAAS/v20210108/agent-binaries-named-pipes-7.24.0.git.2.49f4f6c-1-x86_64.zip" 
   DOTNET_TRACER_DOWNLOAD_URL: "http://apm-dotnet-throughput-cannon.eastus.cloudapp.azure.com/Builds/Custom/NamedPipesAAS/v20210108/windows-tracer-home.zip"
+  VERSIONED_DIR: $CI_PROJECT_DIR/dotnet/content/v100_3_22
   TRACER_CONTENT_DIR: $CI_PROJECT_DIR/dotnet/content/v100_3_22/Tracer
   AGENT_CONTENT_DIR: $CI_PROJECT_DIR/dotnet/content/v100_3_22/Agent
 
@@ -25,7 +26,9 @@ dotnet-package:
     - wget -O tracer.zip $DOTNET_TRACER_DOWNLOAD_URL
     - unzip tracer.zip -d dotnet-tracer-extract
     - echo "Moving agent executables and tracer binaries"
+    - mkdir $VERSIONED_DIR
     - mkdir $TRACER_CONTENT_DIR
+    - mkdir $AGENT_CONTENT_DIR
     - mv -v dotnet-tracer-extract/* $TRACER_CONTENT_DIR
     - mv dotnet-agent-extract/bin/agent/dogstatsd.exe $AGENT_CONTENT_DIR
     - mv dotnet-agent-extract/bin/agent/trace-agent.exe dotnet-agent-extract/bin/agent/datadog-trace-agent.exe
