@@ -1,0 +1,24 @@
+
+C:\Github\datadog-aas-extension\dotnet>(
+powershell -Command "(gc .\content\applicationHost.xdt) -replace '[0-9]+_[0-9]+_[0-9]+', '100_3_21' | Out-File -encoding ASCII .\content\applicationHost.xdt"  
+ echo/
+) 
+
+
+C:\Github\datadog-aas-extension\dotnet>(
+powershell -Command "(gc .\content\install.cmd) -replace '[0-9]+_[0-9]+_[0-9]+', '100_3_21' | Out-File -encoding ASCII .\content\install.cmd"  
+ echo/
+) 
+
+
+C:\Github\datadog-aas-extension\dotnet>(
+powershell -Command "(gc .\content\Agent\datadog.yaml) -replace '[0-9]+_[0-9]+_[0-9]+', '100_3_21' | Out-File -encoding ASCII .\content\Agent\datadog.yaml"  
+ echo/
+) 
+
+
+C:\Github\datadog-aas-extension\dotnet>(
+powershell -Command "(gc .\content\Agent\dogstatsd.yaml) -replace '[0-9]+_[0-9]+_[0-9]+', '100_3_21' | Out-File -encoding ASCII .\content\Agent\dogstatsd.yaml"  
+ echo/
+) 
+
