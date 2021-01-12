@@ -39,7 +39,7 @@ dotnet-package:
     - echo "Packing nuspec file via arcane roundabout csproj process"
     - dotnet pack dotnet/Datadog.AzureAppServices.csproj -p:NoBuild=true -p:NoDefaultExcludes=true -o package
     - echo "Updating paths from Datadog.AzureAppServices to Datadog.Development.AzureAppServices for testing package"
-    - powershell -Command "(gc .\dotnet\content\applicationHost.xdt) -replace 'Datadog.AzureAppServices', 'Datadog.Development.AzureAppServices' | Out-File -encoding ASCII .\dotnet\content\applicationHost.xdt"
+    - sed -i 's/Datadog.AzureAppServices/Datadog.Development.AzureAppServices/g' dotnet\content\applicationHost.xdt
     - dotnet pack dotnet/Datadog.Development.AzureAppServices.csproj -p:NoBuild=true -p:NoDefaultExcludes=true -o package
   artifacts:
     expire_in: 2 weeks
