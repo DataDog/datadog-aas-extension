@@ -10,9 +10,9 @@ variables:
   DOTNET_AGENT_DOWNLOAD_URL: "http://apm-dotnet-throughput-cannon.eastus.cloudapp.azure.com/Builds/Custom/NamedPipesAAS/v20210108/agent-binaries-named-pipes-7.24.0.git.2.49f4f6c-1-x86_64.zip" 
   DOTNET_TRACER_DOWNLOAD_URL: "http://apm-dotnet-throughput-cannon.eastus.cloudapp.azure.com/Builds/Custom/NamedPipesAAS/v20210108/windows-tracer-home.zip"
   AGENT_CONFIG_DIR: $CI_PROJECT_DIR/dotnet/content/Agent
-  VERSIONED_DIR: $CI_PROJECT_DIR/dotnet/content/v100_3_21
-  TRACER_CONTENT_DIR: $CI_PROJECT_DIR/dotnet/content/v100_3_21/Tracer
-  AGENT_CONTENT_DIR: $CI_PROJECT_DIR/dotnet/content/v100_3_21/Agent
+  VERSIONED_DIR: $CI_PROJECT_DIR/dotnet/content/v100_3_22
+  TRACER_CONTENT_DIR: $CI_PROJECT_DIR/dotnet/content/v100_3_22/Tracer
+  AGENT_CONTENT_DIR: $CI_PROJECT_DIR/dotnet/content/v100_3_22/Agent
 
 dotnet-package:
   tags: [ "runner:main", "size:2xlarge" ]
@@ -37,8 +37,10 @@ dotnet-package:
     - mv dotnet-agent-extract/bin/agent/datadog-trace-agent.exe $AGENT_CONTENT_DIR
     - echo "Creating nuget package"
     - echo "Packing nuspec file via arcane roundabout csproj process"
-    - dotnet pack dotnet/Datadog.Development.AzureAppServices.csproj -p:NoBuild=true -p:NoDefaultExcludes=true -o package
     - dotnet pack dotnet/Datadog.AzureAppServices.csproj -p:NoBuild=true -p:NoDefaultExcludes=true -o package
+    - echo "Updating paths from Datadog.AzureAppServices to Datadog.Development.AzureAppServices for testing package"
+    - powershell -Command "(gc .\dotnet\content\applicationHost.xdt) -replace 'Datadog.AzureAppServices', 'Datadog.Development.AzureAppServices' | Out-File -encoding ASCII .\dotnet\content\applicationHost.xdt"
+    - dotnet pack dotnet/Datadog.Development.AzureAppServices.csproj -p:NoBuild=true -p:NoDefaultExcludes=true -o package
   artifacts:
     expire_in: 2 weeks
     paths:
