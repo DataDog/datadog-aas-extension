@@ -55,7 +55,7 @@
 
         <add name="DD_DOTNET_TRACER_HOME" value="%HOME%\SiteExtensions\Datadog.AzureAppServices\v100_3_20\Tracer" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
         <add name="DD_INTEGRATIONS" value="%HOME%\SiteExtensions\Datadog.AzureAppServices\v100_3_20\Tracer\integrations.json" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="DD_TRACE_LOG_PATH" value="%HOME%\LogFiles\SiteExtensions\Datadog.AzureAppServices\v100_3_20\dotnet-profiler.log" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_TRACE_LOG_PATH" value="%HOME%\LogFiles\datadog\v100_3_20\dotnet-profiler.log" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <add name="DD_AZURE_APP_SERVICES" value="1" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
         <add name="DD_TRACE_AGENT_PATH" value="%HOME%\SiteExtensions\Datadog.AzureAppServices\v100_3_20\Agent\datadog-trace-agent.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
