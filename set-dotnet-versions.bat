@@ -3,7 +3,7 @@ REM Set these version variables and run the script to change all the files which
 
 REM The site extension version
 set major=100
-set minor=3
+set minor=4
 set patch=22
 set version_postfix=-prerelease
 

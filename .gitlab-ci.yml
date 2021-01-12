@@ -10,9 +10,9 @@ variables:
   DOTNET_AGENT_DOWNLOAD_URL: "http://apm-dotnet-throughput-cannon.eastus.cloudapp.azure.com/Builds/Custom/NamedPipesAAS/v20210108/agent-binaries-named-pipes-7.24.0.git.2.49f4f6c-1-x86_64.zip" 
   DOTNET_TRACER_DOWNLOAD_URL: "http://apm-dotnet-throughput-cannon.eastus.cloudapp.azure.com/Builds/Custom/NamedPipesAAS/v20210108/windows-tracer-home.zip"
   AGENT_CONFIG_DIR: $CI_PROJECT_DIR/dotnet/content/Agent
-  VERSIONED_DIR: $CI_PROJECT_DIR/dotnet/content/v100_3_22
-  TRACER_CONTENT_DIR: $CI_PROJECT_DIR/dotnet/content/v100_3_22/Tracer
-  AGENT_CONTENT_DIR: $CI_PROJECT_DIR/dotnet/content/v100_3_22/Agent
+  VERSIONED_DIR: $CI_PROJECT_DIR/dotnet/content/v100_4_22
+  TRACER_CONTENT_DIR: $CI_PROJECT_DIR/dotnet/content/v100_4_22/Tracer
+  AGENT_CONTENT_DIR: $CI_PROJECT_DIR/dotnet/content/v100_4_22/Agent
 
 dotnet-package:
   tags: [ "runner:main", "size:2xlarge" ]
