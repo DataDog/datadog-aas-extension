@@ -1,38 +1,46 @@
 image: mcr.microsoft.com/dotnet/core/sdk:3.1
 
 # Original URL format for agent artifact:
-# http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.22.1-1-x86_64.zip
+# http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.25.0-1-x86_64.zip
 
 # Original URL format for windows tracer home:
 # https://github.com/DataDog/dd-trace-dotnet/releases/download/v1.21.1/windows-tracer-home.zip
 
 variables:
-  AGENT_DOWNLOAD_URL: "http://apm-dotnet-throughput-cannon.eastus.cloudapp.azure.com/Builds/Custom/NamedPipesAAS/V20201231/agent-binaries-named-pipes-7.24.0.git.2.49f4f6c-1-x86_64.zip" 
-  TRACER_DOWNLOAD_URL: "http://apm-dotnet-throughput-cannon.eastus.cloudapp.azure.com/Builds/Custom/NamedPipesAAS/V20201231/windows-tracer-home.zip"
-  TRACER_CONTENT_DIR: $CI_PROJECT_DIR/content/Tracer
-  AGENT_CONTENT_DIR: $CI_PROJECT_DIR/content/Agent
+  DOTNET_AGENT_DOWNLOAD_URL: "http://apm-dotnet-throughput-cannon.eastus.cloudapp.azure.com/Builds/Custom/NamedPipesAAS/v20210108/agent-binaries-named-pipes-7.24.0.git.2.49f4f6c-1-x86_64.zip" 
+  DOTNET_TRACER_DOWNLOAD_URL: "http://apm-dotnet-throughput-cannon.eastus.cloudapp.azure.com/Builds/Custom/NamedPipesAAS/v20210108/windows-tracer-home.zip"
+  AGENT_CONFIG_DIR: $CI_PROJECT_DIR/dotnet/content/Agent
+  VERSIONED_DIR: $CI_PROJECT_DIR/dotnet/content/v0_3_15
+  TRACER_CONTENT_DIR: $CI_PROJECT_DIR/dotnet/content/v0_3_15/Tracer
+  AGENT_CONTENT_DIR: $CI_PROJECT_DIR/dotnet/content/v0_3_15/Agent
 
-create-site-extension-package:
+dotnet-package:
   tags: [ "runner:main", "size:2xlarge" ]
   script:
     - echo "Installing dependencies"
     - apt-get update
     - apt-get install unzip
-    - echo "Downloading agent from ${AGENT_DOWNLOAD_URL}"
-    - wget -O agent.zip $AGENT_DOWNLOAD_URL
-    - unzip agent.zip -d agent-extract
-    - echo "Downloading tracer from ${TRACER_DOWNLOAD_URL}"
-    - wget -O tracer.zip $TRACER_DOWNLOAD_URL
-    - unzip tracer.zip -d tracer-extract
+    - echo "Downloading agent from ${DOTNET_AGENT_DOWNLOAD_URL}"
+    - wget -O agent.zip $DOTNET_AGENT_DOWNLOAD_URL
+    - unzip agent.zip -d dotnet-agent-extract
+    - echo "Downloading tracer from ${DOTNET_TRACER_DOWNLOAD_URL}"
+    - wget -O tracer.zip $DOTNET_TRACER_DOWNLOAD_URL
+    - unzip tracer.zip -d dotnet-tracer-extract
     - echo "Moving agent executables and tracer binaries"
+    - mkdir $VERSIONED_DIR
     - mkdir $TRACER_CONTENT_DIR
-    - mv -v tracer-extract/* $TRACER_CONTENT_DIR
-    - mv agent-extract/bin/agent/dogstatsd.exe $AGENT_CONTENT_DIR
-    - mv agent-extract/bin/agent/trace-agent.exe agent-extract/bin/agent/datadog-trace-agent.exe
-    - mv agent-extract/bin/agent/datadog-trace-agent.exe $AGENT_CONTENT_DIR
+    - mkdir $AGENT_CONTENT_DIR
+    - mv -v dotnet-tracer-extract/* $TRACER_CONTENT_DIR
+    - mv -v $AGENT_CONFIG_DIR/* $AGENT_CONTENT_DIR
+    - mv dotnet-agent-extract/bin/agent/dogstatsd.exe $AGENT_CONTENT_DIR
+    - mv dotnet-agent-extract/bin/agent/trace-agent.exe dotnet-agent-extract/bin/agent/datadog-trace-agent.exe
+    - mv dotnet-agent-extract/bin/agent/datadog-trace-agent.exe $AGENT_CONTENT_DIR
     - echo "Creating nuget package"
     - echo "Packing nuspec file via arcane roundabout csproj process"
-    - dotnet pack Datadog.AzureAppServices.csproj -p:NoBuild=true -p:NoDefaultExcludes=true -o package
+    - dotnet pack dotnet/Datadog.AzureAppServices.csproj -p:NoBuild=true -p:NoDefaultExcludes=true -o package
+    - echo "Updating paths from Datadog.AzureAppServices to Datadog.Development.AzureAppServices for testing package"
+    - sed -i 's/Datadog.AzureAppServices/Datadog.Development.AzureAppServices/g' dotnet/content/applicationHost.xdt
+    - dotnet pack dotnet/Datadog.Development.AzureAppServices.csproj -p:NoBuild=true -p:NoDefaultExcludes=true -o package
   artifacts:
     expire_in: 2 weeks
     paths:

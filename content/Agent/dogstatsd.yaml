@@ -1,7 +1,0 @@
-## hostname: none is required for special billing considerations
-hostname: none
-use_dogstatsd: true
-log_file: D:\home\LogFiles\datadog\v0_3_15\dogstatsd.txt
-## log_level: debug
-cloud_provider_metadata:
-  - "azure"
