@@ -26,15 +26,12 @@ set path_replacement=%major%_%minor%_%patch%
 
 set gitlab_yml=.gitlab-ci.yml
 powershell -Command "(gc .\%gitlab_yml%) -replace '%path_regex%', '%path_replacement%' | Out-File -encoding ASCII .\%gitlab_yml%"
-echo/
 
 set version_regex=[0-9]+\.[0-9]+\.[0-9]+[\-a-zA-Z]*
 powershell -Command "(gc .\%gitlab_yml%) -replace '%version_regex%.+windows-tracer-home.zip', '%tracer_version%/windows-tracer-home.zip' | Out-File -encoding ASCII .\%gitlab_yml%"
-echo/
 
 set version_regex=[0-9]+\.[0-9]+\.[0-9]+[\-\.a-zA-Z0-9]*
 powershell -Command "(gc .\%gitlab_yml%) -replace 'agent-binaries-%version_regex%-1-x86_64.zip', 'agent-binaries-%agent_version%-1-x86_64.zip' | Out-File -encoding ASCII .\%gitlab_yml%"
-echo/
 
 set release_nuget=dotnet\Datadog.AzureAppServices.nuspec
 set release_version=%major%.%minor%.%patch%%version_postfix%
@@ -50,11 +47,9 @@ set ext_version_replace='DD_AAS_DOTNET_EXTENSION_VERSION"" value=\"%release_vers
 set ext_version_regex=DD_AAS_DOTNET_EXTENSION_VERSION. value..[0-9]+.[0-9]+.[0-9]+. xdt.Locator
 
 powershell -Command "(gc .\%application_host_transform%) -replace '%ext_version_regex%', %ext_version_replace% | Out-File -encoding ASCII .\%application_host_transform%"
-echo/
 
 set path_files=%application_host_transform% dotnet\content\install.cmd dotnet\content\Agent\datadog.yaml dotnet\content\Agent\dogstatsd.yaml
 
 for %%f in (%path_files%) do (
 	powershell -Command "(gc .\%%f) -replace '%path_regex%', '%path_replacement%' | Out-File -encoding ASCII .\%%f"
-   echo/
 )
