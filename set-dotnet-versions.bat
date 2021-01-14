@@ -8,6 +8,8 @@ set version_postfix=-prerelease
 
 REM Specialized version for development package, increment as necessary for testing
 set development_major=100
+set development_minor=5
+set development_patch=0
 
 REM The agent version to deploy
 set agent_version=7.25.0
@@ -39,7 +41,7 @@ set release_version=%major%.%minor%.%patch%%version_postfix%
 powershell -Command "(gc .\%release_nuget%) -replace '%version_regex%', '%release_version%' | Out-File -encoding ASCII .\%release_nuget%"
 
 set dev_nuget=dotnet\Datadog.Development.AzureAppServices.nuspec
-set development_package_version=%development_major%.%minor%.%patch%%version_postfix%
+set development_package_version=%development_major%.%development_minor%.%development_patch%%version_postfix%
 powershell -Command "(gc .\%dev_nuget%) -replace '%version_regex%', '%development_package_version%' | Out-File -encoding ASCII .\%dev_nuget%"
 
 set application_host_transform=dotnet\content\applicationHost.xdt
