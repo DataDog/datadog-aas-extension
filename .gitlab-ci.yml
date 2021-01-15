@@ -41,7 +41,9 @@ dotnet-package:
     - echo "Updating paths from Datadog.AzureAppServices to Datadog.Development.AzureAppServices for testing package"
     - sed -i 's/Datadog.AzureAppServices/Datadog.Development.AzureAppServices/g' dotnet/content/applicationHost.xdt
     - sed -i 's/${RELEASE_VERSION}/${DEVELOPMENT_VERSION}/g' dotnet/content/applicationHost.xdt
+    - mkdir $DEVELOPMENT_DIR
     - mv -v $RELEASE_DIR/* $DEVELOPMENT_DIR
+    - rm -d -v $RELEASE_DIR
     - dotnet pack dotnet/Datadog.Development.AzureAppServices.csproj -p:NoBuild=true -p:NoDefaultExcludes=true -o package
   artifacts:
     expire_in: 2 weeks
