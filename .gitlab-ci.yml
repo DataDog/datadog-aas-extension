@@ -7,11 +7,9 @@ variables:
   DOTNET_AGENT_DOWNLOAD_URL: "http://apm-dotnet-throughput-cannon.eastus.cloudapp.azure.com/Builds/Custom/NamedPipesAAS/TraceAgentTelemetry/v20210115/agent-binaries-7.26.0-devel.git.92.22361c5-1-x86_64.zip" 
   DOTNET_TRACER_DOWNLOAD_URL: "https://github.com/DataDog/dd-trace-dotnet/releases/download/v1.22.0/windows-tracer-home.zip"
   AGENT_CONFIG_DIR: $CI_PROJECT_DIR/dotnet/content/Agent
-  RELEASE_VERSION: v0_4_0
   RELEASE_DIR: $CI_PROJECT_DIR/dotnet/content/v0_4_0
   RELEASE_TRACER_DIR: $CI_PROJECT_DIR/dotnet/content/v0_4_0/Tracer
   RELEASE_AGENT_DIR: $CI_PROJECT_DIR/dotnet/content/v0_4_0/Agent
-  DEVELOPMENT_VERSION: v100_5_1
   DEVELOPMENT_DIR: $CI_PROJECT_DIR/dotnet/content/v100_5_1
 
 dotnet-package:
@@ -40,7 +38,7 @@ dotnet-package:
     - dotnet pack dotnet/Datadog.AzureAppServices.csproj -p:NoBuild=true -p:NoDefaultExcludes=true -o package
     - echo "Updating paths from Datadog.AzureAppServices to Datadog.Development.AzureAppServices for testing package"
     - sed -i 's/Datadog.AzureAppServices/Datadog.Development.AzureAppServices/g' dotnet/content/applicationHost.xdt
-    - sed -i 's/v$RELEASE_VERSION/v$DEVELOPMENT_VERSION}/g' dotnet/content/applicationHost.xdt
+    - sed -i 's/v0_4_0/v100_5_1/g' dotnet/content/applicationHost.xdt
     - mkdir $DEVELOPMENT_DIR
     - mv -v $RELEASE_DIR/* $DEVELOPMENT_DIR
     - rm -d -v $RELEASE_DIR
