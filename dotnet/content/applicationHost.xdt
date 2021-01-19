@@ -65,7 +65,7 @@
         <add name="DD_DOGSTATSD_ARGS" value="start -c %HOME%\SiteExtensions\Datadog.AzureAppServices\v0_4_0\Agent" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <add name="DD_TRACE_METRICS_ENABLED" value="0" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="DD_PROFILER_EXCLUDE_PROCESSES" value="SnapshotUploader.exe;workerforwarder.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_PROFILER_EXCLUDE_PROCESSES" value="SnapshotUploader.exe;workerforwarder.exe;SnapshotUploader64.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 		
         <add name="DD_TRACE_TRANSPORT" value="DATADOG-NAMED-PIPES" xdt:Locator="Match(name)" xdt:Transform="Insert"/>	
         <add name="DD_APM_WINDOWS_PIPE_NAME" value="datadogtrace-uniqueTracePipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/>	
