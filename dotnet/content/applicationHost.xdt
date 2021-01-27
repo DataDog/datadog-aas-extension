@@ -1,3 +1,4 @@
+<!-- Documentation: https://github.com/projectkudu/kudu/wiki/Xdt-transform-samples -->
 <?xml version="1.0"?>
 <configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
   <system.webServer>
