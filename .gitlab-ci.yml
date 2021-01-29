@@ -5,12 +5,13 @@ image: mcr.microsoft.com/dotnet/core/sdk:3.1
 
 variables:
   DOTNET_AGENT_DOWNLOAD_URL: "http://apm-dotnet-throughput-cannon.eastus.cloudapp.azure.com/Builds/Custom/NamedPipesAAS/v20210108/agent-binaries-named-pipes-7.24.0.git.2.49f4f6c-1-x86_64.zip" 
-  DOTNET_TRACER_DOWNLOAD_URL: "https://github.com/DataDog/dd-trace-dotnet/releases/download/v1.22.0/windows-tracer-home.zip"
+  # DOTNET_TRACER_DOWNLOAD_URL: "https://github.com/DataDog/dd-trace-dotnet/releases/download/v1.22.0/windows-tracer-home.zip"
+  DOTNET_TRACER_DOWNLOAD_URL: "http://apm-dotnet-throughput-cannon.eastus.cloudapp.azure.com/Builds/Custom/AAS/v20210129_EB/windows-tracer-home.zip"
   AGENT_CONFIG_DIR: $CI_PROJECT_DIR/dotnet/content/Agent
   RELEASE_DIR: $CI_PROJECT_DIR/dotnet/content/v0_4_0
   RELEASE_TRACER_DIR: $CI_PROJECT_DIR/dotnet/content/v0_4_0/Tracer
   RELEASE_AGENT_DIR: $CI_PROJECT_DIR/dotnet/content/v0_4_0/Agent
-  DEVELOPMENT_DIR: $CI_PROJECT_DIR/dotnet/content/v100_5_3
+  DEVELOPMENT_DIR: $CI_PROJECT_DIR/dotnet/content/v100_5_4
 
 dotnet-package:
   tags: [ "runner:main", "size:2xlarge" ]
@@ -38,9 +39,9 @@ dotnet-package:
     - dotnet pack dotnet/Datadog.AzureAppServices.csproj -p:NoBuild=true -p:NoDefaultExcludes=true -o package
     - echo "Updating paths from Datadog.AzureAppServices to Datadog.Development.AzureAppServices for testing package"
     - sed -i 's/Datadog.AzureAppServices/Datadog.Development.AzureAppServices/g' dotnet/content/applicationHost.xdt
-    - sed -i 's/v0_4_0/v100_5_3/g' dotnet/content/applicationHost.xdt
-    - sed -i 's/v0_4_0/v100_5_3/g' $RELEASE_AGENT_DIR/datadog.yaml
-    - sed -i 's/v0_4_0/v100_5_3/g' $RELEASE_AGENT_DIR/dogstatsd.yaml
+    - sed -i 's/v0_4_0/v100_5_4/g' dotnet/content/applicationHost.xdt
+    - sed -i 's/v0_4_0/v100_5_4/g' $RELEASE_AGENT_DIR/datadog.yaml
+    - sed -i 's/v0_4_0/v100_5_4/g' $RELEASE_AGENT_DIR/dogstatsd.yaml
     - mkdir $DEVELOPMENT_DIR
     - mv -v $RELEASE_DIR/* $DEVELOPMENT_DIR
     - rm -d -v $RELEASE_DIR
