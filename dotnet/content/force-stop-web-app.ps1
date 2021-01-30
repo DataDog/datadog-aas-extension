@@ -4,15 +4,21 @@
 # Prevent the progress meter from trying to access the console mode
 $ProgressPreference = "SilentlyContinue"
 
+Write-Output "Current PID: $PID"
+
 $w3wpProcesses=@(Get-Process w3wp)
 
 foreach ($w3wp in @($w3wpProcesses)) 
 {	
+
   $w3wp_id=$w3wp.Id
   # The variables match exactly, so we need to examine loaded modules
   $w3wp_modules=$w3wp.Modules
   
   Write-Output "Examining ${w3wp_id} as shutdown candidate"
+  Write-Output $w3wp
+  Write-Output $w3wp.StartInfo.Environment
+  Write-Output $w3wp.StartInfo.EnvironmentVariables
 
   $wellknown_scm_module_count=0;
   $minimum_scm_module_count=5;
@@ -20,6 +26,7 @@ foreach ($w3wp in @($w3wpProcesses))
   foreach ($loaded_module in $w3wp_modules) 
   {	
     $module_name=$loaded_module.ModuleName
+    Write-Output $module_name
     if ($module_name.EndsWith(".ni.dll") -eq $False) 
 	{
 	  continue;
