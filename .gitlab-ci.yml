@@ -11,7 +11,7 @@ variables:
   RELEASE_DIR: $CI_PROJECT_DIR/dotnet/content/v0_4_0
   RELEASE_TRACER_DIR: $CI_PROJECT_DIR/dotnet/content/v0_4_0/Tracer
   RELEASE_AGENT_DIR: $CI_PROJECT_DIR/dotnet/content/v0_4_0/Agent
-  DEVELOPMENT_DIR: $CI_PROJECT_DIR/dotnet/content/v100_5_4
+  DEVELOPMENT_DIR: $CI_PROJECT_DIR/dotnet/content/v100_5_9
 
 dotnet-package:
   tags: [ "runner:main", "size:2xlarge" ]
@@ -39,9 +39,9 @@ dotnet-package:
     - dotnet pack dotnet/Datadog.AzureAppServices.csproj -p:NoBuild=true -p:NoDefaultExcludes=true -o package
     - echo "Updating paths from Datadog.AzureAppServices to Datadog.Development.AzureAppServices for testing package"
     - sed -i 's/Datadog.AzureAppServices/Datadog.Development.AzureAppServices/g' dotnet/content/applicationHost.xdt
-    - sed -i 's/v0_4_0/v100_5_4/g' dotnet/content/applicationHost.xdt
-    - sed -i 's/v0_4_0/v100_5_4/g' $RELEASE_AGENT_DIR/datadog.yaml
-    - sed -i 's/v0_4_0/v100_5_4/g' $RELEASE_AGENT_DIR/dogstatsd.yaml
+    - sed -i 's/v0_4_0/v100_5_9/g' dotnet/content/applicationHost.xdt
+    - sed -i 's/v0_4_0/v100_5_9/g' $RELEASE_AGENT_DIR/datadog.yaml
+    - sed -i 's/v0_4_0/v100_5_9/g' $RELEASE_AGENT_DIR/dogstatsd.yaml
     - mkdir $DEVELOPMENT_DIR
     - mv -v $RELEASE_DIR/* $DEVELOPMENT_DIR
     - rm -d -v $RELEASE_DIR

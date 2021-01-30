@@ -66,5 +66,43 @@ foreach ($w3wp in @($w3wpProcesses))
   Write-Output "Stopping process ${w3wp_id}"
   
   # This is a non-scm instance, fire and forget stop the web app
-  Start-Process powershell -ArgumentList '-Id', '${w3wp_id}'
+  $null = Start-Process PowerShell.exe -ArgumentList "-NoLogo", "-NonInteractive", "-Command", "Stop-Process -Id ${w3wp_id}" -NoNewWindow
+  
+  # Now we need to watch until the process is actually stopped
+  $stopped_webapp=$False
+  $max_attempts=60 # 6 seconds
+  
+  while ($stopped_webapp)
+  {
+	  Start-Sleep 100
+	  
+	  $new_w3wps=@(Get-Process w3wp)
+	  
+	  $stopped_webapp=$True
+	  
+	  foreach ($current_w3wp in @($new_w3wps))
+	  {
+		  if ($current_w3wp.Id -eq $w3wp_id) 
+		  {
+			  $stopped_webapp=$False
+			  break;
+		  }
+	  }
+	  
+	  if ($stopped_webapp)
+	  {
+		  Write-Output "Verified stop of ${w3wp_id}"
+		  break;
+	  }
+	  
+	  $max_attempts--
+	  
+	  if ($max_attempts -eq 0) {
+		  Write-Output "Unable to verify stop of ${w3wp_id}"
+		  break;
+	  }
+  }
+  
+  Start-Sleep 1 # Necessary for script to close out normally
+  
 }
