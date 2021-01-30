@@ -9,7 +9,7 @@ set version_postfix=-prerelease
 REM Specialized version for development package, increment as necessary for testing
 set development_major=100
 set development_minor=5
-set development_patch=11
+set development_patch=12
 
 REM The agent version to deploy
 set agent_version=7.25.0
