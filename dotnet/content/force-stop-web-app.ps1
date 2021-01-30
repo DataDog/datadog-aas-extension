@@ -1,3 +1,5 @@
+# Force stop the web app to enable proper loading of asp.net module
+# This also has the added benefit of immediate traces
 
 # Prevent the progress meter from trying to access the console mode
 $ProgressPreference = "SilentlyContinue"
@@ -66,17 +68,21 @@ foreach ($w3wp in @($w3wpProcesses))
   Write-Output "Stopping process ${w3wp_id}"
   
   # This is a non-scm instance, fire and forget stop the web app
-  $null = Start-Process PowerShell.exe -ArgumentList "-NoLogo", "-NonInteractive", "-Command", "Stop-Process -Id ${w3wp_id}" -NoNewWindow
+  $null=Start-Process PowerShell.exe -ArgumentList "-NoLogo", "-NonInteractive", "-Command", "Stop-Process -Id ${w3wp_id}" -NoNewWindow
   
   # Now we need to watch until the process is actually stopped
   $stopped_webapp=$False
   $max_attempts=60 # 6 seconds
   
-  while ($stopped_webapp)
+  
+  Write-Output "Watching for process stop"
+  
+  while ($stopped_webapp -eq $False)
   {
-	  Start-Sleep 100
+	  Start-Sleep -Milliseconds 100
+	  Write-Output "..."
 	  
-	  $new_w3wps=@(Get-Process w3wp)
+	  $w3wpProcesses=@(Get-Process w3wp)
 	  
 	  $stopped_webapp=$True
 	  
@@ -102,7 +108,5 @@ foreach ($w3wp in @($w3wpProcesses))
 		  break;
 	  }
   }
-  
-  Start-Sleep 1 # Necessary for script to close out normally
-  
 }
+
