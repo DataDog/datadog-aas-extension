@@ -16,51 +16,38 @@ foreach ($w3wp in @($w3wpProcesses))
   $w3wp_modules=$w3wp.Modules
   
   Write-Output "Examining ${w3wp_id} as shutdown candidate"
+  
   Write-Output $w3wp
-  Write-Output $w3wp.StartInfo.Environment
-  Write-Output $w3wp.StartInfo.EnvironmentVariables
 
   $wellknown_scm_module_count=0;
-  $minimum_scm_module_count=5;
+  $minimum_scm_module_count=4;
   
   foreach ($loaded_module in $w3wp_modules) 
   {	
     $module_name=$loaded_module.ModuleName
     Write-Output $module_name
-    if ($module_name.EndsWith(".ni.dll") -eq $False) 
-	{
-	  continue;
-	}
-	
-    if ($module_name.StartsWith("Microsoft.Build.Tasks")) 
+
+    if ($module_name.StartsWith("rasapi32.dll")) 
 	{
 	  $wellknown_scm_module_count++
 	}
-    elseif ($module_name.StartsWith("SMDiagnostics")) 
+    elseif ($module_name.StartsWith("rasman.dll")) 
 	{
 	  $wellknown_scm_module_count++
 	}
-    elseif ($module_name.StartsWith("System.Runtime.DurableInstancing")) 
+    elseif ($module_name.StartsWith("secur32.dll")) 
 	{
 	  $wellknown_scm_module_count++
 	}
-    elseif ($module_name.StartsWith("System.Activities.DurableInstancing")) 
+    elseif ($module_name.StartsWith("schannel.dll")) 
 	{
 	  $wellknown_scm_module_count++
 	}
-    elseif ($module_name.StartsWith("System.ServiceProcess")) 
+    elseif ($module_name.StartsWith("mskeyprotect.dll")) 
 	{
 	  $wellknown_scm_module_count++
 	}
-    elseif ($module_name.StartsWith("System.Deployment")) 
-	{
-	  $wellknown_scm_module_count++
-	}
-    elseif ($module_name.StartsWith("Microsoft.VisualBasic.Activities.Compiler")) 
-	{
-	  $wellknown_scm_module_count++
-	}
-    elseif ($module_name.StartsWith("System.Runtime.Caching")) 
+    elseif ($module_name.StartsWith("ncryptsslp.dll")) 
 	{
 	  $wellknown_scm_module_count++
 	}
