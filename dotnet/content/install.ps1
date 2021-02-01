@@ -9,4 +9,6 @@ $statsPipeId=([guid]::NewGuid().ToString().ToUpper())
 #### Do not call this script unless we have a way to request iisreset or similar.
 #### If we can gracefully shutdown w3wp.exe, then this is potentially useful.
 #### Netfx applications need to STOP the web app before installing this extension.
-#### .\force-stop-web-app.ps1 > force-stop-web-app-log.txt
+#### .\force-stop-web-app.ps1 > force-stop-web-app-log.
+
+.\validate-w3wp-stopped.ps1 > validate-w3wp-stopped.txt
