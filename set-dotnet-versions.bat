@@ -30,6 +30,7 @@ powershell -Command "(gc .\%gitlab_yml%) -replace '%development_release_path_reg
 powershell -Command "(gc .\%gitlab_yml%) -replace '%release_path_regex%', '%release_path_replacement%' | Out-File -encoding ASCII .\%gitlab_yml%"
 
 set version_regex=[1-9]+\.[0-9]+\.[0-9]+[\-a-zA-Z]*
+set dev_version_regex=0\.[0-9][0-9]?[0-9]?\.[0-9][0-9]?[0-9]?
 powershell -Command "(gc .\%gitlab_yml%) -replace '%version_regex%.+windows-tracer-home.zip', '%tracer_version%/windows-tracer-home.zip' | Out-File -encoding ASCII .\%gitlab_yml%"
 powershell -Command "(gc .\%gitlab_yml%) -replace 'agent-binaries-%version_regex%-1-x86_64.zip', 'agent-binaries-%agent_version%-1-x86_64.zip' | Out-File -encoding ASCII .\%gitlab_yml%"
 
@@ -39,7 +40,7 @@ powershell -Command "(gc .\%release_nuget%) -replace '%version_regex%', '%releas
 
 set dev_nuget=dotnet\DevelopmentVerification.DdDotNet.Apm.nuspec
 set development_package_version=0.%development_minor%.%development_patch%%version_postfix%
-powershell -Command "(gc .\%dev_nuget%) -replace '%version_regex%', '%development_package_version%' | Out-File -encoding ASCII .\%dev_nuget%"
+powershell -Command "(gc .\%dev_nuget%) -replace '%dev_version_regex%', '%development_package_version%' | Out-File -encoding ASCII .\%dev_nuget%"
 
 set application_host_transform=dotnet\content\applicationHost.xdt
 
