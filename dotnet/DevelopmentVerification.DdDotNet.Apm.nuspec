@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>DevelopmentVerification.DdDotNet.Apm</id>
-    <version>0.1.0</version>
+    <version>0.1.0-prerelease</version>
     <title>Experimental Extension</title>
     <authors>Datadog</authors>
     <icon>icon.png</icon>
