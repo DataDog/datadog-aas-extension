@@ -3,7 +3,7 @@
   <metadata>
     <id>Datadog.AzureAppServices.DotNet</id>
     <version>1.0.0</version>
-    <title>.NET Datadog</title>
+    <title>.NET Datadog APM</title>
     <authors>Datadog</authors>
     <icon>icon.png</icon>
     <license type="expression">Apache-2.0</license>
