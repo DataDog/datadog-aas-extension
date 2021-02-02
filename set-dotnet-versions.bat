@@ -42,7 +42,7 @@ set dev_nuget=dotnet\DevelopmentVerification.DdDotNet.Apm.nuspec
 set development_package_version=0.%development_minor%.%development_patch%%version_postfix%
 powershell -Command "(gc .\%dev_nuget%) -replace '%dev_version_regex%', '%development_package_version%' | Out-File -encoding ASCII .\%dev_nuget%"
 
-set application_host_transform=dotnet\content\appHostTransform.dd
+set application_host_transform=dotnet\content\applicationHost.xdt.dd
 
 set ext_version_replace='DD_AAS_DOTNET_EXTENSION_VERSION"" value=\"%release_version%\" xdt:Locator'
 set ext_version_regex=DD_AAS_DOTNET_EXTENSION_VERSION. value..[0-9][0-9]?[0-9]?.[0-9][0-9]?[0-9]?.[0-9][0-9]?[0-9]?. xdt.Locator
