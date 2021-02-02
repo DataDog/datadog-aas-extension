@@ -3,14 +3,10 @@ REM Entrypoint: https://github.com/projectkudu/kudu/blob/master/Kudu.Core/SiteEx
 
 @echo off
 
+echo Starting install
 
 IF EXIST ".\applicationHost.xdt" (
-  echo Starting upgrade
   echo Upgrade will not apply until full application stop
-)
-ELSE 
-(
-  echo Starting upgrade
 )
 
 POWERSHELL .\install.ps1
@@ -20,6 +16,5 @@ IF EXIST ".\applicationHost.xdt" (
   exit /B 1
 )
 
-echo Completed install
-
+echo Finished install
 exit /B 0
