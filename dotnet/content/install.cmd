@@ -5,6 +5,11 @@ REM Entrypoint: https://github.com/projectkudu/kudu/blob/master/Kudu.Core/SiteEx
 
 echo Starting install
 
+IF EXIST ..\Datadog.AzureAppServices\applicationHost.xdt (
+  echo This package can not be installed side by side with Datadog.AzureAppServices
+  exit /B 2
+)
+
 IF EXIST .\applicationHost.xdt (
   echo Upgrade will not apply until full application stop
 )
