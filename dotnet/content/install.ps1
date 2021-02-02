@@ -13,5 +13,4 @@ $statsPipeId=([guid]::NewGuid().ToString().ToUpper())
 ## .\force-stop-web-app.ps1 > force-stop-web-app-log.
 
 #### Errors in the install script do not prevent the install from completing
-#### Deleting the extension during the install does not prevent applicationHost.xdt from being applied
-## .\validate-w3wp-stopped.ps1 > validate-w3wp-stopped.txt
+.\validate-w3wp-stopped.ps1 > validate-w3wp-stopped.txt
