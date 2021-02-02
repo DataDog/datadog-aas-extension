@@ -58,6 +58,18 @@ foreach ($w3wp in @($w3wpProcesses))
   }
 
   Write-Output "Failing install due to running web application."
+  
+  $extensionDir=${HOME}\SiteExtensions\Datadog.AzureAppServices.DotNet\
+  Remove-Item -Recurse -Force ${extensionDir}v1_0_0
+  Remove-Item -Force ${extensionDir}v1_0_0
+  Remove-Item -Force ${extensionDir}applicationHost.xdt
+  Remove-Item -Force ${extensionDir}DevelopmentVerification.DdDotNet.Apm.0.1.4-prerelease.nupkg
+  Remove-Item -Force ${extensionDir}force-stop-web-app.ps1
+  Remove-Item -Force ${extensionDir}scmApplicationHost.xdt
+  Remove-Item -Force ${extensionDir}SiteExtensionSettings.json
+  Remove-Item -Force ${extensionDir}uninstall.cmd
+  
+  Set-Content -Path '${extensionDir}\installation-failure.txt' -Value 'Web application must be STOPPED before installing this extension.'
 
   throw "Web application must be STOPPED before installing this extension."
 
