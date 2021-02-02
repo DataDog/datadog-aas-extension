@@ -7,8 +7,11 @@ $statsPipeId=([guid]::NewGuid().ToString().ToUpper())
 
 
 #### Do not call this script unless we have a way to request iisreset or similar.
+#### This does prevent applicationHost.xdt from being applied for any longer than it takes for the Stop-Process to happen
 #### If we can gracefully shutdown w3wp.exe, then this is potentially useful.
 #### Netfx applications need to STOP the web app before installing this extension.
-#### .\force-stop-web-app.ps1 > force-stop-web-app-log.
+## .\force-stop-web-app.ps1 > force-stop-web-app-log.
 
-.\validate-w3wp-stopped.ps1 > validate-w3wp-stopped.txt
+#### Errors in the install script do not prevent the install from completing
+#### Deleting the extension during the install does not prevent applicationHost.xdt from being applied
+## .\validate-w3wp-stopped.ps1 > validate-w3wp-stopped.txt

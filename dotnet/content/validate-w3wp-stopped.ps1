@@ -1,4 +1,8 @@
 
+# TODO: Figure out another path to prevent installation
+# The applicationhost.xdt is applied before the install.cmd finishes
+# So this does not prevent the module from getting loaded
+
 # Prevent the progress meter from trying to access the console mode
 $ProgressPreference = "SilentlyContinue"
 
