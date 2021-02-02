@@ -6,7 +6,7 @@
 # Prevent the progress meter from trying to access the console mode
 $ProgressPreference = "SilentlyContinue"
 
-if ([System.IO.File]::Exists($path)) 
+if ([System.IO.File]::Exists('.\install-success.txt')) 
 {
   # The extension has successfully installed, and upgrades will take place after process stop
   Write-Output "Upgrade successful. Changes will take effect after the next application stop."
