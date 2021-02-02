@@ -7,12 +7,9 @@ $statsPipeId=([guid]::NewGuid().ToString().ToUpper())
 ((Get-Content -path .\applicationHost.xdt -Raw) -replace "uniqueTracePipeId", "${tracePipeId}") | Set-Content -Path .\applicationHost.xdt
 ((Get-Content -path .\applicationHost.xdt -Raw) -replace "uniqueStatsPipeId", "${statsPipeId}") | Set-Content -Path .\applicationHost.xdt
 
-
-#### Do not call this script unless we have a way to request iisreset or similar.
-#### This does prevent applicationHost.xdt from being applied for any longer than it takes for the Stop-Process to happen
-#### If we can gracefully shutdown w3wp.exe, then this is potentially useful.
-#### Netfx applications need to STOP the web app before installing this extension.
-## .\force-stop-web-app.ps1 > force-stop-web-app-log.
-
-#### Errors in the install script do not prevent the install from completing
+# If a web application is running, do not create the applicationHost.xdt file
+# This is used as an indication of install failure
+# Upgrades should replace the applicationHost.xdt regardless of running processes
+# It is important that we do not apply the applicationHost.xdt for the first time with active web applications
+# If we apply the transform before the profiler is loaded, a recycle will attempt to load the ASP.NET module and fail
 .\validate-w3wp-stopped.ps1 > validate-w3wp-stopped.txt

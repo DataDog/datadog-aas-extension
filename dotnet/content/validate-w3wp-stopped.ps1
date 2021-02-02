@@ -1,14 +1,11 @@
 
-# TODO: Figure out another path to prevent installation
-# The applicationhost.xdt is applied before the install.cmd finishes
-# So this does not prevent the module from getting loaded
+# Use applicationHost.xdt as an indicator of success or upgrade, as this is the ultimate entry point to instrumentation
 
-# Prevent the progress meter from trying to access the console mode
 $ProgressPreference = "SilentlyContinue"
 
-if ([System.IO.File]::Exists('.\install-success.txt')) 
+if ([System.IO.File]::Exists('.\applicationHost.xdt')) 
 {
-  # The extension has successfully installed, and upgrades will take place after process stop
+  # The extension has successfully installed previously, and the full upgrade will take place after process stop
   Write-Output "Upgrade successful. Changes will take effect after the next application stop."
   # Allow the transform to apply
   Move-Item -Path '.\applicationHost.xdt.dd' -Destination '.\applicationHost.xdt' -Force
@@ -81,6 +78,5 @@ foreach ($w3wp in @($w3wpProcesses))
 }
 
 # If we are here, then the extension has successfully installed.
-Set-Content -Path '.\install-success.txt' -Value 'true'
 # Allow the transform to apply
 Move-Item -Path '.\applicationHost.xdt.dd' -Destination '.\applicationHost.xdt' -Force
