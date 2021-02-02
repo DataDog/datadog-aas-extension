@@ -11,7 +11,7 @@ variables:
   RELEASE_DIR: $CI_PROJECT_DIR/dotnet/content/v1_0_0
   RELEASE_TRACER_DIR: $CI_PROJECT_DIR/dotnet/content/v1_0_0/Tracer
   RELEASE_AGENT_DIR: $CI_PROJECT_DIR/dotnet/content/v1_0_0/Agent
-  DEVELOPMENT_DIR: $CI_PROJECT_DIR/dotnet/content/v0_1_10
+  DEVELOPMENT_DIR: $CI_PROJECT_DIR/dotnet/content/v0_1_11
 
 dotnet-package:
   tags: [ "runner:main", "size:2xlarge" ]
@@ -37,11 +37,11 @@ dotnet-package:
     - echo "Creating nuget package"
     - echo "Packing nuspec file via arcane roundabout csproj process"
     - dotnet pack dotnet/Datadog.AzureAppServices.DotNet.csproj -p:NoBuild=true -p:NoDefaultExcludes=true -o package
-    - echo "Updating versions from v1_0_0 to v0_1_10 for testing package"
-    - sed -i 's/v1_0_0/v0_1_10/g' dotnet/content/applicationHost.xdt.dd
-    - sed -i 's/v1_0_0/v0_1_10/g' $RELEASE_AGENT_DIR/datadog.yaml
-    - sed -i 's/v1_0_0/v0_1_10/g' $RELEASE_AGENT_DIR/dogstatsd.yaml
-    - sed -i 's/v1_0_0/v0_1_10/g' $BASE_DIR/validate-w3wp-stopped.ps1
+    - echo "Updating versions from v1_0_0 to v0_1_11 for testing package"
+    - sed -i 's/v1_0_0/v0_1_11/g' dotnet/content/applicationHost.xdt.dd
+    - sed -i 's/v1_0_0/v0_1_11/g' $RELEASE_AGENT_DIR/datadog.yaml
+    - sed -i 's/v1_0_0/v0_1_11/g' $RELEASE_AGENT_DIR/dogstatsd.yaml
+    - sed -i 's/v1_0_0/v0_1_11/g' $BASE_DIR/validate-w3wp-stopped.ps1
     - echo "Updating paths from Datadog.AzureAppServices.DotNet to DevelopmentVerification.DdDotNet.Apm for testing package"
     - sed -i 's/Datadog.AzureAppServices.DotNet/DevelopmentVerification.DdDotNet.Apm/g' $BASE_DIR/applicationHost.xdt.dd
     - sed -i 's/Datadog.AzureAppServices.DotNet/DevelopmentVerification.DdDotNet.Apm/g' $BASE_DIR/validate-w3wp-stopped.ps1
