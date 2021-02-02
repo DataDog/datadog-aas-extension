@@ -10,6 +10,8 @@ if ([System.IO.File]::Exists('.\install-success.txt'))
 {
   # The extension has successfully installed, and upgrades will take place after process stop
   Write-Output "Upgrade successful. Changes will take effect after the next application stop."
+  # Allow the transform to apply
+  Move-Item -Path '.\appHostTransform.dd' -Destination '.\applicationHost.xdt' -Force
   return
 }
 
@@ -80,3 +82,5 @@ foreach ($w3wp in @($w3wpProcesses))
 
 # If we are here, then the extension has successfully installed.
 Set-Content -Path '.\install-success.txt' -Value 'true'
+# Allow the transform to apply
+Move-Item -Path '.\appHostTransform.dd' -Destination '.\applicationHost.xdt' -Force

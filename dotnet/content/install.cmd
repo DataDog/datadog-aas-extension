@@ -1,3 +1,6 @@
+
+REM Entrypoint: https://github.com/projectkudu/kudu/blob/master/Kudu.Core/SiteExtensions/SiteExtensionManager.cs#L548
+
 @echo off
 
 echo Starting install
