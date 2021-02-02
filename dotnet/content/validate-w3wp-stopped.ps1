@@ -6,6 +6,13 @@
 # Prevent the progress meter from trying to access the console mode
 $ProgressPreference = "SilentlyContinue"
 
+if ([System.IO.File]::Exists($path)) 
+{
+  # The extension has successfully installed, and upgrades will take place after process stop
+  Write-Output "Upgrade successful. Changes will take effect after the next application stop."
+  return
+}
+
 Write-Output "Current PID: $PID"
 
 $w3wpProcesses=@(Get-Process w3wp)
@@ -63,16 +70,14 @@ foreach ($w3wp in @($w3wpProcesses))
 
   Write-Output "Failing install due to running web application."
   
-  Remove-Item -Recurse -Force .\v1_0_0
+  Set-Content -Path '.\installation-failure.txt' -Value 'Web application must be STOPPED before installing this extension.'
+  
   Remove-Item -Force .\applicationHost.xdt
-  Remove-Item -Force .\DevelopmentVerification.DdDotNet.Apm.0.1.4-prerelease.nupkg
-  Remove-Item -Force .\force-stop-web-app.ps1
   Remove-Item -Force .\scmApplicationHost.xdt
   Remove-Item -Force .\SiteExtensionSettings.json
+  Remove-Item -Recurse -Force .\v1_0_0
   
-  Set-Content -Path '.\\installation-failure.txt' -Value 'Web application must be STOPPED before installing this extension.'
-
-  throw "Web application must be STOPPED before installing this extension."
-
 }
 
+# If we are here, then the extension has successfully installed.
+Set-Content -Path '.\install-success.txt' -Value 'true'
