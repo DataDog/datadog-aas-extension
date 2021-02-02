@@ -1,4 +1,6 @@
 
+# https://github.com/projectkudu/kudu/blob/13824205c60a4bdb53896b9553ef1f370a93b911/Kudu.Services/SiteExtensions/SiteExtensionController.cs#L240
+
 # Set the unique pipe names in the applicationHost.xdt file for traces and metrics
 $tracePipeId=([guid]::NewGuid().ToString().ToUpper())
 $statsPipeId=([guid]::NewGuid().ToString().ToUpper())

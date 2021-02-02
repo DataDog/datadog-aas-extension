@@ -70,12 +70,11 @@ foreach ($w3wp in @($w3wpProcesses))
 
   Write-Output "Failing install due to running web application."
   
-  Set-Content -Path '.\installation-failure.txt' -Value 'Web application must be STOPPED before installing this extension.'
+  Set-Content -Path '.\installation-failure.txt' -Value 'true'
+  Set-Content -Path '..\..\datadog-installation-failure.txt' -Value 'Web application must be STOPPED before installing Datadog.'
   
-  Remove-Item -Force .\applicationHost.xdt
-  Remove-Item -Force .\scmApplicationHost.xdt
-  Remove-Item -Force .\SiteExtensionSettings.json
-  Remove-Item -Recurse -Force .\v1_0_0
+  # Return to prevent success file from being created
+  return
   
 }
 
