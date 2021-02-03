@@ -22,17 +22,15 @@ REM ****************************************************************************
 
 set release_path_regex=v[1-9][0-9]?_[0-9]+_[0-9]+
 set release_path_replacement=v%major%_%minor%_%patch%
+
 set development_release_path_regex=v0_[0-9][0-9]?[0-9]?_[0-9][0-9]?[0-9]?
 set development_release_path_replacement=v0_%development_minor%_%development_patch%
 
-set gitlab_yml=.gitlab-ci.yml
-powershell -Command "(gc .\%gitlab_yml%) -replace '%development_release_path_regex%', '%development_release_path_replacement%' | Out-File -encoding ASCII .\%gitlab_yml%"
-powershell -Command "(gc .\%gitlab_yml%) -replace '%release_path_regex%', '%release_path_replacement%' | Out-File -encoding ASCII .\%gitlab_yml%"
-
 set version_regex=[1-9]+\.[0-9]+\.[0-9]+[\-a-zA-Z]*
+set version=%major%.%minor%.%patch%
+
 set dev_version_regex=0\.[0-9][0-9]?[0-9]?\.[0-9][0-9]?[0-9]?
-powershell -Command "(gc .\%gitlab_yml%) -replace '%version_regex%.+windows-tracer-home.zip', '%tracer_version%/windows-tracer-home.zip' | Out-File -encoding ASCII .\%gitlab_yml%"
-powershell -Command "(gc .\%gitlab_yml%) -replace 'agent-binaries-%version_regex%-1-x86_64.zip', 'agent-binaries-%agent_version%-1-x86_64.zip' | Out-File -encoding ASCII .\%gitlab_yml%"
+set dev_version=0.%minor%.%patch%
 
 set release_nuget=dotnet\Datadog.AzureAppServices.DotNet.nuspec
 set release_version=%major%.%minor%.%patch%%version_postfix%
@@ -41,6 +39,9 @@ powershell -Command "(gc .\%release_nuget%) -replace '%version_regex%', '%releas
 set dev_nuget=dotnet\DevelopmentVerification.DdDotNet.Apm.nuspec
 set development_package_version=0.%development_minor%.%development_patch%%version_postfix%
 powershell -Command "(gc .\%dev_nuget%) -replace '%dev_version_regex%', '%development_package_version%' | Out-File -encoding ASCII .\%dev_nuget%"
+
+set install_cmd=dotnet\content\install.cmd
+powershell -Command "(gc .\%install_cmd%) -replace 'version=%version_regex%', 'version=%release_version%' | Out-File -encoding ASCII .\%install_cmd%"
 
 set application_host_transform=dotnet\content\applicationHost.xdt.dd
 
@@ -54,3 +55,13 @@ set path_files=%application_host_transform% dotnet\content\install.cmd dotnet\co
 for %%f in (%path_files%) do (
 	powershell -Command "(gc .\%%f) -replace '%release_path_regex%', '%release_path_replacement%' | Out-File -encoding ASCII .\%%f"
 )
+
+REM Ensure the gitlab build file has the new versions
+set gitlab_yml=.gitlab-ci.yml
+powershell -Command "(gc .\%gitlab_yml%) -replace '%development_release_path_regex%', '%development_release_path_replacement%' | Out-File -encoding ASCII .\%gitlab_yml%"
+powershell -Command "(gc .\%gitlab_yml%) -replace '%release_path_regex%', '%release_path_replacement%' | Out-File -encoding ASCII .\%gitlab_yml%"
+
+powershell -Command "(gc .\%gitlab_yml%) -replace 'v%version_regex%\/v%dev_version_regex%', 'v%version%\/v%dev_version%' | Out-File -encoding ASCII .\%gitlab_yml%"
+
+powershell -Command "(gc .\%gitlab_yml%) -replace '%version_regex%.+windows-tracer-home.zip', '%tracer_version%/windows-tracer-home.zip' | Out-File -encoding ASCII .\%gitlab_yml%"
+powershell -Command "(gc .\%gitlab_yml%) -replace 'agent-binaries-%version_regex%-1-x86_64.zip', 'agent-binaries-%agent_version%-1-x86_64.zip' | Out-File -encoding ASCII .\%gitlab_yml%"
