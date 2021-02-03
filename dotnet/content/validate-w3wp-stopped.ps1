@@ -76,9 +76,6 @@ foreach ($w3wp in @($w3wpProcesses))
 
   Write-Output "Failing install due to running web application."
   
-  Set-Content -Path '.\installation-failure.txt' -Value 'true'
-  Set-Content -Path '..\..\datadog-installation-failure.txt' -Value 'Web application must be STOPPED before installing Datadog.'
-  
   # Return to prevent success file from being created
   return
   
