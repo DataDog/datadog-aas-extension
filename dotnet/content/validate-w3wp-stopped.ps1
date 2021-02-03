@@ -1,8 +1,23 @@
-# Force stop the web app to enable proper loading of asp.net module
-# This also has the added benefit of immediate traces
-
-# Prevent the progress meter from trying to access the console mode
 $ProgressPreference = "SilentlyContinue"
+
+# Use applicationHost.xdt as an indicator of success or upgrade, as this is the ultimate entry point to instrumentation
+if ([System.IO.File]::Exists('.\applicationHost.xdt')) 
+{
+  # The extension has successfully installed previously, and the full upgrade will take place after process stop
+  Write-Output "Upgrade successful. Changes will take effect after the next application stop."
+  
+  # Allow the transform to apply if it exists
+  if ([System.IO.File]::Exists('.\applicationHost.xdt.dd')) 
+  {
+    Move-Item -Path '.\applicationHost.xdt.dd' -Destination '.\applicationHost.xdt' -Force
+  }
+  else 
+  {
+    Write-Output "There is no applicationHost.xdt.dd to override the applicationHost.xdt."
+  }
+  
+  return
+}
 
 Write-Output "Current PID: $PID"
 
@@ -59,48 +74,13 @@ foreach ($w3wp in @($w3wpProcesses))
 	continue;
   }
 
-  Write-Output "Stopping process ${w3wp_id}"
+  Write-Output "Failing install due to running web application."
   
-  # This is a non-scm instance, fire and forget stop the web app
-  $null=Start-Process PowerShell.exe -ArgumentList "-NoLogo", "-NonInteractive", "-Command", "Stop-Process -Id ${w3wp_id}" -NoNewWindow
+  # Return to prevent success file from being created
+  return
   
-  # Now we need to watch until the process is actually stopped
-  $stopped_webapp=$False
-  $max_attempts=60 # 6 seconds
-  
-  
-  Write-Output "Watching for process stop"
-  
-  while ($stopped_webapp -eq $False)
-  {
-	  Start-Sleep -Milliseconds 100
-	  Write-Output "..."
-	  
-	  $w3wpProcesses=@(Get-Process w3wp)
-	  
-	  $stopped_webapp=$True
-	  
-	  foreach ($current_w3wp in @($new_w3wps))
-	  {
-		  if ($current_w3wp.Id -eq $w3wp_id) 
-		  {
-			  $stopped_webapp=$False
-			  break;
-		  }
-	  }
-	  
-	  if ($stopped_webapp)
-	  {
-		  Write-Output "Verified stop of ${w3wp_id}"
-		  break;
-	  }
-	  
-	  $max_attempts--
-	  
-	  if ($max_attempts -eq 0) {
-		  Write-Output "Unable to verify stop of ${w3wp_id}"
-		  break;
-	  }
-  }
 }
 
+# If we are here, then the extension has successfully installed.
+# Allow the transform to apply
+Move-Item -Path '.\applicationHost.xdt.dd' -Destination '.\applicationHost.xdt' -Force
