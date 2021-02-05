@@ -7,7 +7,7 @@ Fully stop your web app before installing, modifying, or removing the .NET Datad
 This site extension uses the [.NET Profiling API](https://docs.microsoft.com/en-us/dotnet/framework/unmanaged-api/profiling/profiling-interfaces) which hooks in at process start.
 
 ### IMPORTANT NOTICES:
-#### *Restart* recycles an application pool, the app must be *STOPPED* before any changes to this extension.
+#### *Restart* recycles an Application Pool. The app must be *STOPPED* before any changes to this extension.
 #### *Beta users will need to uninstall the beta extension before installing the official release*
 
 ### Documentation:
