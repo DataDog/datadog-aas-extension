@@ -13,5 +13,6 @@ This site extension uses the [.NET Profiling API](https://docs.microsoft.com/en-
 ### Relevant Links:
 
 [Datadog Azure App Service Documentation](https://docs.datadoghq.com/serverless/azure_app_services)
+[Datadog Azure App Service Blog](https://www.datadoghq.com/blog/azure-app-service-extension/)
 [Azure App Service Documentation](https://docs.microsoft.com/en-us/azure/app-service/)
 [Nuget Package](https://www.nuget.org/packages/Datadog.AzureAppServices.DotNet)
