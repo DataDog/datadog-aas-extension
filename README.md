@@ -8,7 +8,7 @@ This site extension uses the [.NET Profiling API](https://docs.microsoft.com/en-
 
 ### IMPORTANT NOTICES:
 #### *Restart* recycles an application pool, the app must be *STOPPED* before any changes to this extension.
-####*Beta users will need to uninstall the beta extension before installing the official release*
+#### *Beta users will need to uninstall the beta extension before installing the official release*
 
 ### Documentation:
 
