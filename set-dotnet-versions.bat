@@ -57,10 +57,14 @@ for %%f in (%path_files%) do (
 
 REM Ensure the gitlab build file has the new versions
 set gitlab_yml=.gitlab-ci.yml
+
+powershell -Command "(gc .\%gitlab_yml%) -replace '%version_regex%.+windows-tracer-home.zip', '%tracer_version%/windows-tracer-home.zip' | Out-File -encoding ASCII .\%gitlab_yml%"
+powershell -Command "(gc .\%gitlab_yml%) -replace 'agent-binaries-%version_regex%-', 'agent-binaries-%agent_version%-' | Out-File -encoding ASCII .\%gitlab_yml%"
+
 powershell -Command "(gc .\%gitlab_yml%) -replace '%development_release_path_regex%', '%development_release_path_replacement%' | Out-File -encoding ASCII .\%gitlab_yml%"
 powershell -Command "(gc .\%gitlab_yml%) -replace '%release_path_regex%', '%release_path_replacement%' | Out-File -encoding ASCII .\%gitlab_yml%"
 
 powershell -Command "(gc .\%gitlab_yml%) -replace 'v%version_regex%\/v%dev_version_regex%', 'v%version%/v%dev_version%' | Out-File -encoding ASCII .\%gitlab_yml%"
+powershell -Command "(gc .\%gitlab_yml%) -replace 'value="%version_regex%"', 'value="%version%"' | Out-File -encoding ASCII .\%gitlab_yml%"
+powershell -Command "(gc .\%gitlab_yml%) -replace 'value="%dev_version_regex%"', 'value="%dev_version%"' | Out-File -encoding ASCII .\%gitlab_yml%"
 
-powershell -Command "(gc .\%gitlab_yml%) -replace '%version_regex%.+windows-tracer-home.zip', '%tracer_version%/windows-tracer-home.zip' | Out-File -encoding ASCII .\%gitlab_yml%"
-powershell -Command "(gc .\%gitlab_yml%) -replace 'agent-binaries-%version_regex%-1-x86_64.zip', 'agent-binaries-%agent_version%-1-x86_64.zip' | Out-File -encoding ASCII .\%gitlab_yml%"
