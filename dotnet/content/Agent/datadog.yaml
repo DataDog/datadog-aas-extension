@@ -2,7 +2,7 @@
 hostname: none
 apm_config:
   enabled: true
-  log_file: D:\home\LogFiles\datadog\v1_1_0\trace-log.txt
+  log_file: D:\home\LogFiles\datadog\v1_2_0\trace-log.txt
 ## log_level: debug
 cloud_provider_metadata:
   - "azure"
