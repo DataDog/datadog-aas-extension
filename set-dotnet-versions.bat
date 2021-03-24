@@ -2,19 +2,19 @@ REM Set these version variables and run the script to change all the files which
 
 REM The site extension release version
 set major=1
-set minor=1
+set minor=2
 set patch=0
 set version_postfix=
 
 REM Specialized version for development package, increment as necessary for testing
 set development_minor=1
-set development_patch=20
+set development_patch=21
 
 REM The agent version to deploy
 set agent_version=7.25.0
 
 REM The dotnet tracer version to deploy
-set tracer_version=1.24.0
+set tracer_version=1.25.0
 
 REM **************************************************************************************************************************
 REM All of the below code updates versions in files, do not touch unless you wish to modify the structure of those files
@@ -40,7 +40,7 @@ set dev_nuget=dotnet\DevelopmentVerification.DdDotNet.Apm.nuspec
 powershell -Command "(gc .\%dev_nuget%) -replace '%dev_version_regex%', '%dev_version%' | Out-File -encoding ASCII .\%dev_nuget%"
 
 set install_cmd=dotnet\content\install.cmd
-powershell -Command "(gc .\%install_cmd%) -replace 'version=%version_regex%', 'version=%release_version%' | Out-File -encoding ASCII .\%install_cmd%"
+powershell -Command "(gc .\%install_cmd%) -replace 'v%version_regex%', 'v%release_version%' | Out-File -encoding ASCII .\%install_cmd%"
 
 set application_host_transform=dotnet\content\applicationHost.xdt.dd
 
