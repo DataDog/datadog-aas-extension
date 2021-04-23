@@ -36,7 +36,7 @@ dotnet-package:
     - dotnet pack dotnet/Datadog.AzureAppServices.DotNet.csproj -p:NoBuild=true -p:NoDefaultExcludes=true -o package
     - echo "Updating versions from v1_3_1 to v0_1_23 for testing package"
     - sed -i 's/v1_3_1/v0_1_23/g' dotnet/content/applicationHost.xdt.dd
-    - sed -i 's/EXTENSION_VERSION" value="1.2.0"/EXTENSION_VERSION" value="0.1.21"/g' dotnet/content/applicationHost.xdt.dd
+    - sed -i 's/EXTENSION_VERSION" value="1.3.1"/EXTENSION_VERSION" value="0.1.23"/g' dotnet/content/applicationHost.xdt.dd
     - sed -i 's/v1_3_1/v0_1_23/g' $RELEASE_AGENT_DIR/datadog.yaml
     - sed -i 's/v1_3_1/v0_1_23/g' $RELEASE_AGENT_DIR/dogstatsd.yaml
     - sed -i 's/v1_3_1/v0_1_23/g' $BASE_DIR/validate-w3wp-stopped.ps1
