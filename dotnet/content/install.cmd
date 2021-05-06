@@ -20,10 +20,5 @@ IF EXIST .\applicationHost.xdt (
 
 POWERSHELL .\install.ps1
 
-IF NOT EXIST .\applicationHost.xdt (
-  echo %log_prefix% Install failure, make sure your instance is stopped before install. >> %log_file%
-  exit /B 1
-)
-
 echo %log_prefix% Successfully installed. >> %log_file%
 exit /B 0
