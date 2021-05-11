@@ -2,12 +2,12 @@ image: mcr.microsoft.com/dotnet/core/sdk:3.1
 
 variables:
   DOTNET_AGENT_DOWNLOAD_URL: "http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.27.0-1-x86_64.zip" 
-  DOTNET_TRACER_DOWNLOAD_URL: "https://github.com/DataDog/dd-trace-dotnet/releases/download/v1.26.2/windows-tracer-home.zip"
+  DOTNET_TRACER_DOWNLOAD_URL: "https://github.com/DataDog/dd-trace-dotnet/releases/download/v1.26.3/windows-tracer-home.zip"
   AGENT_CONFIG_DIR: $CI_PROJECT_DIR/dotnet/content/Agent
   BASE_DIR: $CI_PROJECT_DIR/dotnet/content/
-  RELEASE_DIR: $CI_PROJECT_DIR/dotnet/content/v1_3_2
-  RELEASE_TRACER_DIR: $CI_PROJECT_DIR/dotnet/content/v1_3_2/Tracer
-  RELEASE_AGENT_DIR: $CI_PROJECT_DIR/dotnet/content/v1_3_2/Agent
+  RELEASE_DIR: $CI_PROJECT_DIR/dotnet/content/v1_3_3
+  RELEASE_TRACER_DIR: $CI_PROJECT_DIR/dotnet/content/v1_3_3/Tracer
+  RELEASE_AGENT_DIR: $CI_PROJECT_DIR/dotnet/content/v1_3_3/Agent
   DEVELOPMENT_DIR: $CI_PROJECT_DIR/dotnet/content/v0_1_24
 
 dotnet-package:
@@ -34,13 +34,13 @@ dotnet-package:
     - echo "Creating nuget package"
     - echo "Packing nuspec file via arcane roundabout csproj process"
     - dotnet pack dotnet/Datadog.AzureAppServices.DotNet.csproj -p:NoBuild=true -p:NoDefaultExcludes=true -o package
-    - echo "Updating versions from v1_3_2 to v0_1_24 for testing package"
-    - sed -i 's/v1_3_2/v0_1_24/g' dotnet/content/applicationHost.xdt.dd
-    - sed -i 's/EXTENSION_VERSION" value="1.3.2"/EXTENSION_VERSION" value="0.1.24"/g' dotnet/content/applicationHost.xdt.dd
-    - sed -i 's/v1_3_2/v0_1_24/g' $RELEASE_AGENT_DIR/datadog.yaml
-    - sed -i 's/v1_3_2/v0_1_24/g' $RELEASE_AGENT_DIR/dogstatsd.yaml
-    - sed -i 's/v1_3_2/v0_1_24/g' $BASE_DIR/validate-w3wp-stopped.ps1
-    - sed -i 's/v1.3.2/v0.1.24/g' $BASE_DIR/install.cmd
+    - echo "Updating versions from v1_3_3 to v0_1_24 for testing package"
+    - sed -i 's/v1_3_3/v0_1_24/g' dotnet/content/applicationHost.xdt.dd
+    - sed -i 's/EXTENSION_VERSION" value="1.3.3"/EXTENSION_VERSION" value="0.1.24"/g' dotnet/content/applicationHost.xdt.dd
+    - sed -i 's/v1_3_3/v0_1_24/g' $RELEASE_AGENT_DIR/datadog.yaml
+    - sed -i 's/v1_3_3/v0_1_24/g' $RELEASE_AGENT_DIR/dogstatsd.yaml
+    - sed -i 's/v1_3_3/v0_1_24/g' $BASE_DIR/validate-w3wp-stopped.ps1
+    - sed -i 's/v1.3.3/v0.1.24/g' $BASE_DIR/install.cmd
     - echo "Updating paths from Datadog.AzureAppServices.DotNet to DevelopmentVerification.DdDotNet.Apm for testing package"
     - sed -i 's/Datadog.AzureAppServices.DotNet/DevelopmentVerification.DdDotNet.Apm/g' $BASE_DIR/applicationHost.xdt.dd
     - sed -i 's/Datadog.AzureAppServices.DotNet/DevelopmentVerification.DdDotNet.Apm/g' $BASE_DIR/validate-w3wp-stopped.ps1
