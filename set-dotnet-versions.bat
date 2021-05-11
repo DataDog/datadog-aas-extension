@@ -3,18 +3,18 @@ REM Set these version variables and run the script to change all the files which
 REM The site extension release version
 set major=1
 set minor=3
-set patch=1
+set patch=2
 set version_postfix=
 
 REM Specialized version for development package, increment as necessary for testing
 set development_minor=1
-set development_patch=23
+set development_patch=24
 
 REM The agent version to deploy
 set agent_version=7.27.0
 
 REM The dotnet tracer version to deploy
-set tracer_version=1.26.1
+set tracer_version=1.26.2
 
 REM **************************************************************************************************************************
 REM All of the below code updates versions in files, do not touch unless you wish to modify the structure of those files
@@ -29,7 +29,7 @@ set development_release_path_replacement=v0_%development_minor%_%development_pat
 set version_regex=[1-9]+\.[0-9]+\.[0-9]+[\-a-zA-Z]*
 set version=%major%.%minor%.%patch%
 
-set dev_version_regex=0\.[0-9][0-9]?[0-9]?\.[0-9][0-9]?[0-9]?
+set dev_version_regex=0\.[0-9]{1,3}\.[0-9]{1,3}
 set dev_version=0.%development_minor%.%development_patch%
 
 set release_nuget=dotnet\Datadog.AzureAppServices.DotNet.nuspec
@@ -65,6 +65,6 @@ powershell -Command "(gc .\%gitlab_yml%) -replace '%development_release_path_reg
 powershell -Command "(gc .\%gitlab_yml%) -replace '%release_path_regex%', '%release_path_replacement%' | Out-File -encoding ASCII .\%gitlab_yml%"
 
 powershell -Command "(gc .\%gitlab_yml%) -replace 'v%version_regex%\/v%dev_version_regex%', 'v%version%/v%dev_version%' | Out-File -encoding ASCII .\%gitlab_yml%"
-powershell -Command "(gc .\%gitlab_yml%) -replace 'value="%version_regex%"', 'value="%version%"' | Out-File -encoding ASCII .\%gitlab_yml%"
-powershell -Command "(gc .\%gitlab_yml%) -replace 'value="%dev_version_regex%"', 'value="%dev_version%"' | Out-File -encoding ASCII .\%gitlab_yml%"
+powershell -Command "(gc .\%gitlab_yml%) -replace 'value=\"%version_regex%\"', 'value=\"%version%\"' | Out-File -encoding ASCII .\%gitlab_yml%"
+powershell -Command "(gc .\%gitlab_yml%) -replace 'value=\"%dev_version_regex%\"', 'value=\"%dev_version%\"' | Out-File -encoding ASCII .\%gitlab_yml%"
 
