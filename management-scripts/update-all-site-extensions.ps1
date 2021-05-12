@@ -35,8 +35,6 @@ if ($Password -eq "ambient") {
 $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $Username, $Password)))
 $userAgent = "powershell/1.0"
 $allSites=az webapp list -g $ResourceGroup | ConvertFrom-Json
-$extensionUrl="https://www.nuget.org/packages/${Extension}"
-$latestExtensionVersion=Invoke-RestMethod -Uri $extensionUrl -UserAgent $userAgent -Method GET
 
 Foreach($webapp in @($allSites)) {
 	
