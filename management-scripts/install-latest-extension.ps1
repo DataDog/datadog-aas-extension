@@ -43,21 +43,21 @@ $siteApiUrl="https://management.azure.com/subscriptions/${SubscriptionId}/resour
 
 # Stop the web app
 # https://docs.microsoft.com/en-us/rest/api/appservice/webapps/stop
-Write-Output "Stopping webapp ${SiteName}"
+Write-Output "[${SiteName}] Stopping webapp"
 az rest -m POST --header "Accept=application/json" -u "${siteApiUrl}/stop?api-version=2019-08-01"
 
 if ($Remove) {
   Write-Output "Attempting to remove ${Extension} from ${SiteName}"
   Invoke-RestMethod -Uri $siteExtensionManage -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -UserAgent $userAgent -Method DELETE
-  Write-Output "Completed request to remove ${Extension} from ${SiteName}"
+  Write-Output "[${SiteName}] Completed request to remove ${Extension}"
 }
 else {
-  Write-Output "Attempting to install latest ${Extension} on ${SiteName}"
+  Write-Output "Attempting to install latest ${Extension}"
   Invoke-RestMethod -Uri $siteExtensionManage -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -UserAgent $userAgent -Method PUT
-  Write-Output "Completed request to install latest of ${Extension} to ${SiteName}"
+  Write-Output "[${SiteName}] Completed request to install latest of ${Extension}"
 }
 
 # Start the web app
 # https://docs.microsoft.com/en-us/rest/api/appservice/webapps/stop
-Write-Output "Starting webapp ${SiteName}"
+Write-Output "[${SiteName}] Starting webapp"
 az rest -m POST --header "Accept=application/json" -u "${siteApiUrl}/start?api-version=2019-08-01"

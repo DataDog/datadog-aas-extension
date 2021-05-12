@@ -45,26 +45,22 @@ Foreach($webapp in @($allSites)) {
 	$siteExtensionsBase="${baseApiUrl}/siteextensions"
 	$siteExtensionManage="${baseApiUrl}/siteextensions/${extension}"
 
-	Write-Output "Requesting installed extensions on ${siteName}"
+	Write-Output "[${siteName}] Requesting installed extensions."
 	
 	$hasExtension=$false
+	$hasLatest=$false
 	$installedExtensions=Invoke-RestMethod -Uri $siteExtensionsBase -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -UserAgent $userAgent -Method GET
-
-	if (@($installedExtensions).Length -eq 0) {
-		Write-Output "No site extensions installed on ${siteName}"
-	}
 
 	Foreach ($installedExtension in @($installedExtensions)){
 		
 		$extVersion=$installedExtension.version
 		$extId=$installedExtension.id
-		Write-Output "Inspecting ${extId} on ${siteName}"
 		
 		if ($extId -eq $Extension) {
 			
-			if ($installedExtension.local_is_latest_version -eq $true) {
-				Write-Output "Latest Version (${extVersion}) of ${extId} is already installed."
-				continue;
+			if ($installedExtension.local_is_latest_version) {
+				Write-Output "[${siteName}] Latest version (${extVersion}) of ${Extension} already installed."
+				$hasLatest=$true
 			}
 			
 			$hasExtension=$true
@@ -72,6 +68,18 @@ Foreach($webapp in @($allSites)) {
 		}
 	}
 	
+	if (-Not $hasExtension) {
+		Write-Output "[${siteName}] ${Extension} not found."
+		continue;
+	}
+	
+	if ($hasLatest) {
+		# Nothing to do
+		continue;
+	}
+	
+	Write-Output "[${siteName}] Ready to modify ${Extension}."
+			
 	if ($hasExtension) {
 		if ($Remove) {
 		  .\install-latest-extension.ps1 -SubscriptionId $SubscriptionId -ResourceGroup $ResourceGroup -SiteName $siteName -Username $Username -Password $Password -Extension $Extension -Remove
@@ -80,4 +88,5 @@ Foreach($webapp in @($allSites)) {
 		  .\install-latest-extension.ps1 -SubscriptionId $SubscriptionId -ResourceGroup $ResourceGroup -SiteName $siteName -Username $Username -Password $Password -Extension $Extension
 		}
 	}
+	
 }
