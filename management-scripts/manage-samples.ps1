@@ -54,7 +54,7 @@ if ($UpdateExtension) {
 	Foreach($sub in @($subscriptions)) {
 		Foreach($group in @($resourceGroups)) {
 			Foreach($ext in @($extensions)) {
-				.\update-all-site-extensions.ps1 -SubscriptionId $sub -ResourceGroup $group -Extension $ext
+				.\extension\update-all-site-extensions.ps1 -SubscriptionId $sub -ResourceGroup $group -Extension $ext
 			}
 		}
 	}
