@@ -1,5 +1,6 @@
 ## hostname: none is required for special billing considerations
 hostname: none
+enable_metadata_collection: false # disable sending the host metadata payload, required for serverless
 use_dogstatsd: true
 log_file: D:\home\LogFiles\datadog\v1_3_3\dogstatsd.txt
 ## log_level: debug
