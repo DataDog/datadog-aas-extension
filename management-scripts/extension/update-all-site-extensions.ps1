@@ -79,12 +79,11 @@ Foreach($webapp in @($allSites)) {
 	Write-Output "[${siteName}] Ready to modify ${Extension}."
 			
 	if ($hasExtension) {
+		$extensionUpdate="$PSScriptRoot\install-latest-extension.ps1 -SubscriptionId $SubscriptionId -ResourceGroup $ResourceGroup -SiteName $siteName -Username $Username -Password $Password -Extension $Extension"
 		if ($Remove) {
-		  .\install-latest-extension.ps1 -SubscriptionId $SubscriptionId -ResourceGroup $ResourceGroup -SiteName $siteName -Username $Username -Password $Password -Extension $Extension -Remove
+		  $extensionUpdate="${extensionUpdate} -Remove"
 		}
-		else {
-		  .\install-latest-extension.ps1 -SubscriptionId $SubscriptionId -ResourceGroup $ResourceGroup -SiteName $siteName -Username $Username -Password $Password -Extension $Extension
-		}
+		iex $extensionUpdate
 	}
 	
 }
