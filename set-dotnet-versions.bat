@@ -8,10 +8,10 @@ set version_postfix=
 
 REM Specialized version for development package, increment as necessary for testing
 set development_minor=1
-set development_patch=25
+set development_patch=26
 
 REM The agent version to deploy
-set agent_version=7.27.0
+set agent_version=7.25.0
 
 REM The dotnet tracer version to deploy
 set tracer_version=1.26.3
@@ -42,7 +42,7 @@ powershell -Command "(gc .\%dev_nuget%) -replace '%dev_version_regex%', '%dev_ve
 set install_cmd=dotnet\content\install.cmd
 powershell -Command "(gc .\%install_cmd%) -replace 'v%version_regex%', 'v%release_version%' | Out-File -encoding ASCII .\%install_cmd%"
 
-set application_host_transform=dotnet\content\applicationHost.xdt.dd
+set application_host_transform=dotnet\content\applicationHost.xdt
 
 set ext_version_replace='DD_AAS_DOTNET_EXTENSION_VERSION"" value=\"%release_version%\" xdt:Locator'
 set ext_version_regex=DD_AAS_DOTNET_EXTENSION_VERSION. value..[0-9][0-9]?[0-9]?.[0-9][0-9]?[0-9]?.[0-9][0-9]?[0-9]?. xdt.Locator
