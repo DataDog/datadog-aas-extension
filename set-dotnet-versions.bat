@@ -3,18 +3,18 @@ REM Set these version variables and run the script to change all the files which
 REM The site extension release version
 set major=1
 set minor=3
-set patch=3
+set patch=4
 set version_postfix=
 
 REM Specialized version for development package, increment as necessary for testing
 set development_minor=1
-set development_patch=26
+set development_patch=27
 
 REM The agent version to deploy
 set agent_version=7.25.0
 
 REM The dotnet tracer version to deploy
-set tracer_version=1.26.3
+set tracer_version=1.27.0
 
 REM **************************************************************************************************************************
 REM All of the below code updates versions in files, do not touch unless you wish to modify the structure of those files
