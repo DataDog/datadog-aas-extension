@@ -31,7 +31,7 @@ if ($Recycle -or $FullStopStart) {
 			Foreach($webapp in @($allSites)) {
 				
 				$SiteName=$webapp.name
-				$siteApiUrl="https://management.azure.com/subscriptions/${SubscriptionId}/resourceGroups/${group}/providers/Microsoft.Web/sites/${SiteName}"
+				$siteApiUrl="https://management.azure.com/subscriptions/${sub}/resourceGroups/${group}/providers/Microsoft.Web/sites/${SiteName}"
 				
 				if ($Recycle) {
 					Write-Host "[${SiteName}] Requesting recycle."
