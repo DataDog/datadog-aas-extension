@@ -2,8 +2,8 @@ REM Set these version variables and run the script to change all the files which
 
 REM The site extension release version
 set major=1
-set minor=4
-set patch=1
+set minor=5
+set patch=0
 set version_postfix=
 
 REM Specialized version for development package, increment as necessary for testing
