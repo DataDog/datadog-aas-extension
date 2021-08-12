@@ -9,6 +9,10 @@
     [Parameter(Mandatory=$false)][string]$Username="ambient",
     [Parameter(Mandatory=$false)][string]$Password="ambient",
     [Parameter(Mandatory=$false)][string]$Extension="Datadog.AzureAppServices.DotNet",
+    [Parameter(Mandatory=$false)][string]$DDApiKey="<not-set>",
+    [Parameter(Mandatory=$false)][string]$DDEnv="<not-set>",
+    [Parameter(Mandatory=$false)][string]$DDService="<not-set>",
+    [Parameter(Mandatory=$false)][string]$DDVersion="<not-set>",
     [Parameter(Mandatory=$false)][Switch]$Remove
  )
 
@@ -19,6 +23,11 @@
 # .\install-latest-extension.ps1 -SubscriptionId $subscriptionId -ResourceGroup $resourceGroupName -SiteName $webAppName
 # .\install-latest-extension.ps1 -SubscriptionId $subscriptionId -ResourceGroup $resourceGroupName -SiteName $webAppName -Username $username -Password $password -Remove
 # .\install-latest-extension.ps1 -SubscriptionId $subscriptionId -ResourceGroup $resourceGroupName -SiteName $webAppName -Remove
+#
+
+# Example call of install with datadog environment variables applied:
+# 
+# .\install-latest-extension.ps1 -Username $username -Password $password -SubscriptionId $subscriptionId -ResourceGroup $resourceGroupName -SiteName $webAppName -DDApiKey $ddApiKey -DDEnv $ddEnv -DDService $ddService -DDVersion $ddVersion
 #
 
 if ($Username -eq "ambient") {
@@ -45,6 +54,26 @@ $siteApiUrl="https://management.azure.com/subscriptions/${SubscriptionId}/resour
 # https://docs.microsoft.com/en-us/rest/api/appservice/webapps/stop
 Write-Output "[${SiteName}] Stopping webapp"
 az rest -m POST --header "Accept=application/json" -u "${siteApiUrl}/stop?api-version=2019-08-01"
+
+$skipVar="<not-set>"
+
+az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --settings DD_AAS_SCRIPT_INSTALL=1
+	
+if ($DDApiKey -ne $skipVar) {
+	az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --settings DD_API_KEY=$DDApiKey
+}
+
+if ($DDEnv -ne $skipVar) {
+	az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --settings DD_ENV=$DDEnv
+}
+
+if ($DDService -ne $skipVar) {
+	az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --settings DD_SERVICE=$DDService
+}
+
+if ($DDVersion -ne $skipVar) {
+	az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --settings DD_VERSION=$DDVersion
+}
 
 if ($Remove) {
   Write-Output "Attempting to remove ${Extension} from ${SiteName}"
