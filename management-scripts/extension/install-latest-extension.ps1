@@ -10,6 +10,7 @@
     [Parameter(Mandatory=$false)][string]$Password="ambient",
     [Parameter(Mandatory=$false)][string]$Extension="Datadog.AzureAppServices.DotNet",
     [Parameter(Mandatory=$false)][string]$DDApiKey="<not-set>",
+    [Parameter(Mandatory=$false)][string]$DDSite="<not-set>",
     [Parameter(Mandatory=$false)][string]$DDEnv="<not-set>",
     [Parameter(Mandatory=$false)][string]$DDService="<not-set>",
     [Parameter(Mandatory=$false)][string]$DDVersion="<not-set>",
@@ -27,7 +28,7 @@
 
 # Example call of install with datadog environment variables applied:
 # 
-# .\install-latest-extension.ps1 -Username $username -Password $password -SubscriptionId $subscriptionId -ResourceGroup $resourceGroupName -SiteName $webAppName -DDApiKey $ddApiKey -DDEnv $ddEnv -DDService $ddService -DDVersion $ddVersion
+# .\install-latest-extension.ps1 -Username $username -Password $password -SubscriptionId $subscriptionId -ResourceGroup $resourceGroupName -SiteName $webAppName -DDSite $ddSite -DDApiKey $ddApiKey -DDEnv $ddEnv -DDService $ddService -DDVersion $ddVersion
 #
 
 if ($Username -eq "ambient") {
@@ -61,6 +62,10 @@ az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --settings D
 	
 if ($DDApiKey -ne $skipVar) {
 	az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --settings DD_API_KEY=$DDApiKey
+}
+	
+if ($DDSite -ne $skipVar) {
+	az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --settings DD_SITE=$DDSite
 }
 
 if ($DDEnv -ne $skipVar) {
