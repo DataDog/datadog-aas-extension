@@ -58,6 +58,6 @@ else {
 }
 
 # Start the web app
-# https://docs.microsoft.com/en-us/rest/api/appservice/webapps/stop
+# https://docs.microsoft.com/en-us/rest/api/appservice/webapps/start
 Write-Output "[${SiteName}] Starting webapp"
 az rest -m POST --header "Accept=application/json" -u "${siteApiUrl}/start?api-version=2019-08-01"
