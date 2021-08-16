@@ -1,5 +1,4 @@
-## hostname: none is required for special billing considerations
-hostname: none
+## hostname:'' is configured in the host transform
 ## disable sending the host metadata payload, required for serverless
 enable_metadata_collection: false
 use_dogstatsd: true
