@@ -8,7 +8,7 @@ variables:
   RELEASE_DIR: $CI_PROJECT_DIR/dotnet/content/v1_5_0
   RELEASE_TRACER_DIR: $CI_PROJECT_DIR/dotnet/content/v1_5_0/Tracer
   RELEASE_AGENT_DIR: $CI_PROJECT_DIR/dotnet/content/v1_5_0/Agent
-  DEVELOPMENT_DIR: $CI_PROJECT_DIR/dotnet/content/v0_1_30
+  DEVELOPMENT_DIR: $CI_PROJECT_DIR/dotnet/content/v0_1_32
 
 dotnet-package:
   tags: [ "runner:main", "size:2xlarge" ]
@@ -34,12 +34,12 @@ dotnet-package:
     - echo "Creating nuget package"
     - echo "Packing nuspec file via arcane roundabout csproj process"
     - dotnet pack dotnet/Datadog.AzureAppServices.DotNet.csproj -p:NoBuild=true -p:NoDefaultExcludes=true -o package
-    - echo "Updating versions from v1_5_0 to v0_1_30 for testing package"
-    - sed -i 's/v1_5_0/v0_1_30/g' dotnet/content/applicationHost.xdt
-    - sed -i 's/EXTENSION_VERSION" value="1.5.0"/EXTENSION_VERSION" value="0.1.30"/g' dotnet/content/applicationHost.xdt
-    - sed -i 's/v1_5_0/v0_1_30/g' $RELEASE_AGENT_DIR/datadog.yaml
-    - sed -i 's/v1_5_0/v0_1_30/g' $RELEASE_AGENT_DIR/dogstatsd.yaml
-    - sed -i 's/v1.5.0/v0.1.30/g' $BASE_DIR/install.cmd
+    - echo "Updating versions from v1_5_0 to v0_1_32 for testing package"
+    - sed -i 's/v1_5_0/v0_1_32/g' dotnet/content/applicationHost.xdt
+    - sed -i 's/EXTENSION_VERSION" value="1.5.0"/EXTENSION_VERSION" value="0.1.32"/g' dotnet/content/applicationHost.xdt
+    - sed -i 's/v1_5_0/v0_1_32/g' $RELEASE_AGENT_DIR/datadog.yaml
+    - sed -i 's/v1_5_0/v0_1_32/g' $RELEASE_AGENT_DIR/dogstatsd.yaml
+    - sed -i 's/v1.5.0/v0.1.32/g' $BASE_DIR/install.cmd
     - echo "Updating paths from Datadog.AzureAppServices.DotNet to DevelopmentVerification.DdDotNet.Apm for testing package"
     - sed -i 's/Datadog.AzureAppServices.DotNet/DevelopmentVerification.DdDotNet.Apm/g' $BASE_DIR/applicationHost.xdt
     - mkdir $DEVELOPMENT_DIR

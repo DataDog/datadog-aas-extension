@@ -7,3 +7,4 @@ obj/
 /dotnet/content/Tracer/*
 /dotnet/content/Agent/dogstatsd.exe
 /dotnet/content/Agent/datadog-trace-agent.exe
+/package/*
