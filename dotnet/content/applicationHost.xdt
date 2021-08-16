@@ -38,6 +38,8 @@
         <add name="DD_DOGSTATSD_PIPE_NAME" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_DOGSTATSD_WINDOWS_PIPE_NAME" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
 		
+        <add name="DD_HOST" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+		
         <add name="DD_AGENT_HOST" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_DOGSTATSD_PORT" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_APM_RECEIVER_PORT" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
@@ -72,6 +74,8 @@
         <add name="DD_TRACE_TRANSPORT" value="DATADOG-NAMED-PIPES" xdt:Locator="Match(name)" xdt:Transform="Insert"/>	
         <add name="DD_APM_WINDOWS_PIPE_NAME" value="datadogtrace-uniqueTracePipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/>	
         <add name="DD_TRACE_PIPE_NAME" value="datadogtrace-uniqueTracePipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+		
+		<add name="DD_HOST" value="''" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Needed to ensure no billing and stats clobbering -->
 
         <add name="DD_AGENT_PIPE_NAME" value="dogstatsd-uniqueStatsPipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Dogstatsd client variable (LEGACY) -->
         <add name="DD_DOGSTATSD_PIPE_NAME" value="dogstatsd-uniqueStatsPipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Dogstatsd client variable (CURRENT) -->
