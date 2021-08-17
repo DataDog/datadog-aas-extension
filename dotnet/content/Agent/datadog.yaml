@@ -1,4 +1,4 @@
-## hostname:'' is configured in the host transform
+hostname: ## prevent per host billing and host tags
 ## disable sending the host metadata payload, required for serverless
 enable_metadata_collection: false
 apm_config:
