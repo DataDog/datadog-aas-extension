@@ -1,5 +1,6 @@
-hostname: ## prevent per host billing and host tags
-## disable sending the host metadata payload, required for serverless
+## prevent per host billing and host tags
+hostname:
+## disable sending the host metadata payload
 enable_metadata_collection: false
 use_dogstatsd: true
 log_file: D:\home\LogFiles\datadog\v1_8_0\dogstatsd.txt
