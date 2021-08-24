@@ -17,19 +17,15 @@
     "parameters": {
         ...
         "dd_api_key": {
-            "defaultValue": "missing-dd-api-key-parameter",
             "type": "String"
         },
         "dd_env": {
-            "defaultValue": "missing-dd-env-parameter",
             "type": "String"
         },
         "dd_service": {
-            "defaultValue": "missing-dd-service-parameter",
             "type": "String"
         },
         "dd_version": {
-            "defaultValue": "missing-dd-version-parameter",
             "type": "String"
         },
         "dd_site": {
