@@ -1,11 +1,11 @@
 ## Configuring Datadog in ARM Templates
 
  - [Parameters to accept Datadog configuration. ](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/parameters)
-  - DD_API_KEY
-  - DD_ENV
-  - DD_SERVICE
-  - DD_VERSION
-  - DD_SITE
+   - DD_API_KEY
+   - DD_ENV
+   - DD_SERVICE
+   - DD_VERSION
+   - DD_SITE
  - [Entries in `appSettings` underneath `Microsoft.Web/sites/config`](https://docs.microsoft.com/en-us/azure/templates/microsoft.web/sites/config-web?tabs=json)
 	 - One to one entries for each relevant parameter
 
