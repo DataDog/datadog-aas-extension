@@ -60,7 +60,7 @@ Foreach($webapp in @($allSites)) {
 		if ($extId -eq $Extension) {
 			
 			if ($requiresSpecificVersion) {
-				if ($installedExtension.version -eq) {
+				if ($installedExtension.version -eq $ExtensionVersion) {
 					Write-Output "[${siteName}] Version (${extVersion}) of ${Extension} already installed."
 					$hasDesiredVersion=$true
 				}
