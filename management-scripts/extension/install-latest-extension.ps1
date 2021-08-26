@@ -121,8 +121,8 @@ else {
 		}
 		
 		if ($install) {
+			# https://github.com/projectkudu/kudu/blob/98ad238b860f81a4cb4e3419c8785a58ba68e661/Kudu.Services/SiteExtensions/SiteExtensionController.cs#L240
 			$siteExtensionInfo = @{        
-			  # version = "${ExtensionVersion}"
 			  packageUri = $packageUrl
 			};
 			

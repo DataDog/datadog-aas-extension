@@ -92,7 +92,7 @@ Foreach($webapp in @($allSites)) {
 		$extensionUpdate="$PSScriptRoot\install-latest-extension.ps1 -SubscriptionId $SubscriptionId -ResourceGroup $ResourceGroup -SiteName $siteName -Username $Username -Password $Password -Extension $Extension"
 		
 		if ($requiresSpecificVersion) {
-		  $extensionUpdate="${extensionUpdate} -Version ${ExtensionVersion}"
+		  $extensionUpdate="${extensionUpdate} -ExtensionVersion ${ExtensionVersion}"
 		}
 		
 		if ($Remove) {
