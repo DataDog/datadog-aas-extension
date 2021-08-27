@@ -8,6 +8,7 @@
     [Parameter(Mandatory=$false)][string]$Username="ambient",
     [Parameter(Mandatory=$false)][string]$Password="ambient",
     [Parameter(Mandatory=$false)][string]$Extension="Datadog.AzureAppServices.DotNet",
+    [Parameter(Mandatory=$false)][string]$ExtensionVersion,
     [Parameter(Mandatory=$false)][Switch]$Remove
  )
 
@@ -46,8 +47,10 @@ Foreach($webapp in @($allSites)) {
 	Write-Output "[${siteName}] Requesting installed extensions."
 	
 	$hasExtension=$false
-	$hasLatest=$false
+	$hasDesiredVersion=$false
 	$installedExtensions=Invoke-RestMethod -Uri $siteExtensionsBase -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -UserAgent $userAgent -Method GET
+
+	$requiresSpecificVersion=$PSBoundParameters.ContainsKey('ExtensionVersion')
 
 	Foreach ($installedExtension in @($installedExtensions)){
 		
@@ -56,9 +59,15 @@ Foreach($webapp in @($allSites)) {
 		
 		if ($extId -eq $Extension) {
 			
-			if ($installedExtension.local_is_latest_version) {
+			if ($requiresSpecificVersion) {
+				if ($installedExtension.version -eq $ExtensionVersion) {
+					Write-Output "[${siteName}] Version (${extVersion}) of ${Extension} already installed."
+					$hasDesiredVersion=$true
+				}
+			}
+			elseif ($installedExtension.local_is_latest_version) {
 				Write-Output "[${siteName}] Latest version (${extVersion}) of ${Extension} already installed."
-				$hasLatest=$true
+				$hasDesiredVersion=$true
 			}
 			
 			$hasExtension=$true
@@ -71,7 +80,7 @@ Foreach($webapp in @($allSites)) {
 		continue;
 	}
 	
-	if ($hasLatest) {
+	if ($hasDesiredVersion) {
 		# Nothing to do
 		continue;
 	}
@@ -79,10 +88,17 @@ Foreach($webapp in @($allSites)) {
 	Write-Output "[${siteName}] Ready to modify ${Extension}."
 			
 	if ($hasExtension) {
+		
 		$extensionUpdate="$PSScriptRoot\install-latest-extension.ps1 -SubscriptionId $SubscriptionId -ResourceGroup $ResourceGroup -SiteName $siteName -Username $Username -Password $Password -Extension $Extension"
+		
+		if ($requiresSpecificVersion) {
+		  $extensionUpdate="${extensionUpdate} -ExtensionVersion ${ExtensionVersion}"
+		}
+		
 		if ($Remove) {
 		  $extensionUpdate="${extensionUpdate} -Remove"
 		}
+		
 		iex $extensionUpdate
 	}
 	

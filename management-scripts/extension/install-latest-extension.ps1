@@ -14,6 +14,7 @@
     [Parameter(Mandatory=$false)][string]$DDEnv="<not-set>",
     [Parameter(Mandatory=$false)][string]$DDService="<not-set>",
     [Parameter(Mandatory=$false)][string]$DDVersion="<not-set>",
+    [Parameter(Mandatory=$false)][string]$ExtensionVersion,
     [Parameter(Mandatory=$false)][Switch]$Remove
  )
 
@@ -22,6 +23,8 @@
 #
 # .\install-latest-extension.ps1 -SubscriptionId $subscriptionId -ResourceGroup $resourceGroupName -SiteName $webAppName -Username $username -Password $password
 # .\install-latest-extension.ps1 -SubscriptionId $subscriptionId -ResourceGroup $resourceGroupName -SiteName $webAppName
+# .\install-latest-extension.ps1 -SubscriptionId $subscriptionId -ResourceGroup $resourceGroupName -SiteName $webAppName -Username $username -Password $password -ExtensionVersion 1.5.0
+# .\install-latest-extension.ps1 -SubscriptionId $subscriptionId -ResourceGroup $resourceGroupName -SiteName $webAppName -ExtensionVersion 1.5.0
 # .\install-latest-extension.ps1 -SubscriptionId $subscriptionId -ResourceGroup $resourceGroupName -SiteName $webAppName -Username $username -Password $password -Remove
 # .\install-latest-extension.ps1 -SubscriptionId $subscriptionId -ResourceGroup $resourceGroupName -SiteName $webAppName -Remove
 #
@@ -81,14 +84,60 @@ if ($DDVersion -ne $skipVar) {
 }
 
 if ($Remove) {
-  Write-Output "Attempting to remove ${Extension} from ${SiteName}"
+  Write-Output "[${SiteName}] Attempting to remove ${Extension}"
   Invoke-RestMethod -Uri $siteExtensionManage -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -UserAgent $userAgent -Method DELETE
   Write-Output "[${SiteName}] Completed request to remove ${Extension}"
 }
 else {
-  Write-Output "Attempting to install latest ${Extension}"
-  Invoke-RestMethod -Uri $siteExtensionManage -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -UserAgent $userAgent -Method PUT
-  Write-Output "[${SiteName}] Completed request to install latest of ${Extension}"
+	if ($PSBoundParameters.ContainsKey('ExtensionVersion')) {
+		
+        Write-Output "[${SiteName}] Attempting to install version ${ExtensionVersion} of ${Extension}"
+		
+		$packageUrl="https://globalcdn.nuget.org/packages/${Extension}.${ExtensionVersion}.nupkg".ToLower()
+		
+		Write-Output "[${SiteName}] Setting package URL to ${packageUrl}"
+		
+		$install=$true
+		
+		# If this is a downgrade, we need to remove the extension first or the install logic will ignore the package
+		$installedExtensions=Invoke-RestMethod -Uri $siteExtensionsBase -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -UserAgent $userAgent -Method GET
+		
+		Foreach ($installedExtension in @($installedExtensions)){
+			
+			if ($installedExtension.id -eq $Extension) {
+				if ($installedExtension.version -eq $ExtensionVersion) {
+					Write-Output "[${SiteName}] Package version (${ExtensionVersion}) is already installed."
+					$install=$false
+					break;
+				}
+				else {
+					Invoke-RestMethod -Uri $siteExtensionManage -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -UserAgent $userAgent -Method DELETE
+					Write-Output "[${SiteName}] Requested package removal. "
+					Write-Output "[${SiteName}] Waiting ten seconds to ensure removal is complete. "
+					Start-Sleep -s 10
+					break;
+				}
+			}
+		}
+		
+		if ($install) {
+			# https://github.com/projectkudu/kudu/blob/98ad238b860f81a4cb4e3419c8785a58ba68e661/Kudu.Services/SiteExtensions/SiteExtensionController.cs#L240
+			$siteExtensionInfo = @{        
+			  packageUri = $packageUrl
+			};
+			
+			$json = $siteExtensionInfo | ConvertTo-Json;
+			
+			Invoke-RestMethod -Uri $siteExtensionManage -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -UserAgent $userAgent -Method PUT -ContentType application/json -Body $json
+			
+			Write-Output "[${SiteName}] Completed request to install version ${ExtensionVersion} of ${Extension}"
+		}
+	}
+	else {
+        Write-Output "Attempting to install latest ${Extension}"
+        Invoke-RestMethod -Uri $siteExtensionManage -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -UserAgent $userAgent -Method PUT
+        Write-Output "[${SiteName}] Completed request to install latest of ${Extension}"
+	}
 }
 
 # Start the web app
