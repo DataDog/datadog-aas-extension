@@ -8,10 +8,10 @@ set version_postfix=
 
 REM Specialized version for development package, increment as necessary for testing
 set development_minor=1
-set development_patch=32
+set development_patch=35
 
 REM The agent version to deploy (Manually including 7.30 pre-upload)
-set agent_version=7.25.0
+set agent_version=7.30.2
 
 REM The dotnet tracer version to deploy
 set tracer_version=1.28.4
