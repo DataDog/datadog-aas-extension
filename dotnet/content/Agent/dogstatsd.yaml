@@ -3,7 +3,7 @@ hostname: none
 ## disable sending the host metadata payload, required for serverless
 enable_metadata_collection: false
 use_dogstatsd: true
-log_file: D:\home\LogFiles\datadog\v1_5_0\dogstatsd.txt
+log_file: D:\home\LogFiles\datadog\v1_5_1\dogstatsd.txt
 ## log_level: debug
 cloud_provider_metadata:
   - "azure"
