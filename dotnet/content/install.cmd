@@ -3,7 +3,7 @@ REM Entrypoint: https://github.com/projectkudu/kudu/blob/13824205c60a4bdb53896b9
 
 @echo off
 
-set version=v1.5.1
+set version=v1.6.0
 set log_prefix=%date% %time% ^[%version%^]
 set log_file=..\..\Datadog.AzureAppServices.DotNet-Install.txt
 
