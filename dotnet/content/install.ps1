@@ -11,14 +11,14 @@ $statsPipeId=([guid]::NewGuid().ToString().ToUpper())
 ((Get-Content -path .\applicationHost.xdt -Raw) -replace "uniqueStatsPipeId", "${statsPipeId}") | Set-Content -Path .\applicationHost.xdt
 
 if (Test-Path env:DD_AAS_REMOTE_INSTALL) {
-	
-	# https://github.com/PowerShell/Microsoft.PowerShell.Archive/issues/77#issuecomment-601947496
-	$global:ProgressPreference = "SilentlyContinue"
-	# Global is required because Expand-Archive module calls ignore the contextual $ProgressPreference
-	
-	$underscoreVersion=($ExtensionVersion -replace "\.", "_")
+    
+    # https://github.com/PowerShell/Microsoft.PowerShell.Archive/issues/77#issuecomment-601947496
+    # Global is required because Expand-Archive module calls ignore the contextual $ProgressPreference
+    $global:ProgressPreference = "SilentlyContinue"
+    
+    $underscoreVersion=($ExtensionVersion -replace "\.", "_")
     $tracerHome="${PSScriptRoot}\${underscoreVersion}"
-	
+    
     # View available artifacts: 
     #  https://apmdotnetci.blob.core.windows.net/apm-dotnet-ci-artifacts-master/index.txt
     # View latest sha: 
@@ -53,8 +53,7 @@ if (Test-Path env:DD_AAS_REMOTE_INSTALL) {
     Remove-Item -Recurse -Force ".\tracer-home"
     Remove-Item -Recurse ".\tracer-home.zip"
 
-	$extensionVersionReplace="DD_AAS_DOTNET_EXTENSION_VERSION"" value=""${installSha}"""
+    $extensionVersionReplace="DD_AAS_DOTNET_EXTENSION_VERSION"" value=""${installSha}"""
 
-	((Get-Content -path .\applicationHost.xdt -Raw) -replace 'DD_AAS_DOTNET_EXTENSION_VERSION" value="[^"]+"', $extensionVersionReplace) | Set-Content -Path .\applicationHost.xdt
-	
+    ((Get-Content -path .\applicationHost.xdt -Raw) -replace 'DD_AAS_DOTNET_EXTENSION_VERSION" value="[^"]+"', $extensionVersionReplace) | Set-Content -Path .\applicationHost.xdt
 }
