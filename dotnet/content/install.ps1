@@ -11,6 +11,14 @@ $statsPipeId=([guid]::NewGuid().ToString().ToUpper())
 ((Get-Content -path .\applicationHost.xdt -Raw) -replace "uniqueStatsPipeId", "${statsPipeId}") | Set-Content -Path .\applicationHost.xdt
 
 if (Test-Path env:DD_AAS_REMOTE_INSTALL) {
+	
+	# https://github.com/PowerShell/Microsoft.PowerShell.Archive/issues/77#issuecomment-601947496
+	$global:ProgressPreference = "SilentlyContinue"
+	# Global is required because Expand-Archive module calls ignore the contextual $ProgressPreference
+	
+	$underscoreVersion=($ExtensionVersion -replace "\.", "_")
+    $tracerHome="${PSScriptRoot}\${underscoreVersion}"
+	
     # View available artifacts: 
     #  https://apmdotnetci.blob.core.windows.net/apm-dotnet-ci-artifacts-master/index.txt
     # View latest sha: 
@@ -19,9 +27,7 @@ if (Test-Path env:DD_AAS_REMOTE_INSTALL) {
     #  https://apmdotnetci.blob.core.windows.net/apm-dotnet-ci-artifacts-master/16dd0fce121ca0fe9b20e650c05823496d603283/windows-tracer-home.zip
     
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    # Prevent the progress meter from trying to access the console mode
-    $ProgressPreference = "SilentlyContinue"
-    
+
     $installOption=$env:DD_AAS_REMOTE_INSTALL
     
     if ($installOption -eq "latest") { 
@@ -37,13 +43,18 @@ if (Test-Path env:DD_AAS_REMOTE_INSTALL) {
     $latestHomeArtifactUrl="https://apmdotnetci.blob.core.windows.net/apm-dotnet-ci-artifacts-master/${installSha}/windows-tracer-home.zip"
     
     Invoke-RestMethod -Uri $latestHomeArtifactUrl -Method "GET" -OutFile "tracer-home.zip"
-    
-    Expand-Archive "tracer-home.zip" -DestinationPath "tracer-home"
-    
-    $tracerHome="${PSScriptRoot}\${ExtensionVersion}"
-    
+
+    Expand-Archive ".\tracer-home.zip" -DestinationPath ".\tracer-home\" -Force
+
     Remove-Item -Recurse -Force $tracerHome
     mkdir $tracerHome
     Get-ChildItem -Path ".\tracer-home\*" -Recurse | Move-Item -Destination "$tracerHome"
+
     Remove-Item -Recurse -Force ".\tracer-home"
+    Remove-Item -Recurse ".\tracer-home.zip"
+
+	$extensionVersionReplace="DD_AAS_DOTNET_EXTENSION_VERSION"" value=""${installSha}"""
+
+	((Get-Content -path .\applicationHost.xdt -Raw) -replace 'DD_AAS_DOTNET_EXTENSION_VERSION" value="[^"]+"', $extensionVersionReplace) | Set-Content -Path .\applicationHost.xdt
+	
 }
