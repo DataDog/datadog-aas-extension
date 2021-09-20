@@ -18,7 +18,7 @@ IF EXIST .\applicationHost.xdt (
   echo %log_prefix% Upgrade will not apply until full application stop. >> %log_file%
 )
 
-POWERSHELL .\install.ps1
+POWERSHELL .\install.ps1 -ExtensionVersion %version%
 
 echo %log_prefix% Successfully installed. >> %log_file%
 exit /B 0
