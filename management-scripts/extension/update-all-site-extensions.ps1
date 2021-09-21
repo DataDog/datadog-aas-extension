@@ -51,6 +51,7 @@ Foreach($webapp in @($allSites)) {
 	$installedExtensions=Invoke-RestMethod -Uri $siteExtensionsBase -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -UserAgent $userAgent -Method GET
 
 	$requiresSpecificVersion=$PSBoundParameters.ContainsKey('ExtensionVersion')
+	$hasExtension=$false
 
 	Foreach ($installedExtension in @($installedExtensions)){
 		
@@ -59,47 +60,32 @@ Foreach($webapp in @($allSites)) {
 		
 		if ($extId -eq $Extension) {
 			
-			if ($requiresSpecificVersion) {
+			$hasExtension=$true
+			$extensionUpdate="$PSScriptRoot\install-latest-extension.ps1 -SubscriptionId $SubscriptionId -ResourceGroup $ResourceGroup -SiteName $siteName -Username $Username -Password $Password -Extension $Extension"
+		
+			if ($Remove) {
+				$extensionUpdate="${extensionUpdate} -Remove"
+			}
+			elseif ($requiresSpecificVersion) {
 				if ($installedExtension.version -eq $ExtensionVersion) {
 					Write-Output "[${siteName}] Version (${extVersion}) of ${Extension} already installed."
-					$hasDesiredVersion=$true
+					break;
+				}
+				else {
+					$extensionUpdate="${extensionUpdate} -ExtensionVersion ${ExtensionVersion}"
 				}
 			}
 			elseif ($installedExtension.local_is_latest_version) {
 				Write-Output "[${siteName}] Latest version (${extVersion}) of ${Extension} already installed."
-				$hasDesiredVersion=$true
+				break;
 			}
 			
-			$hasExtension=$true
-			break;
+			Write-Output "[${siteName}] Ready to modify ${Extension}."
+			iex $extensionUpdate
 		}
 	}
 	
 	if (-Not $hasExtension) {
 		Write-Output "[${siteName}] ${Extension} not found."
-		continue;
 	}
-	
-	if ($hasDesiredVersion) {
-		# Nothing to do
-		continue;
-	}
-	
-	Write-Output "[${siteName}] Ready to modify ${Extension}."
-			
-	if ($hasExtension) {
-		
-		$extensionUpdate="$PSScriptRoot\install-latest-extension.ps1 -SubscriptionId $SubscriptionId -ResourceGroup $ResourceGroup -SiteName $siteName -Username $Username -Password $Password -Extension $Extension"
-		
-		if ($requiresSpecificVersion) {
-		  $extensionUpdate="${extensionUpdate} -ExtensionVersion ${ExtensionVersion}"
-		}
-		
-		if ($Remove) {
-		  $extensionUpdate="${extensionUpdate} -Remove"
-		}
-		
-		iex $extensionUpdate
-	}
-	
 }
