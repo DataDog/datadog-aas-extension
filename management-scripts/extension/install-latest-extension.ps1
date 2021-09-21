@@ -28,6 +28,8 @@
 # .\install-latest-extension.ps1 -SubscriptionId $subscriptionId -ResourceGroup $resourceGroupName -SiteName $webAppName -Username $username -Password $password -Remove
 # .\install-latest-extension.ps1 -SubscriptionId $subscriptionId -ResourceGroup $resourceGroupName -SiteName $webAppName -Remove
 #
+# .\install-latest-extension.ps1 -SubscriptionId 8c56d827-5f07-45ce-8f2b-6c5001db5c6f -ResourceGroup apm-aas-junkyard -SiteName dd-netcore31-junkyard-dev -Extension DevelopmentVerification.DdDotNet.Apm -ExtensionVersion 0.1.37-prerelease
+# 
 
 # Example call of install with datadog environment variables applied:
 # 
