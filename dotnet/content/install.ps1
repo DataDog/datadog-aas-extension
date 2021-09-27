@@ -17,7 +17,7 @@ if (Test-Path env:DD_AAS_REMOTE_INSTALL) {
     $global:ProgressPreference = "SilentlyContinue"
     
     $underscoreVersion=($ExtensionVersion -replace "\.", "_")
-    $tracerHome="${PSScriptRoot}\${underscoreVersion}"
+    $tracerHome="${PSScriptRoot}\${underscoreVersion}\Tracer"
     
     # View available artifacts: 
     #  https://apmdotnetci.blob.core.windows.net/apm-dotnet-ci-artifacts-master/index.txt
