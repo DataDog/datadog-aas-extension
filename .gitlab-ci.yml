@@ -2,13 +2,13 @@ image: mcr.microsoft.com/dotnet/core/sdk:3.1
 
 variables:
   DOTNET_AGENT_DOWNLOAD_URL: "http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.31.1-1-x86_64.zip" 
-  DOTNET_TRACER_DOWNLOAD_URL: "https://github.com/DataDog/dd-trace-dotnet/releases/download/v1.28.7/windows-tracer-home.zip"
+  DOTNET_TRACER_DOWNLOAD_URL: "https://github.com/DataDog/dd-trace-dotnet/releases/download/v1.28.8/windows-tracer-home.zip"
   AGENT_CONFIG_DIR: $CI_PROJECT_DIR/dotnet/content/Agent
   BASE_DIR: $CI_PROJECT_DIR/dotnet/content/
   RELEASE_DIR: $CI_PROJECT_DIR/dotnet/content/v1_7_0
   RELEASE_TRACER_DIR: $CI_PROJECT_DIR/dotnet/content/v1_7_0/Tracer
   RELEASE_AGENT_DIR: $CI_PROJECT_DIR/dotnet/content/v1_7_0/Agent
-  DEVELOPMENT_DIR: $CI_PROJECT_DIR/dotnet/content/v0_1_40
+  DEVELOPMENT_DIR: $CI_PROJECT_DIR/dotnet/content/v0_1_41
 
 dotnet-package:
   tags: [ "runner:main", "size:2xlarge" ]
@@ -34,12 +34,12 @@ dotnet-package:
     - echo "Creating nuget package"
     - echo "Packing nuspec file via arcane roundabout csproj process"
     - dotnet pack dotnet/Datadog.AzureAppServices.DotNet.csproj -p:NoBuild=true -p:NoDefaultExcludes=true -o package
-    - echo "Updating versions from v1_7_0 to v0_1_40 for testing package"
-    - sed -i 's/v1_7_0/v0_1_40/g' dotnet/content/applicationHost.xdt
-    - sed -i 's/EXTENSION_VERSION" value="1.7.0"/EXTENSION_VERSION" value="0.1.40"/g' dotnet/content/applicationHost.xdt
-    - sed -i 's/v1_7_0/v0_1_40/g' $RELEASE_AGENT_DIR/datadog.yaml
-    - sed -i 's/v1_7_0/v0_1_40/g' $RELEASE_AGENT_DIR/dogstatsd.yaml
-    - sed -i 's/v1.7.0/v0.1.40/g' $BASE_DIR/install.cmd
+    - echo "Updating versions from v1_7_0 to v0_1_41 for testing package"
+    - sed -i 's/v1_7_0/v0_1_41/g' dotnet/content/applicationHost.xdt
+    - sed -i 's/EXTENSION_VERSION" value="1.7.0"/EXTENSION_VERSION" value="0.1.41"/g' dotnet/content/applicationHost.xdt
+    - sed -i 's/v1_7_0/v0_1_41/g' $RELEASE_AGENT_DIR/datadog.yaml
+    - sed -i 's/v1_7_0/v0_1_41/g' $RELEASE_AGENT_DIR/dogstatsd.yaml
+    - sed -i 's/v1.7.0/v0.1.41/g' $BASE_DIR/install.cmd
     - echo "Updating paths from Datadog.AzureAppServices.DotNet to DevelopmentVerification.DdDotNet.Apm for testing package"
     - sed -i 's/Datadog.AzureAppServices.DotNet/DevelopmentVerification.DdDotNet.Apm/g' $BASE_DIR/applicationHost.xdt
     - mkdir $DEVELOPMENT_DIR

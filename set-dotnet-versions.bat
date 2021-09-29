@@ -8,7 +8,7 @@ set version_postfix=
 
 REM Specialized version for development package, increment as necessary for testing
 set development_minor=1
-set development_patch=40
+set development_patch=41
 
 REM The agent version to deploy (Manually including 7.30 pre-upload)
 set agent_version=7.31.1
