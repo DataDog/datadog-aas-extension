@@ -4,7 +4,7 @@ hostname: none
 enable_metadata_collection: false
 apm_config:
   enabled: true
-  log_file: D:\home\LogFiles\datadog\v1_7_0\trace-log.txt
+  log_file: D:\home\LogFiles\datadog\v1_8_0\trace-log.txt
 ## log_level: debug
 cloud_provider_metadata:
   - "azure"
