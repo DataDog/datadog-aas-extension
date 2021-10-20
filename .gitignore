@@ -8,3 +8,7 @@ obj/
 /dotnet/content/Agent/dogstatsd.exe
 /dotnet/content/Agent/datadog-trace-agent.exe
 /package/*
+/dotnet/content/management/bin/*
+/helper-gui/Datadog.Kudu.Helper/bin/*
+/helper-gui/Datadog.Kudu.Helper/datadog_diagnostics*
+/helper-gui/Datadog.Kudu.Helper/packages/*

@@ -2,4 +2,28 @@
 <configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
   <!-- This file exists to prevent applicationHost.xdt from being applied to scm host that runs
       other dotnet processes (dotnet build, csc etc. )-->
+  <system.applicationHost>
+    <sites>
+      <site name="%XDT_SCMSITENAME%" xdt:Locator="Match(name)">
+        <application path="/Datadog" xdt:Locator="Match(path)" xdt:Transform="Remove" />
+        <application path="/Datadog" applicationPool="%XDT_APPPOOLNAME%" xdt:Transform="Insert">
+          <virtualDirectory path="/" physicalPath="%XDT_EXTENSIONPATH%\management" />
+        </application>
+      </site>
+    </sites>
+  </system.applicationHost>
+  <system.webServer>
+    <runtime xdt:Transform="InsertIfMissing">
+      <environmentVariables xdt:Transform="InsertIfMissing">
+        <add name="CORECLR_ENABLE_PROFILING" xdt:Locator="Match(name)" xdt:Transform="RemoveAll" />
+        <add name="CORECLR_PROFILER" xdt:Locator="Match(name)" xdt:Transform="RemoveAll" />
+        <add name="CORECLR_PROFILER_PATH_32" xdt:Locator="Match(name)" xdt:Transform="RemoveAll" />
+        <add name="CORECLR_PROFILER_PATH_64" xdt:Locator="Match(name)" xdt:Transform="RemoveAll" />
+        <add name="COR_ENABLE_PROFILING" xdt:Locator="Match(name)" xdt:Transform="RemoveAll" />
+        <add name="COR_PROFILER" xdt:Locator="Match(name)" xdt:Transform="RemoveAll" />
+        <add name="COR_PROFILER_PATH_32" xdt:Locator="Match(name)" xdt:Transform="RemoveAll" />
+        <add name="COR_PROFILER_PATH_64" xdt:Locator="Match(name)" xdt:Transform="RemoveAll" />
+      </environmentVariables>
+    </runtime>
+  </system.webServer>
 </configuration>
