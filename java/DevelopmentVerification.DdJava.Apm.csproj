@@ -2,6 +2,6 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
 	<NuspecProperties>version=$(Version)</NuspecProperties>
-    <NuspecFile>DevelopmentVerification.DdDotNet.Apm.nuspec</NuspecFile>
+    <NuspecFile>DevelopmentVerification.DdJava.Apm.nuspec</NuspecFile>
   </PropertyGroup>
 </Project>

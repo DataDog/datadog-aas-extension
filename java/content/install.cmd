@@ -3,16 +3,11 @@ REM Entrypoint: https://github.com/projectkudu/kudu/blob/13824205c60a4bdb53896b9
 
 @echo off
 
-set version=v%DD_AAS_DOTNET_EXTENSION_VERSION%
+set version=v%DD_AAS_JAVA_EXTENSION_VERSION%
 set log_prefix=%date% %time% ^[%version%^]
-set log_file=..\..\Datadog.AzureAppServices.DotNet-Install.txt
+set log_file=..\..\Datadog.AzureAppServices.Java-Install.txt
 
 echo %log_prefix% Starting install. >> %log_file%
-
-IF EXIST ..\Datadog.AzureAppServices\applicationHost.xdt (
-  echo %log_prefix% Datadog.AzureAppServices.DotNet can not be installed side by side with Datadog.AzureAppServices. >> %log_file%
-  exit /B 2
-)
 
 IF EXIST .\applicationHost.xdt (
   echo %log_prefix% Upgrade will not apply until full application stop. >> %log_file%

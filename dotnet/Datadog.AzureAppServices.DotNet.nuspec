@@ -2,10 +2,11 @@
 <package>
   <metadata>
     <id>Datadog.AzureAppServices.DotNet</id>
-    <version>1.8.0</version>
     <title>.NET Datadog APM</title>
     <authors>Datadog</authors>
+	<version>0.0.0</version> <!-- placeholder that is overridden -->
     <icon>icon.png</icon>
+	<projectUrl>https://github.com/DataDog/datadog-aas-extension</projectUrl>
     <license type="expression">Apache-2.0</license>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>

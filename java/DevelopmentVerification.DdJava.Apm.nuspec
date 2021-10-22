@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <metadata>
-    <id>DevelopmentVerification.DdDotNet.Apm</id>
+    <id>DevelopmentVerification.DdJava.Apm</id>
     <title>Experimental Extension</title>
     <authors>Datadog</authors>
 	<version>0.0.0</version> <!-- placeholder that is overridden -->
