@@ -1,8 +1,10 @@
 ﻿using Datadog.Kudu.Helper.Models;
 using System;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 
 namespace Datadog.Kudu.Helper.Controllers
@@ -53,22 +55,171 @@ namespace Datadog.Kudu.Helper.Controllers
 		}
 
 		[HttpGet]
+		public string Cookies()
+		{
+			try
+			{
+				return BuildCookiePassthrough();
+			}
+			catch (Exception ex)
+			{
+				return ex.ToString();
+			}
+		}
+
+		private string BuildCookiePassthrough()
+		{
+			var allCookies = "";
+			var cookieKeys = Request.Cookies.AllKeys;
+			foreach (var key in cookieKeys)
+			{
+				var cookie = Request.Cookies[key];
+				allCookies += $"{key}={string.Join(" | ", cookie.Values)}; ";
+			}
+			return allCookies;
+		}
+
+		[HttpGet]
+		public async Task<string> WebAppDiagnostics()
+		{
+			try
+			{
+				string baseUri = GetBaseUrl();
+				var processInfoUrl = $"{baseUri}/api/processes/-1";
+				HttpResponseMessage result = await SendRequest(processInfoUrl);
+				var webProcessInfo = await result.Content.ReadAsStringAsync();
+				//var webProcessInfo = "fake_json";
+
+				return webProcessInfo;
+			}
+			catch (Exception ex)
+			{
+				return $"{ex.ToString()}" + Environment.NewLine + Environment.NewLine + "";
+			}
+		}
+
+		private async Task<HttpResponseMessage> SendRequest(string processInfoUrl)
+		{
+			var message = new HttpRequestMessage(HttpMethod.Get, processInfoUrl);
+			// message.Headers.Add("Cookie", BuildCookiePassthrough());
+			CopyTo(Request, message);
+			var result = await _httpClient.SendAsync(message);
+			result.EnsureSuccessStatusCode();
+			return result;
+		}
+
+		/// <summary>
+		/// Copies all headers and content (except the URL) from an incoming to an outgoing
+		/// request.
+		/// </summary>
+		/// <param name="source">The request to copy from</param>
+		/// <param name="destination">The request to copy to</param>
+		public static void CopyTo(HttpRequestBase source, HttpRequestMessage destination)
+		{
+			// destination.Method = source.HttpMethod;
+
+			// Copy unrestricted headers (including cookies, if any)
+			foreach (var headerKey in source.Headers.AllKeys)
+			{
+				switch (headerKey)
+				{
+					case "Connection":
+					case "Content-Length":
+					case "Date":
+					case "Expect":
+					case "Host":
+					case "If-Modified-Since":
+					case "Range":
+					case "Transfer-Encoding":
+					case "Proxy-Connection":
+						// Let IIS handle these
+						break;
+
+					//case "Accept":
+					//case "Content-Type":
+					//case "Referer":
+					//case "User-Agent":
+					//	// Restricted - copied below
+					//	break;
+
+					default:
+						destination.Headers.Add(headerKey, source.Headers[headerKey]);
+						break;
+				}
+			}
+
+			//// Copy restricted headers
+			//if (source.AcceptTypes.Any())
+			//{
+			//	destination.Accept = string.Join(",", source.AcceptTypes);
+			//}
+			//destination.ContentType = source.ContentType;
+			//destination.Referer = source.UrlReferrer.AbsoluteUri;
+			//destination.UserAgent = source.UserAgent;
+
+			//// Copy content (if content body is allowed)
+			//if (source.HttpMethod != "GET"
+			//	&& source.HttpMethod != "HEAD"
+			//	&& source.ContentLength > 0)
+			//{
+			//	var destinationStream = destination.GetRequestStream();
+			//	source.InputStream.CopyTo(destinationStream);
+			//	destinationStream.Close();
+			//}
+		}
+
+		[HttpGet]
+		public async Task<byte[]> GetDatadogLogs()
+		{
+			try
+			{
+				string baseUri = GetBaseUrl();
+				var datadogLogZipUrl = $"{baseUri}/api/zip/LogFiles/datadog";
+				var datadogLogBytes = await _httpClient.GetByteArrayAsync(datadogLogZipUrl);
+
+				return datadogLogBytes;
+			}
+			catch (Exception ex)
+			{
+				return new byte[0];
+			}
+		}
+
+		[HttpGet]
+		public async Task<byte[]> GetEventLog()
+		{
+			try
+			{
+				string baseUri = GetBaseUrl();
+				var eventLogUrl = $"{baseUri}/api/vfs/LogFiles/eventlog.xml";
+				var fileBytes = await _httpClient.GetByteArrayAsync(eventLogUrl);
+
+				return fileBytes;
+			}
+			catch (Exception ex)
+			{
+				return new byte[0];
+			}
+		}
+
+		private string GetBaseUrl()
+		{
+			var currentUrl = Request.Url;
+			var baseUri = currentUrl.GetLeftPart(UriPartial.Authority);
+			return baseUri;
+		}
+
+		[HttpGet]
 		public async Task<FileResult> Diagnostics()
 		{
 			var currentUrl = Request.Url;
 			var baseUri = currentUrl.GetLeftPart(UriPartial.Authority);
 
-			var processInfoUrl = $"{baseUri}/api/processes/-1";
-			var webProcessInfo = await _httpClient.GetStringAsync(processInfoUrl);
-			//var webProcessInfo = "fake_json";
+			var webProcessInfo = await WebAppDiagnostics();
 
-			var datadogLogZipUrl = $"{baseUri}/api/zip/LogFiles/datadog";
-			var datadogLogBytes = await _httpClient.GetByteArrayAsync(datadogLogZipUrl);
-			//var datadogLogBytes = new byte[] { 1, 1, 1, 1 };
+			var datadogLogBytes = await GetDatadogLogs();
 
-			var eventLogUrl = $"{baseUri}/api/vfs/LogFiles/eventlog.xml";
-			var eventLogBytes = await _httpClient.GetByteArrayAsync(eventLogUrl);
-			//var eventLogBytes = new byte[] { 1, 1, 1, 1 };
+			var eventLogBytes = await GetEventLog();
 
 			var dumpName = $"datadog_diagnostics_{DateTime.UtcNow.ToString("yyyy-dd-M--HH-mm-ss")}";
 			var directory = ControllerContext.HttpContext.Server.MapPath($"~/{dumpName}");

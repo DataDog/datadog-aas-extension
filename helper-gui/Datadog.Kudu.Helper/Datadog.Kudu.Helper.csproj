@@ -140,7 +140,6 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\Images\datadog.png" />
     <Content Include="favicon.ico" />
-    <Content Include="favicon.png" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />

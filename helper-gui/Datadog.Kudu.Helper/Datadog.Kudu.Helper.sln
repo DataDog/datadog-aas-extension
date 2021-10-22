@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.31515.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Datadog.Kudu.Helper", "Datadog.Kudu.Helper.csproj", "{E46C5578-EA0B-49CB-8AC5-8D2B4BA8A146}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Datadog.Kudu.Manager", "..\Datadog.Kudu.Manager\Datadog.Kudu.Manager.csproj", "{59769362-EDE1-417D-8083-869C0C971366}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication1", "..\WebApplication1\WebApplication1.csproj", "{F1A7A4CF-0355-4ACF-A0C4-990773E36C3C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{E46C5578-EA0B-49CB-8AC5-8D2B4BA8A146}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E46C5578-EA0B-49CB-8AC5-8D2B4BA8A146}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E46C5578-EA0B-49CB-8AC5-8D2B4BA8A146}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59769362-EDE1-417D-8083-869C0C971366}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59769362-EDE1-417D-8083-869C0C971366}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59769362-EDE1-417D-8083-869C0C971366}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59769362-EDE1-417D-8083-869C0C971366}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1A7A4CF-0355-4ACF-A0C4-990773E36C3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1A7A4CF-0355-4ACF-A0C4-990773E36C3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1A7A4CF-0355-4ACF-A0C4-990773E36C3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1A7A4CF-0355-4ACF-A0C4-990773E36C3C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

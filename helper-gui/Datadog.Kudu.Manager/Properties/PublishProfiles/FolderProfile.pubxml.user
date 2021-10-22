@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_PublishTargetUrl>C:\Github\datadog-aas-extension\dotnet\content\management</_PublishTargetUrl>
+    <History>True|2021-10-21T21:10:31.0622425Z;True|2021-10-21T15:36:44.4090630-04:00;True|2021-10-21T14:13:06.2739846-04:00;True|2021-10-21T14:04:04.1277492-04:00;True|2021-10-21T11:33:05.4177786-04:00;True|2021-10-21T11:02:54.9392591-04:00;True|2021-10-21T11:00:14.5518750-04:00;True|2021-10-21T10:10:22.7516157-04:00;True|2021-10-21T10:05:22.3988914-04:00;True|2021-10-21T09:44:58.5866980-04:00;True|2021-10-20T14:48:15.1915853-04:00;True|2021-10-20T14:41:15.8057393-04:00;</History>
+  </PropertyGroup>
+</Project>
