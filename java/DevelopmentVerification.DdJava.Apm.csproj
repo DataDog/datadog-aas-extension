@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-	<NuspecProperties>version=$(Version)</NuspecProperties>
+    <NuspecProperties>version=$(Version)</NuspecProperties>
     <NuspecFile>DevelopmentVerification.DdJava.Apm.nuspec</NuspecFile>
   </PropertyGroup>
 </Project>
