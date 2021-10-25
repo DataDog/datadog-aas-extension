@@ -23,7 +23,7 @@ mkdir $RELEASE_TRACER_DIR
 mkdir $RELEASE_AGENT_DIR
 
 echo "Downloading tracer from ${TRACER_DOWNLOAD_URL} to ${RELEASE_TRACER_DIR}"
-wget -O dd-java-agent.jar $RELEASE_TRACER_DIR
+wget -O $RELEASE_TRACER_DIR/dd-java-agent.jar $TRACER_DOWNLOAD_URL
 
 echo "Moving agent executables"
 mv -v $AGENT_CONFIG_DIR/* $RELEASE_AGENT_DIR
