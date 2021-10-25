@@ -3,10 +3,6 @@
   <system.webServer>
     <runtime xdt:Transform="InsertIfMissing" >
       <environmentVariables xdt:Transform="InsertIfMissing">
-        <add name="COMPLUS_LoaderOptimization" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <!-- We're unable to instrument domain-neutral assemblies when our managed assemblies are not in the GAC, so force LoaderOptimization to be LoaderOptimization.SingleDomain -->
-        <add name="COMPLUS_LoaderOptimization" value="1" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-		
         <add name="DD_TRACE_LOG_PATH" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
 		<add name="DD_TRACE_LOG_PATH" value="%HOME%\LogFiles\datadog\java\vFOLDERUNKNOWN" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 

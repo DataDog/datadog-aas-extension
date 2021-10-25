@@ -24,7 +24,7 @@ mkdir $RELEASE_DIR
 mkdir $RELEASE_TRACER_DIR
 mkdir $RELEASE_AGENT_DIR
 
-mv -v dotnet-tracer-extract/* $RELEASE_TRACER_DIR
+mv dd-java-agent $RELEASE_TRACER_DIR
 mv -v $AGENT_CONFIG_DIR/* $RELEASE_AGENT_DIR
 mv agent-extract/bin/agent/dogstatsd.exe $RELEASE_AGENT_DIR
 mv agent-extract/bin/agent/trace-agent.exe agent-extract/bin/agent/datadog-trace-agent.exe
