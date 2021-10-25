@@ -21,9 +21,6 @@
         <add name="DD_DOGSTATSD_ARGS" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_DOGSTATSD_ARGS" value="start -c %XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Agent" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
-        <add name="DD_TRACE_METRICS_ENABLED" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="DD_PROFILER_EXCLUDE_PROCESSES" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-
         <add name="DD_TRACE_TRANSPORT" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_TRACE_TRANSPORT" value="DATADOG-NAMED-PIPES" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 		
