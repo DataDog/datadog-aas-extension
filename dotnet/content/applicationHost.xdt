@@ -47,24 +47,24 @@
         <add name="COMPLUS_LoaderOptimization" value="1" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
         <add name="COR_ENABLE_PROFILING" value="1" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
         <add name="COR_PROFILER" value="{846F5F1C-F9AE-4B07-969E-05C26BC060D8}" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="COR_PROFILER_PATH" value="%HOME%\SiteExtensions\Datadog.AzureAppServices.DotNet\v1_8_0\Tracer\win-x64\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="COR_PROFILER_PATH_32" value="%HOME%\SiteExtensions\Datadog.AzureAppServices.DotNet\v1_8_0\Tracer\win-x86\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="COR_PROFILER_PATH_64" value="%HOME%\SiteExtensions\Datadog.AzureAppServices.DotNet\v1_8_0\Tracer\win-x64\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="COR_PROFILER_PATH" value="%HOME%\SiteExtensions\Datadog.AzureAppServices.DotNet\vFOLDERUNKNOWN\Tracer\win-x64\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="COR_PROFILER_PATH_32" value="%HOME%\SiteExtensions\Datadog.AzureAppServices.DotNet\vFOLDERUNKNOWN\Tracer\win-x86\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="COR_PROFILER_PATH_64" value="%HOME%\SiteExtensions\Datadog.AzureAppServices.DotNet\vFOLDERUNKNOWN\Tracer\win-x64\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <add name="CORECLR_ENABLE_PROFILING" value="1" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
         <add name="CORECLR_PROFILER" value="{846F5F1C-F9AE-4B07-969E-05C26BC060D8}" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="CORECLR_PROFILER_PATH_32" value="%HOME%\SiteExtensions\Datadog.AzureAppServices.DotNet\v1_8_0\Tracer\win-x86\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="CORECLR_PROFILER_PATH_64" value="%HOME%\SiteExtensions\Datadog.AzureAppServices.DotNet\v1_8_0\Tracer\win-x64\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="CORECLR_PROFILER_PATH_32" value="%HOME%\SiteExtensions\Datadog.AzureAppServices.DotNet\vFOLDERUNKNOWN\Tracer\win-x86\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="CORECLR_PROFILER_PATH_64" value="%HOME%\SiteExtensions\Datadog.AzureAppServices.DotNet\vFOLDERUNKNOWN\Tracer\win-x64\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
-        <add name="DD_DOTNET_TRACER_HOME" value="%HOME%\SiteExtensions\Datadog.AzureAppServices.DotNet\v1_8_0\Tracer" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="DD_INTEGRATIONS" value="%HOME%\SiteExtensions\Datadog.AzureAppServices.DotNet\v1_8_0\Tracer\integrations.json" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="DD_TRACE_LOG_PATH" value="%HOME%\LogFiles\datadog\v1_8_0\dotnet-profiler.log" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_DOTNET_TRACER_HOME" value="%HOME%\SiteExtensions\Datadog.AzureAppServices.DotNet\vFOLDERUNKNOWN\Tracer" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_INTEGRATIONS" value="%HOME%\SiteExtensions\Datadog.AzureAppServices.DotNet\vFOLDERUNKNOWN\Tracer\integrations.json" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_TRACE_LOG_PATH" value="%HOME%\LogFiles\datadog\vFOLDERUNKNOWN\dotnet-profiler.log" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <add name="DD_AZURE_APP_SERVICES" value="1" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="DD_TRACE_AGENT_PATH" value="%HOME%\SiteExtensions\Datadog.AzureAppServices.DotNet\v1_8_0\Agent\datadog-trace-agent.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="DD_TRACE_AGENT_ARGS" value="--config %HOME%\SiteExtensions\Datadog.AzureAppServices.DotNet\v1_8_0\Agent\datadog.yaml" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="DD_DOGSTATSD_PATH" value="%HOME%\SiteExtensions\Datadog.AzureAppServices.DotNet\v1_8_0\Agent\dogstatsd.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="DD_DOGSTATSD_ARGS" value="start -c %HOME%\SiteExtensions\Datadog.AzureAppServices.DotNet\v1_8_0\Agent" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_TRACE_AGENT_PATH" value="%HOME%\SiteExtensions\Datadog.AzureAppServices.DotNet\vFOLDERUNKNOWN\Agent\datadog-trace-agent.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_TRACE_AGENT_ARGS" value="--config %HOME%\SiteExtensions\Datadog.AzureAppServices.DotNet\vFOLDERUNKNOWN\Agent\datadog.yaml" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_DOGSTATSD_PATH" value="%HOME%\SiteExtensions\Datadog.AzureAppServices.DotNet\vFOLDERUNKNOWN\Agent\dogstatsd.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_DOGSTATSD_ARGS" value="start -c %HOME%\SiteExtensions\Datadog.AzureAppServices.DotNet\vFOLDERUNKNOWN\Agent" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <add name="DD_TRACE_METRICS_ENABLED" value="0" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
         <add name="DD_PROFILER_EXCLUDE_PROCESSES" value="SnapshotUploader.exe;workerforwarder.exe;SnapshotUploader64.exe;Crashmon.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
@@ -77,9 +77,9 @@
         <add name="DD_DOGSTATSD_PIPE_NAME" value="dogstatsd-uniqueStatsPipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Dogstatsd client variable (CURRENT) -->
         <add name="DD_DOGSTATSD_WINDOWS_PIPE_NAME" value="dogstatsd-uniqueStatsPipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Dogstatsd server variable -->
 		
-        <add name="DD_DOGSTATSD_PORT" value="0" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Needed to force no port binding -->
-        <add name="DD_APM_RECEIVER_PORT" value="0" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Needed to force no port binding -->
-        <add name="DD_AAS_DOTNET_EXTENSION_VERSION" value="1.8.0" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- For troubleshooting and tagging traces -->
+        <add name="DD_DOGSTATSD_PORT" value="0" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Needed to force no port conflicts -->
+        <add name="DD_APM_RECEIVER_PORT" value="0" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Needed to force no port conflicts -->
+        <add name="DD_AAS_DOTNET_EXTENSION_VERSION" value="vUNKNOWN" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- For troubleshooting and tagging traces -->
 
         <add name="DD_LOG_LEVEL" value="WARN" xdt:Locator="Match(name)" xdt:Transform="InsertIfMissing"/> <!-- Keep agent logs reasonably quiet for v1, until logging levels are settled in tracer -->
 
