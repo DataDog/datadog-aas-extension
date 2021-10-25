@@ -16,20 +16,22 @@ DEVELOPMENT_DIR=$CI_PROJECT_DIR/java/content/v${DEVELOPMENT_VERSION_FILE}
 echo "Downloading agent from ${AGENT_DOWNLOAD_URL}"
 wget -O agent.zip $AGENT_DOWNLOAD_URL
 unzip agent.zip -d agent-extract
-echo "Downloading tracer from ${TRACER_DOWNLOAD_URL}"
-wget -O dd-java-agent.jar $TRACER_DOWNLOAD_URL
 
-echo "Moving agent executables and tracer binaries"
+echo "Creating folders for agent and tracer binaries"
 mkdir $RELEASE_DIR
 mkdir $RELEASE_TRACER_DIR
 mkdir $RELEASE_AGENT_DIR
 
-mv dd-java-agent $RELEASE_TRACER_DIR
+echo "Downloading tracer from ${TRACER_DOWNLOAD_URL} to ${RELEASE_TRACER_DIR}"
+wget -O dd-java-agent.jar $RELEASE_TRACER_DIR
+
+echo "Moving agent executables"
 mv -v $AGENT_CONFIG_DIR/* $RELEASE_AGENT_DIR
 mv agent-extract/bin/agent/dogstatsd.exe $RELEASE_AGENT_DIR
 mv agent-extract/bin/agent/trace-agent.exe agent-extract/bin/agent/datadog-trace-agent.exe
 mv agent-extract/bin/agent/datadog-trace-agent.exe $RELEASE_AGENT_DIR
 
+echo "Versioning files"
 sed -i "s/vFOLDERUNKNOWN/v${RELEASE_VERSION_FILE}/g" java/content/applicationHost.xdt
 sed -i "s/vFOLDERUNKNOWN/v${RELEASE_VERSION_FILE}/g" java/content/install.cmd
 sed -i "s/vUNKNOWN/v${RELEASE_VERSION}/g" java/content/applicationHost.xdt
