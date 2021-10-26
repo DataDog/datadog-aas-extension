@@ -4,7 +4,154 @@
     ViewData["Title"] = "Home page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<style>
+    .config-section {
+        background-color: #f6f5f6;
+        color: rgba(28,43,52,0.98);
+        margin: 10px;
+        border-radius: 5px;
+        border: solid thin #e0dee2;
+        padding: 10px;
+    }
+
+        .config-section label {
+            font-weight: 500;
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+
+        .config-section .explanation {
+            display: inline;
+            border-radius: 5px;
+        }
+
+        .config-section .status {
+            display: inline;
+            border-radius: 5px;
+        }
+</style>
+
+<div>
+    <h3>Configuration</h3>
+    <p>
+        Each of these fields may be managed through your application settings.
+        Many are integral to the operation of Datadog in your Azure App Service instances,
+        and for correlating your data in useful ways in the UI.
+    </p>
+    <hr />
+    <div class="config-section">
+        <label>DD_API_KEY</label>
+        <hr />
+        <div class="explanation">
+            <p>This API key is your key to submitting data to Datadog. Make sure you protect it.</p>
+        </div>
+        <div class="status">
+            @if (string.IsNullOrEmpty(Model.ApiKey))
+            {
+                <p>
+                    DD_API_KEY is missing from your configuration.
+                    This setting is absolutely required for the extension to function.
+                </p>
+            }
+            else
+            {
+                <p>
+                    DD_API_KEY is set to @Model.ApiKey
+                </p>
+            }
+        </div>
+    </div>
+    <div class="config-section">
+        <label>DD_SITE</label>
+        <hr />
+        <div class="explanation">
+            <p>This identifies the domain which your organization is hosted within, and as such the domain your data is sent to.</p>
+        </div>
+        <div class="status">
+            @if (string.IsNullOrEmpty(Model.Site))
+            {
+                <p>
+                    DD_SITE is missing from your configuration.
+                    The default value for this variable is datadoghq.com
+                    <br />
+                    If your DD_API_KEY is for an organization hosted on a different domain, you must specify the DD_SITE variable.
+                </p>
+            }
+            else
+            {
+                <p>
+                    DD_SITE is set to @Model.Site
+                </p>
+            }
+        </div>
+    </div>
+    <div class="config-section">
+        <label>DD_ENV</label>
+        <hr />
+        <div class="explanation">
+            <p>Differentiates the various environments your code may be deployed to.</p>
+        </div>
+        <div class="status">
+            @if (string.IsNullOrEmpty(Model.Env))
+            {
+                <p>
+                    DD_ENV is missing from your configuration.
+                    This is part of the unified service tagging functionality.
+                    Please consider setting it to identify your various environments.
+                </p>
+            }
+            else
+            {
+                <p>
+                    DD_ENV is set to @Model.Env
+                </p>
+            }
+        </div>
+    </div>
+    <div class="config-section">
+        <label>DD_SERVICE</label>
+        <hr />
+        <div class="explanation">
+            <p>Differentiates the various services that make up your architecture.</p>
+        </div>
+        <div class="status">
+            @if (string.IsNullOrEmpty(Model.Service))
+            {
+                <p>
+                    DD_SERVICE is missing from your configuration.
+                    This is part of the unified service tagging functionality.
+                    Please consider setting it to better identify your various services.
+                </p>
+            }
+            else
+            {
+                <p>
+                    DD_SERVICE is set to @Model.Service
+                </p>
+            }
+        </div>
+    </div>
+    <div class="config-section">
+        <label>DD_VERSION</label>
+        <hr />
+        <div class="explanation">
+            <p>Differentiates the versions of services in your architecture.</p>
+        </div>
+        <div class="status">
+            @if (string.IsNullOrEmpty(Model.Version))
+            {
+                <p>
+                    DD_VERSION is missing from your configuration.
+                    This is part of the unified service tagging functionality.
+                    Please consider setting it to differentiate versions of your services.
+                </p>
+            }
+            else
+            {
+                <p>
+                    DD_VERSION is set to @Model.Service
+                </p>
+            }
+        </div>
+    </div>
 </div>

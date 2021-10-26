@@ -12,3 +12,5 @@ obj/
 /helper-gui/Datadog.Kudu.Helper/bin/*
 /helper-gui/Datadog.Kudu.Helper/datadog_diagnostics*
 /helper-gui/Datadog.Kudu.Helper/packages/*
+/helper-gui/Datadog.Kudu.Manager/bin/*
+/helper-gui/Datadog.Kudu.Helper/.vs/*
