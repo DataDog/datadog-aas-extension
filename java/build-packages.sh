@@ -34,8 +34,10 @@ mv agent-extract/bin/agent/datadog-trace-agent.exe $RELEASE_AGENT_DIR
 echo "Versioning files"
 sed -i "s/vFOLDERUNKNOWN/v${RELEASE_VERSION_FILE}/g" java/content/applicationHost.xdt
 sed -i "s/vFOLDERUNKNOWN/v${RELEASE_VERSION_FILE}/g" java/content/install.cmd
+sed -i "s/vFOLDERUNKNOWN/v${RELEASE_VERSION_FILE}/g" java/content/install.ps1
 sed -i "s/vUNKNOWN/v${RELEASE_VERSION}/g" java/content/applicationHost.xdt
 sed -i "s/vUNKNOWN/v${RELEASE_VERSION}/g" java/content/install.cmd
+sed -i "s/vUNKNOWN/v${RELEASE_VERSION}/g" java/content/install.ps1
 
 echo "Creating nuget package"
 echo "Packing nuspec file via arcane roundabout csproj process"
@@ -45,8 +47,11 @@ echo "Updating versions from v${RELEASE_VERSION} to v${DEVELOPMENT_VERSION} for 
 sed -i "s/v${RELEASE_VERSION_FILE}/v${DEVELOPMENT_VERSION_FILE}/g" $RELEASE_AGENT_DIR/datadog.yaml
 sed -i "s/v${RELEASE_VERSION_FILE}/v${DEVELOPMENT_VERSION_FILE}/g" $RELEASE_AGENT_DIR/dogstatsd.yaml
 sed -i "s/v${RELEASE_VERSION_FILE}/v${DEVELOPMENT_VERSION_FILE}/g" java/content/applicationHost.xdt
+sed -i "s/v${RELEASE_VERSION_FILE}/v${DEVELOPMENT_VERSION_FILE}/g" $BASE_DIR/install.cmd
+sed -i "s/v${RELEASE_VERSION_FILE}/v${DEVELOPMENT_VERSION_FILE}/g" $BASE_DIR/install.ps1
 sed -i "s/v${RELEASE_VERSION}/v${DEVELOPMENT_VERSION}/g" java/content/applicationHost.xdt
 sed -i "s/v${RELEASE_VERSION}/v${DEVELOPMENT_VERSION}/g" $BASE_DIR/install.cmd
+sed -i "s/v${RELEASE_VERSION}/v${DEVELOPMENT_VERSION}/g" $BASE_DIR/install.ps1
 
 echo "Updating paths from Datadog.AzureAppServices.Java to DevelopmentVerification.DdJava.Apm for testing package"
 sed -i 's/Datadog.AzureAppServices.Java/DevelopmentVerification.DdJava.Apm/g' $BASE_DIR/applicationHost.xdt
