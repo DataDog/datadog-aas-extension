@@ -1,5 +1,3 @@
-## prevent per host billing and host tags
-hostname:
 ## disable sending the host metadata payload
 enable_metadata_collection: false
 use_dogstatsd: true
