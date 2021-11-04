@@ -2,14 +2,14 @@
 <package>
   <metadata>
     <id>DevelopmentVerification.DdDotNet.Apm</id>
-    <title>Experimental Extension</title>
+    <title>Experimental .NET Extension</title>
     <authors>Datadog</authors>
     <version>0.0.0</version> <!-- placeholder that is overridden -->
     <icon>icon.png</icon>
     <license type="expression">Apache-2.0</license>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>
-      Experimental Extension. Do not use.
+      Experimental .NET Extension. Do not use.
     </description>
     <tags>AzureSiteExtension</tags>
     <packageTypes>

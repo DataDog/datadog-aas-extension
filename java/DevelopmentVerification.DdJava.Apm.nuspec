@@ -2,14 +2,14 @@
 <package>
   <metadata>
     <id>DevelopmentVerification.DdJava.Apm</id>
-    <title>Experimental Extension</title>
+    <title>Experimental Java Extension</title>
     <authors>Datadog</authors>
     <version>0.0.0</version> <!-- placeholder that is overridden -->
     <icon>icon.png</icon>
     <license type="expression">Apache-2.0</license>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>
-      Experimental Extension. Do not use.
+      Experimental Java Extension. Do not use.
     </description>
     <tags>AzureSiteExtension</tags>
     <packageTypes>
