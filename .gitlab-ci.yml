@@ -1,7 +1,7 @@
 image: mcr.microsoft.com/dotnet/core/sdk:3.1
 
 dotnet-package:
-  tags: [ "runner:main", "size:2xlarge" ]
+  tags: [ "runner:main" ]
   script: 
     - echo "Installing dependencies"
     - apt-get update
@@ -13,7 +13,7 @@ dotnet-package:
       - package
 
 java-package:
-  tags: [ "runner:main", "size:2xlarge" ]
+  tags: [ "runner:main" ]
   script: 
     - echo "Installing dependencies"
     - apt-get update
