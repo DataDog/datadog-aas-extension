@@ -38,9 +38,6 @@
         <add name="DD_DOGSTATSD_PIPE_NAME" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_DOGSTATSD_WINDOWS_PIPE_NAME" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
 		
-        <!-- AAS relies on the empty host configured in the yaml -->
-        <add name="DD_HOST" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-		
         <add name="DD_AGENT_HOST" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_DOGSTATSD_PORT" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_APM_RECEIVER_PORT" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
