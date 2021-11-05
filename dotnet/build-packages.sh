@@ -36,7 +36,8 @@ sed -i "s/vUNKNOWN/v${RELEASE_VERSION}/g" dotnet/content/install.ps1
 
 echo "Moving content to versioned folder"
 mkdir $RELEASE_DIR
-mv -v dotnet/content/* $RELEASE_DIR
+mv -v dotnet/content/Tracer $RELEASE_DIR/Tracer
+mv -v dotnet/content/Agent $RELEASE_DIR/Agent
 
 echo "Creating release nuget package"
 echo "Packing nuspec file via arcane roundabout csproj process"
@@ -55,7 +56,8 @@ sed -i 's/Datadog.AzureAppServices.DotNet/DevelopmentVerification.DdDotNet.Apm/g
 
 echo "Moving content to development versioned folder"
 mkdir $DEVELOPMENT_DIR
-mv -v dev-dotnet/content/* $DEVELOPMENT_DIR
+mv -v dev-dotnet/content/Tracer $DEVELOPMENT_DIR/Tracer
+mv -v dev-dotnet/content/Agent $DEVELOPMENT_DIR/Agent
 
 echo "Creating development nuget package"
 echo "Packing nuspec file via arcane roundabout csproj process"

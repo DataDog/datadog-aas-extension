@@ -1,6 +1,6 @@
 
 RELEASE_VERSION="0.1.0"
-DEVELOPMENT_VERSION="0.1.1-prerelease"
+DEVELOPMENT_VERSION="0.1.2-prerelease"
 AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.31.1-1-x86_64.zip" 
 TRACER_DOWNLOAD_URL="https://225900-89221572-gh.circle-artifacts.com/0/libs/dd-java-agent-0.90.0-SNAPSHOT.jar"
 
@@ -35,7 +35,8 @@ sed -i "s/vUNKNOWN/v${RELEASE_VERSION}/g" java/content/install.ps1
 
 echo "Moving content to versioned folder"
 mkdir $RELEASE_DIR
-mv -v java/content/* $RELEASE_DIR
+mv -v java/content/Tracer $RELEASE_DIR/Tracer
+mv -v java/content/Agent $RELEASE_DIR/Agent
 
 echo "Creating release nuget package"
 echo "Packing nuspec file via arcane roundabout csproj process"
@@ -54,7 +55,8 @@ sed -i 's/Datadog.AzureAppServices.Java/DevelopmentVerification.DdJava.Apm/g' de
 
 echo "Moving content to development versioned folder"
 mkdir $DEVELOPMENT_DIR
-mv -v dev-java/content/* $DEVELOPMENT_DIR
+mv -v dev-java/content/Tracer $DEVELOPMENT_DIR/Tracer
+mv -v dev-java/content/Agent $DEVELOPMENT_DIR/Agent
 
 echo "Creating development nuget package"
 echo "Packing nuspec file via arcane roundabout csproj process"
