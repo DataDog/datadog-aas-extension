@@ -11,7 +11,6 @@ BASE_DIR=$CI_PROJECT_DIR/java/content/
 RELEASE_DIR=$CI_PROJECT_DIR/java/content/v${RELEASE_VERSION_FILE}
 RELEASE_TRACER_DIR=$CI_PROJECT_DIR/java/content/v${RELEASE_VERSION_FILE}/Tracer
 RELEASE_AGENT_DIR=$CI_PROJECT_DIR/java/content/v${RELEASE_VERSION_FILE}/Agent
-DEVELOPMENT_DIR=$CI_PROJECT_DIR/java/content/v${DEVELOPMENT_VERSION_FILE}
 
 echo "Downloading agent from ${AGENT_DOWNLOAD_URL}"
 wget -O agent.zip $AGENT_DOWNLOAD_URL
@@ -31,7 +30,10 @@ mv agent-extract/bin/agent/dogstatsd.exe $RELEASE_AGENT_DIR
 mv agent-extract/bin/agent/trace-agent.exe agent-extract/bin/agent/datadog-trace-agent.exe
 mv agent-extract/bin/agent/datadog-trace-agent.exe $RELEASE_AGENT_DIR
 
-echo "Versioning files"
+echo "Copying files for development version"
+cp -r ./java ./dev-java
+
+echo "Versioning release files"
 sed -i "s/vFOLDERUNKNOWN/v${RELEASE_VERSION_FILE}/g" java/content/applicationHost.xdt
 sed -i "s/vFOLDERUNKNOWN/v${RELEASE_VERSION_FILE}/g" java/content/install.cmd
 sed -i "s/vFOLDERUNKNOWN/v${RELEASE_VERSION_FILE}/g" java/content/install.ps1
@@ -39,23 +41,21 @@ sed -i "s/vUNKNOWN/v${RELEASE_VERSION}/g" java/content/applicationHost.xdt
 sed -i "s/vUNKNOWN/v${RELEASE_VERSION}/g" java/content/install.cmd
 sed -i "s/vUNKNOWN/v${RELEASE_VERSION}/g" java/content/install.ps1
 
-echo "Creating nuget package"
+echo "Creating release nuget package"
 echo "Packing nuspec file via arcane roundabout csproj process"
 dotnet pack java/Datadog.AzureAppServices.Java.csproj -p:Version=${RELEASE_VERSION} -p:NoBuild=true -p:NoDefaultExcludes=true -o package
 
-echo "Updating versions from v${RELEASE_VERSION} to v${DEVELOPMENT_VERSION} for testing package"
-sed -i "s/v${RELEASE_VERSION_FILE}/v${DEVELOPMENT_VERSION_FILE}/g" $RELEASE_AGENT_DIR/datadog.yaml
-sed -i "s/v${RELEASE_VERSION_FILE}/v${DEVELOPMENT_VERSION_FILE}/g" $RELEASE_AGENT_DIR/dogstatsd.yaml
-sed -i "s/v${RELEASE_VERSION_FILE}/v${DEVELOPMENT_VERSION_FILE}/g" java/content/applicationHost.xdt
-sed -i "s/v${RELEASE_VERSION_FILE}/v${DEVELOPMENT_VERSION_FILE}/g" $BASE_DIR/install.cmd
-sed -i "s/v${RELEASE_VERSION_FILE}/v${DEVELOPMENT_VERSION_FILE}/g" $BASE_DIR/install.ps1
-sed -i "s/v${RELEASE_VERSION}/v${DEVELOPMENT_VERSION}/g" java/content/applicationHost.xdt
-sed -i "s/v${RELEASE_VERSION}/v${DEVELOPMENT_VERSION}/g" $BASE_DIR/install.cmd
-sed -i "s/v${RELEASE_VERSION}/v${DEVELOPMENT_VERSION}/g" $BASE_DIR/install.ps1
+echo "Versioning development files"
+sed -i "s/vFOLDERUNKNOWN/v${RELEASE_VERSION_FILE}/g" dev-java/content/applicationHost.xdt
+sed -i "s/vFOLDERUNKNOWN/v${RELEASE_VERSION_FILE}/g" dev-java/content/install.cmd
+sed -i "s/vFOLDERUNKNOWN/v${RELEASE_VERSION_FILE}/g" dev-java/content/install.ps1
+sed -i "s/vUNKNOWN/v${RELEASE_VERSION}/g" dev-java/content/applicationHost.xdt
+sed -i "s/vUNKNOWN/v${RELEASE_VERSION}/g" dev-java/content/install.cmd
+sed -i "s/vUNKNOWN/v${RELEASE_VERSION}/g" dev-java/content/install.ps1
 
 echo "Updating paths from Datadog.AzureAppServices.Java to DevelopmentVerification.DdJava.Apm for testing package"
-sed -i 's/Datadog.AzureAppServices.Java/DevelopmentVerification.DdJava.Apm/g' $BASE_DIR/applicationHost.xdt
-mkdir $DEVELOPMENT_DIR
-mv -v $RELEASE_DIR/* $DEVELOPMENT_DIR
-rm -d -v $RELEASE_DIR
-dotnet pack java/DevelopmentVerification.DdJava.Apm.csproj -p:Version=${DEVELOPMENT_VERSION} -p:NoBuild=true -p:NoDefaultExcludes=true -o package
+sed -i 's/Datadog.AzureAppServices.Java/DevelopmentVerification.DdJava.Apm/g' dev-java/content/applicationHost.xdt
+
+echo "Creating development nuget package"
+echo "Packing nuspec file via arcane roundabout csproj process"
+dotnet pack dev-java/DevelopmentVerification.DdJava.Apm.csproj -p:Version=${DEVELOPMENT_VERSION} -p:NoBuild=true -p:NoDefaultExcludes=true -o package
