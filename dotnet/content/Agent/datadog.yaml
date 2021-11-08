@@ -1,6 +1,4 @@
-## hostname: none is required for special billing considerations
-hostname: none
-## disable sending the host metadata payload, required for serverless
+## disable sending the host metadata payload
 enable_metadata_collection: false
 apm_config:
   enabled: true
