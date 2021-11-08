@@ -27,6 +27,8 @@ echo "Copying files for development version"
 cp -r ./dotnet ./dev-dotnet
 
 echo "Versioning release files"
+sed -i "s/vFOLDERUNKNOWN/v${RELEASE_VERSION_FILE}/g" dotnet/content/Agent/datadog.yaml
+sed -i "s/vFOLDERUNKNOWN/v${RELEASE_VERSION_FILE}/g" dotnet/content/Agent/dogstatsd.yaml
 sed -i "s/vFOLDERUNKNOWN/v${RELEASE_VERSION_FILE}/g" dotnet/content/applicationHost.xdt
 sed -i "s/vFOLDERUNKNOWN/v${RELEASE_VERSION_FILE}/g" dotnet/content/install.cmd
 sed -i "s/vFOLDERUNKNOWN/v${RELEASE_VERSION_FILE}/g" dotnet/content/install.ps1
@@ -44,6 +46,8 @@ echo "Packing nuspec file via arcane roundabout csproj process"
 dotnet pack dotnet/Datadog.AzureAppServices.DotNet.csproj -p:Version=${RELEASE_VERSION} -p:NoBuild=true -p:NoDefaultExcludes=true -o package
 
 echo "Versioning development files"
+sed -i "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" dev-dotnet/content/Agent/datadog.yaml
+sed -i "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" dev-dotnet/content/Agent/dogstatsd.yaml
 sed -i "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" dev-dotnet/content/applicationHost.xdt
 sed -i "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" dev-dotnet/content/install.cmd
 sed -i "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" dev-dotnet/content/install.ps1
