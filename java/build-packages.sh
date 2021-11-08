@@ -26,6 +26,8 @@ echo "Copying files for development version"
 cp -r ./java ./dev-java
 
 echo "Versioning release files"
+sed -i "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" java/content/Agent/datadog.yaml
+sed -i "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" java/content/Agent/dogstatsd.yaml
 sed -i "s/vFOLDERUNKNOWN/v${RELEASE_VERSION_FILE}/g" java/content/applicationHost.xdt
 sed -i "s/vFOLDERUNKNOWN/v${RELEASE_VERSION_FILE}/g" java/content/install.cmd
 sed -i "s/vFOLDERUNKNOWN/v${RELEASE_VERSION_FILE}/g" java/content/install.ps1
@@ -43,6 +45,8 @@ echo "Packing nuspec file via arcane roundabout csproj process"
 dotnet pack java/Datadog.AzureAppServices.Java.csproj -p:Version=${RELEASE_VERSION} -p:NoBuild=true -p:NoDefaultExcludes=true -o package
 
 echo "Versioning development files"
+sed -i "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" dev-java/content/Agent/datadog.yaml
+sed -i "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" dev-java/content/Agent/dogstatsd.yaml
 sed -i "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" dev-java/content/applicationHost.xdt
 sed -i "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" dev-java/content/install.cmd
 sed -i "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" dev-java/content/install.ps1
