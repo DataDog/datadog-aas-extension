@@ -4,22 +4,22 @@ $Version="vUNKNOWN"
 
 function Log ([string] $text)
 {
-    $LogDate=Get-Date -Format "MM/dd/yyyy HH:mm K"
+    $LogDate=Get-Date -Format "yyyy-MM-dd HH:mm K"
     Write-Output "[(${Version}) ${LogDate}] $text"
 }
 
 Log("Beginning install")
 
-function SetPipe ([string] $file, [string] $pipeName, [string] $pipeGuid)
+function SetPipe ([string] $file, [string] $pipePattern, [string] $pipeGuid)
 { 
-	if (Select-String -Path $file -Pattern $pipeName -SimpleMatch -Quiet)
+	if (Select-String -Path $file -Pattern $pipePattern -SimpleMatch -Quiet)
 	{
-		Log("Setting ${pipeName} to ${pipeGuid} in ${file}")
-		((Get-Content -path $file -Raw) -replace $pipeName, $pipeGuid) | Set-Content -Path $file
+		Log("Setting ${pipePattern} to ${pipeGuid} in ${file}")
+		((Get-Content -path $file -Raw) -replace $pipePattern, $pipeGuid) | Set-Content -Path $file
 	}
 	else
 	{
-		Log("${pipeName} has already been set in ${file}")
+		Log("${pipePattern} has already been set in ${file}")
 	}
 }
 
@@ -27,10 +27,10 @@ function SetPipe ([string] $file, [string] $pipeName, [string] $pipeGuid)
 $tracePipeId=([guid]::NewGuid().ToString().ToUpper())
 $statsPipeId=([guid]::NewGuid().ToString().ToUpper())
 
-SetPipe(".\applicationHost.xdt", "uniqueStatsPipeId", "${statsPipeId}")
-SetPipe(".\applicationHost.xdt", "uniqueTracePipeId", "${tracePipeId}")
-SetPipe(".\scmApplicationHost.xdt", "uniqueStatsPipeId", "${statsPipeId}")
-SetPipe(".\scmApplicationHost.xdt", "uniqueTracePipeId", "${tracePipeId}")
+SetPipe ".\applicationHost.xdt" "uniqueStatsPipeId" "${statsPipeId}"
+SetPipe ".\applicationHost.xdt" "uniqueTracePipeId" "${tracePipeId}"
+SetPipe ".\scmApplicationHost.xdt" "uniqueStatsPipeId" "${statsPipeId}"
+SetPipe ".\scmApplicationHost.xdt" "uniqueTracePipeId" "${tracePipeId}"
 
 if (Test-Path env:DD_AAS_REMOTE_INSTALL) {
     
@@ -65,11 +65,11 @@ if (Test-Path env:DD_AAS_REMOTE_INSTALL) {
     }
     
     Log("Installing specific commit: ${installSha}")
-    $latestHomeArtifactUrl="https://apmdotnetci.blob.core.windows.net/apm-dotnet-ci-artifacts-master/${installSha}/tracer-home.zip"
+    $latestHomeArtifactUrl="https://apmdotnetci.blob.core.windows.net/apm-dotnet-ci-artifacts-master/${installSha}/windows-tracer-home.zip"
     
     Invoke-RestMethod -Uri $latestHomeArtifactUrl -Method "GET" -OutFile "tracer-home.zip"
 
-    if (Test-Path "\tracer-home.zip") {
+    if (Test-Path -Path ".\tracer-home.zip") {
         Expand-Archive ".\tracer-home.zip" -DestinationPath ".\tracer-home\" -Force
     
         Remove-Item -Recurse -Force $tracerHome
