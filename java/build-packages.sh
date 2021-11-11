@@ -1,7 +1,7 @@
 
 RELEASE_VERSION="0.1.0"
-DEVELOPMENT_VERSION="0.1.2-prerelease"
-AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.31.1-1-x86_64.zip" 
+DEVELOPMENT_VERSION="0.1.3-prerelease"
+AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.32.0-1-x86_64.zip" 
 TRACER_DOWNLOAD_URL="https://225900-89221572-gh.circle-artifacts.com/0/libs/dd-java-agent-0.90.0-SNAPSHOT.jar"
 
 echo "Downloading tracer from ${TRACER_DOWNLOAD_URL}"
