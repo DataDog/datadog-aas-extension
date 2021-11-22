@@ -1,5 +1,5 @@
 
-RELEASE_VERSION="1.9.0"
+RELEASE_VERSION="1.9.1"
 DEVELOPMENT_VERSION="0.1.52-prerelease"
 AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.32.0-1-x86_64.zip" 
 TRACER_DOWNLOAD_URL="https://github.com/DataDog/dd-trace-dotnet/releases/download/v1.30.0/windows-tracer-home.zip"
