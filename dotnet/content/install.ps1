@@ -67,17 +67,14 @@ if (Test-Path env:DD_AAS_REMOTE_INSTALL) {
     Log("Installing specific commit: ${installSha}")
     $latestHomeArtifactUrl="https://apmdotnetci.blob.core.windows.net/apm-dotnet-ci-artifacts-master/${installSha}/windows-tracer-home.zip"
     
-    Invoke-RestMethod -Uri $latestHomeArtifactUrl -Method "GET" -OutFile "tracer-home.zip"
+    Invoke-RestMethod -Uri $latestHomeArtifactUrl -Method "GET" -OutFile "Tracer.zip"
 
-    if (Test-Path -Path ".\tracer-home.zip") {
-        Expand-Archive ".\tracer-home.zip" -DestinationPath ".\tracer-home\" -Force
+    if (Test-Path -Path ".\Tracer.zip") {
+        Expand-Archive ".\Tracer.zip" -DestinationPath ".\Tracer\" -Force
     
         Remove-Item -Recurse -Force $tracerHome
-        mkdir $tracerHome
-        Get-ChildItem -Path ".\tracer-home\*" -Recurse | Move-Item -Destination "$tracerHome"
-    
-        Remove-Item -Recurse -Force ".\tracer-home"
-        Remove-Item -Recurse ".\tracer-home.zip"
+        Move-Item -Path ".\Tracer\" -Destination "$tracerHome\.."
+        Remove-Item -Recurse ".\Tracer.zip"
     
         $extensionVersionReplace="DD_AAS_DOTNET_EXTENSION_VERSION"" value=""${installSha}"""
     
