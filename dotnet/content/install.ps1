@@ -74,7 +74,7 @@ if (Test-Path env:DD_AAS_REMOTE_INSTALL) {
     
         Remove-Item -Recurse -Force $tracerHome
         Move-Item -Path ".\Tracer\" -Destination "$tracerHome\.."
-        Remove-Item -Recurse ".\Tracer.zip"
+        Remove-Item ".\Tracer.zip"
     
         $extensionVersionReplace="DD_AAS_DOTNET_EXTENSION_VERSION"" value=""${installSha}"""
     
