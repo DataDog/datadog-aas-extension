@@ -1,0 +1,37 @@
+name: Auto tag version bump commit and create release
+
+on:
+  push:
+    branches: [ master]
+    tags-ignore:
+      - '**'
+
+jobs:
+  tag_version_bump_commit:
+    if: startsWith(github.event.head_commit.message, '[Version Bump]')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: "Configure Git Credentials"
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+
+      - name: "Create and push git tag"
+        id: version
+        run: |
+          VERSION="$(grep -o -e RELEASE_VERSION\=\"[0-9]*\.[0-9]*\.[0-9]*  dotnet/build-packages.sh | sed 's/RELEASE_VERSION="//')"
+          TAGNAME=dotnet-v$VERSION
+          git tag "$TAGNAME"
+          git push origin "$TAGNAME"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          name: "$TAGNAME"
+          tag_name: "$TAGNAME"
+          prerelease: false
+          body: "copy paste from the previous release"
