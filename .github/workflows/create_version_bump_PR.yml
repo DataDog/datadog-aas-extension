@@ -28,8 +28,6 @@ jobs:
           CURRENTVERSION="$(grep -o -e RELEASE_VERSION\=\"[0-9]*\.[0-9]*\.[0-9]*  dotnet/build-packages.sh | sed 's/RELEASE_VERSION="//')"
           VERSION="${{ github.event.inputs.version }}"
           sed -i '' -e "s/$CURRENTVERSION/"$VERSION/g" dotnet/build-packages.sh
-          git tag "$TAGNAME"
-          git push origin "$TAGNAME"
 
       - name: Create Pull Request
         id: pr
