@@ -4,12 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Next Version Number (x.x.x)'
+        description: 'Next Version Number (x.y.zzz).'
         required: true
-      is_prerelease:
-        description: 'Is Prerelease version? (true/false)'
-        default: 'false'
-        required: true
+      tracer_version:
+        description: 'Next Version Number (x.y.z). To be used for a tracer version bump.'
+        required: false
 
 jobs:
   bump_version:
@@ -24,21 +23,43 @@ jobs:
         uses: actions/checkout@v2
 
       - name: "Modify build-packages"
+        id: "versions"
         run: |
           CURRENTVERSION="$(grep -o -e RELEASE_VERSION\=\"[0-9]*\.[0-9]*\.[0-9]*  dotnet/build-packages.sh | sed 's/RELEASE_VERSION="//')"
-          VERSION="${{ github.event.inputs.version }}"
-          sed -i '' -e "s/$CURRENTVERSION/"$VERSION/g" dotnet/build-packages.sh
-
+          echo Current version is: $CURRENTVERSION
+          
+          VERSION=${{ github.event.inputs.version }}
+          echo Bumping extension version to $VERSION
+          
+          sed -i -e "s/RELEASE_VERSION=\"$CURRENTVERSION\"/RELEASE_VERSION=\"$VERSION\"/g" dotnet/build-packages.sh
+          echo Replaced release version in file.
+          PR_BODY="Bumps the release version to $VERSION."
+          
+          TRACER_VERSION=${{ github.event.inputs.tracer_version }}
+          if [ -n "$TRACER_VERSION" ]; then
+            CURRENT_TRACER_VERSION="$(grep -o -e dd-trace-dotnet/releases/download/v[0-9]*\.[0-9]*\.[0-9]* dotnet/build-packages.sh | sed 's#dd-trace-dotnet/releases/download/v##')"
+            echo Current tracer version is: $CURRENT_TRACER_VERSION
+            
+            echo Bumping tracer version to $TRACER_VERSION
+            sed -i -e "s#dd-trace-dotnet/releases/download/v$CURRENT_TRACER_VERSION#dd-trace-dotnet/releases/download/v$TRACER_VERSION#" dotnet/build-packages.sh
+            echo Replaced release version in file.
+            PR_BODY="$PR_BODY Also updates the tracer url to use the last version of the .net Tracer: $TRACER_VERSION"
+          fi
+          
+          echo "::set-output name=version::$VERSION"
+          echo "::set-output name=tracer_version::$TRACER_VERSION"
+          echo "::set-output name=pr_body::$PR_BODY"
+          
       - name: Create Pull Request
         id: pr
         uses: peter-evans/create-pull-request@v3.10.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: "version-bump-${{steps.versions.outputs.full_version}}"
-          commit-message: "[Version Bump] ${{steps.versions.outputs.full_version}}"
+          branch: "version-bump-${{steps.versions.outputs.version}}"
+          commit-message: "[.Net Version Bump] Bump to v${{steps.versions.outputs.version}}"
           delete-branch: true
-          title: "[Version Bump] ${{steps.versions.outputs.full_version}}"
-          body: "Dotnet Tracer Bump"
+          title: "[.Net Version Bump] Bump to v${{steps.versions.outputs.version}}"
+          body: "${{steps.versions.outputs.pr_body}}"
 
       - name: Display output
         run: |
