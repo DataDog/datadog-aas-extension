@@ -68,13 +68,13 @@ jobs:
             echo Bumping tracer version to $TRACER_VERSION
             sed -i -e "s#dd-trace-dotnet/releases/download/v$CURRENT_TRACER_VERSION#dd-trace-dotnet/releases/download/v$TRACER_VERSION#" dotnet/build-packages.sh
             echo Replaced release version in file.
-            PR_BODY="$PR_BODY Also updates the tracer url to use the last version of the .net Tracer: $TRACER_VERSION"
+            PR_BODY="$PR_BODY\nAlso updates the tracer url to use the last version of the .NET Tracer: $TRACER_VERSION"
           fi
 
           CURRENT_AGENT_VERSION="$(grep -o -e agent-binaries-[0-9]*\.[0-9]*\.[0-9]*  dotnet/build-packages.sh | sed 's/agent-binaries-//')"
           AGENT_VERSION=${{ steps.last_release.outputs.release }}
           echo Current agent version is: $CURRENT_AGENT_VERSION
-          echo "Last Agent version: $AGENT_VERSION"
+          echo "Latest Agent version: $AGENT_VERSION"
 
           major=0
           minor=0
@@ -97,19 +97,19 @@ jobs:
           fi
 
           if [[ $agent_major > $major ]]; then
-            updateTracer = 1
+            updateAgent=1
           elif [[ $agent_minor > $minor ]]; then
-            updateTracer = 1
+            updateAgent=1
           elif [[ $agent_build > $build ]]; then
-            updateTracer = 1
+            updateAgent=1
           fi
 
-          if [[ $updateTracer == 1 ]]; then
+          if [[ "$updateAgent" == "1" ]]; then
             echo Updating agent version
             
             sed -i -e "s/agent-binaries-$CURRENT_AGENT_VERSION/agent-binaries-$AGENT_VERSION/" dotnet/build-packages.sh
             echo Replaced agent version in file.
-            PR_BODY="$PR_BODY Also updates the agent url to use the last version: $AGENT_VERSION"
+            PR_BODY="$PR_BODY\nAlso updates the agent URL to use the latest version: $AGENT_VERSION"
           fi
 
           echo "::set-output name=version::$VERSION"
