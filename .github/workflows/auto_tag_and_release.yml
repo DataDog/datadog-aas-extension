@@ -24,9 +24,11 @@ jobs:
           VERSION="$(grep -o -e RELEASE_VERSION\=\"[0-9]*\.[0-9]*\.[0-9]*  dotnet/build-packages.sh | sed 's/RELEASE_VERSION="//')"
           TRACER_VERSION="$(grep -o -e dd-trace-dotnet/releases/download/v[0-9]*\.[0-9]*\.[0-9]* dotnet/build-packages.sh | sed 's#dd-trace-dotnet/releases/download/v##')"
           TAGNAME=dotnet-v$VERSION
+          AGENT_VERSION="$(grep -o -e agent-binaries-[0-9]*\.[0-9]*\.[0-9]*  dotnet/build-packages.sh | sed 's/agent-binaries-//')"
           echo "::set-output name=tagname::$TAGNAME"
           echo "::set-output name=version::$VERSION"
           echo "::set-output name=tracer_version::$TRACER_VERSION"
+          echo "::set-output name=agent_version::$AGENT_VERSION"
           git tag "$TAGNAME"
           git push origin "$TAGNAME"
       - name: Create Release
@@ -39,7 +41,7 @@ jobs:
           body: |
             ## Versions included
             [.NET Tracer v${{steps.version.outputs.tracer_version}}](https://github.com/DataDog/dd-trace-dotnet/releases/tag/v${{steps.version.outputs.tracer_version}})
-            [Datadog Agent v7.32.4](https://github.com/DataDog/datadog-agent/releases/tag/7.32.4)
+            [Datadog Agent v${{steps.version.outputs.agent_version}}](https://github.com/DataDog/datadog-agent/releases/tag/{{steps.version.outputs.agent_version}})
             Hosted on [Nuget](https://www.nuget.org/packages/Datadog.AzureAppServices.DotNet/${{steps.version.outputs.version}})
             [Site Extension Documentation](https://docs.datadoghq.com/serverless/azure_app_services/)
             ## Requirements

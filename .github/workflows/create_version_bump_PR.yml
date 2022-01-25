@@ -22,17 +22,42 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: "Get last agent release"
+        id: last_release
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          owner: DataDog
+          repo: datadog-agent
+          excludes: prerelease, draft
+
       - name: "Modify build-packages"
         id: "versions"
         run: |
           CURRENTVERSION="$(grep -o -e RELEASE_VERSION\=\"[0-9]*\.[0-9]*\.[0-9]*  dotnet/build-packages.sh | sed 's/RELEASE_VERSION="//')"
           echo Current version is: $CURRENTVERSION
-          
+          CURRENT_DEV_VERSION="$(grep -o -e DEVELOPMENT_VERSION\=\"[0-9]*\.[0-9]*\.[0-9]*  dotnet/build-packages.sh | sed 's/DEVELOPMENT_VERSION="//')"
+          echo Current dev version is: $CURRENT_DEV_VERSION
+
           VERSION=${{ github.event.inputs.version }}
           echo Bumping extension version to $VERSION
-          
+
           sed -i -e "s/RELEASE_VERSION=\"$CURRENTVERSION\"/RELEASE_VERSION=\"$VERSION\"/g" dotnet/build-packages.sh
           echo Replaced release version in file.
+          major=0
+          minor=0
+          build=0
+          # break down the version number into it's components
+          regex="([0-9]+).([0-9]+).([0-9]+)"
+          if [[ $CURRENT_DEV_VERSION =~ $regex ]]; then
+            major="${BASH_REMATCH[1]}"
+            minor="${BASH_REMATCH[2]}"
+            build="${BASH_REMATCH[3]}"
+          fi
+          DEV_VERSION=$major.$minor.$(echo $build+1 | bc)
+          echo New dev version is $DEV_VERSION
+          sed -i -e "s/DEVELOPMENT_VERSION=\"$CURRENT_DEV_VERSION/DEVELOPMENT_VERSION=\"$DEV_VERSION/g" dotnet/build-packages.sh
+          echo Replaced dev version in file.
+          
           PR_BODY="Bumps the release version to $VERSION."
           
           TRACER_VERSION=${{ github.event.inputs.tracer_version }}
@@ -45,7 +70,48 @@ jobs:
             echo Replaced release version in file.
             PR_BODY="$PR_BODY Also updates the tracer url to use the last version of the .net Tracer: $TRACER_VERSION"
           fi
-          
+
+          CURRENT_AGENT_VERSION="$(grep -o -e agent-binaries-[0-9]*\.[0-9]*\.[0-9]*  dotnet/build-packages.sh | sed 's/agent-binaries-//')"
+          AGENT_VERSION=${{ steps.last_release.outputs.release }}
+          echo Current agent version is: $CURRENT_AGENT_VERSION
+          echo "Last Agent version: $AGENT_VERSION"
+
+          major=0
+          minor=0
+          build=0
+          agent_major=0
+          agent_minor=0
+          agent_build=0
+          # break down the version number into it's components
+          regex="([0-9]+).([0-9]+).([0-9]+)"
+          if [[ $CURRENT_AGENT_VERSION =~ $regex ]]; then
+            major="${BASH_REMATCH[1]}"
+            minor="${BASH_REMATCH[2]}"
+            build="${BASH_REMATCH[3]}"
+          fi
+          regex="([0-9]+).([0-9]+).([0-9]+)"
+          if [[ $AGENT_VERSION =~ $regex ]]; then
+            agent_major="${BASH_REMATCH[1]}"
+            agent_minor="${BASH_REMATCH[2]}"
+            agent_build="${BASH_REMATCH[3]}"
+          fi
+
+          if [[ $agent_major > $major ]]; then
+            updateTracer = 1
+          elif [[ $agent_minor > $minor ]]; then
+            updateTracer = 1
+          elif [[ $agent_build > $build ]]; then
+            updateTracer = 1
+          fi
+
+          if [[ $updateTracer == 1 ]]; then
+            echo Updating agent version
+            
+            sed -i -e "s/agent-binaries-$CURRENT_AGENT_VERSION/agent-binaries-$AGENT_VERSION/" dotnet/build-packages.sh
+            echo Replaced agent version in file.
+            PR_BODY="$PR_BODY Also updates the agent url to use the last version: $AGENT_VERSION"
+          fi
+
           echo "::set-output name=version::$VERSION"
           echo "::set-output name=tracer_version::$TRACER_VERSION"
           echo "::set-output name=pr_body::$PR_BODY"
