@@ -1,0 +1,137 @@
+name: Create version bump PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Next Version Number (x.y.zzz).'
+        required: true
+      tracer_version:
+        description: 'Next Version Number (x.y.z). To be used for a tracer version bump.'
+        required: false
+
+jobs:
+  bump_version:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      Version: "${{ github.event.inputs.version }}"
+      IsPrerelease: "${{ github.event.inputs.is_prerelease }}"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: "Get last agent release"
+        id: last_release
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          owner: DataDog
+          repo: datadog-agent
+          excludes: prerelease, draft
+
+      - name: "Modify build-packages"
+        id: "versions"
+        run: |
+          versionRegex="[0-9]*.[0-9]*.[0-9]*"
+          splitVersionRegex="([0-9]+).([0-9]+).([0-9]+)"
+
+          CURRENTVERSION="$(grep -o -e RELEASE_VERSION\=\"$versionRegex dotnet/build-packages.sh | sed 's/RELEASE_VERSION="//')"
+          echo Current version is: $CURRENTVERSION
+
+          CURRENT_DEV_VERSION="$(grep -o -e DEVELOPMENT_VERSION\=\"$versionRegex dotnet/build-packages.sh | sed 's/DEVELOPMENT_VERSION="//')"
+          echo Current dev version is: $CURRENT_DEV_VERSION
+
+          VERSION=${{ github.event.inputs.version }}
+          echo Bumping extension version to $VERSION
+
+          sed -i -e "s/RELEASE_VERSION=\"$CURRENTVERSION\"/RELEASE_VERSION=\"$VERSION\"/g" dotnet/build-packages.sh
+          echo Replaced release version in file.
+
+          major=0
+          minor=0
+          build=0
+
+          if [[ $CURRENT_DEV_VERSION =~ $splitVersionRegex ]]; then
+            major="${BASH_REMATCH[1]}"
+            minor="${BASH_REMATCH[2]}"
+            build="${BASH_REMATCH[3]}"
+          fi
+
+          DEV_VERSION=$major.$minor.$(echo $build+1 | bc)
+          echo New dev version is $DEV_VERSION
+
+          sed -i -e "s/DEVELOPMENT_VERSION=\"$CURRENT_DEV_VERSION/DEVELOPMENT_VERSION=\"$DEV_VERSION/g" dotnet/build-packages.sh
+          echo Replaced dev version in file.
+
+          PR_BODY="Bumps the release version to $VERSION."
+
+          TRACER_VERSION=${{ github.event.inputs.tracer_version }}
+          if [ -n "$TRACER_VERSION" ]; then
+            CURRENT_TRACER_VERSION="$(grep -o -e dd-trace-dotnet/releases/download/v$versionRegex dotnet/build-packages.sh | sed 's#dd-trace-dotnet/releases/download/v##')"
+            echo Current tracer version is: $CURRENT_TRACER_VERSION
+  
+            echo Bumping tracer version to $TRACER_VERSION
+            sed -i -e "s#dd-trace-dotnet/releases/download/v$CURRENT_TRACER_VERSION#dd-trace-dotnet/releases/download/v$TRACER_VERSION#" dotnet/build-packages.sh
+            echo Replaced release version in file.
+            PR_BODY="$PR_BODY\nAlso updates the tracer url to use the last version of the .NET Tracer: $TRACER_VERSION"
+          fi
+
+          CURRENT_AGENT_VERSION="$(grep -o -e agent-binaries-$versionRegex  dotnet/build-packages.sh | sed 's/agent-binaries-//')"
+          AGENT_VERSION=${{ steps.last_release.outputs.release }}
+          echo Current agent version is: $CURRENT_AGENT_VERSION
+          echo "Latest Agent version: $AGENT_VERSION"
+
+          major=0
+          minor=0
+          build=0
+          agent_major=0
+          agent_minor=0
+          agent_build=0
+          if [[ $CURRENT_AGENT_VERSION =~ $splitVersionRegex ]]; then
+            major="${BASH_REMATCH[1]}"
+            minor="${BASH_REMATCH[2]}"
+            build="${BASH_REMATCH[3]}"
+          fi
+
+          if [[ $AGENT_VERSION =~ $splitVersionRegex ]]; then
+            agent_major="${BASH_REMATCH[1]}"
+            agent_minor="${BASH_REMATCH[2]}"
+            agent_build="${BASH_REMATCH[3]}"
+          fi
+
+          if [[ $agent_major > $major ]]; then
+            updateAgent=1
+          elif [[ $agent_minor > $minor ]]; then
+            updateAgent=1
+          elif [[ $agent_build > $build ]]; then
+            updateAgent=1
+          fi
+
+          if [[ "$updateAgent" == "1" ]]; then
+            echo Updating agent version
+  
+            sed -i -e "s/agent-binaries-$CURRENT_AGENT_VERSION/agent-binaries-$AGENT_VERSION/" dotnet/build-packages.sh
+            echo Replaced agent version in file.
+            PR_BODY="$PR_BODY\nAlso updates the agent URL to use the latest version: $AGENT_VERSION"
+          fi
+
+          echo "::set-output name=version::$VERSION"
+          echo "::set-output name=tracer_version::$TRACER_VERSION"
+          echo "::set-output name=pr_body::$PR_BODY"
+
+      - name: Create Pull Request
+        id: pr
+        uses: peter-evans/create-pull-request@v3.10.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: "version-bump-${{steps.versions.outputs.version}}"
+          commit-message: "[.Net Version Bump] Bump to v${{steps.versions.outputs.version}}"
+          delete-branch: true
+          title: "[.Net Version Bump] Bump to v${{steps.versions.outputs.version}}"
+          body: "${{steps.versions.outputs.pr_body}}"
+
+      - name: Display output
+        run: |
+          echo "Pull Request Number - ${{ steps.pr.outputs.pull-request-number }}"
+          echo "Pull Request URL - ${{ steps.pr.outputs.pull-request-url }}"
