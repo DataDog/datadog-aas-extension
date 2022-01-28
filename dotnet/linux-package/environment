@@ -1,0 +1,24 @@
+# These variables are manually set in the app settings currently
+# These need to be set via some sort of install script
+        
+CORECLR_ENABLE_PROFILING="1"
+CORECLR_PROFILER="{846F5F1C-F9AE-4B07-969E-05C26BC060D8}"
+CORECLR_PROFILER_PATH_32="/home/datadog/dotnet-tracer/win-x86/Datadog.Trace.ClrProfiler.Native.dll"
+CORECLR_PROFILER_PATH_64="/home/datadog/dotnet-tracer/win-x64/Datadog.Trace.ClrProfiler.Native.dll"
+
+DD_DOTNET_TRACER_HOME="/home/datadog/dotnet-tracer"
+DD_TRACE_LOG_PATH="/home/LogFiles/datadog/dotnet-profiler.log"
+
+DD_AZURE_APP_SERVICES="1"
+DD_TRACE_AGENT_PATH="/home/datadog/trace-agent"
+DD_TRACE_AGENT_ARGS="--config /home/datadog/datadog.yaml"
+DD_DOGSTATSD_PATH="/home/datadog/dogstatsd"
+DD_DOGSTATSD_ARGS="start -c /home/datadog"
+		
+DD_APM_RECEIVER_SOCKET="/home/datadog/sockets/apm.socket"	
+DD_DOGSTATSD_SOCKET="/home/datadog/sockets/dsd.socket" 
+		
+DD_DOGSTATSD_PORT="0"
+DD_APM_RECEIVER_PORT="0"
+DD_AAS_DOTNET_EXTENSION_VERSION="vLinux"
+

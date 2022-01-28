@@ -5,19 +5,28 @@ dotnet-package:
   script: 
     - echo "Installing dependencies"
     - apt-get update
-    - apt-get install unzip
+    - apt-get install unzip -y
     - bash ./dotnet/build-packages.sh
   artifacts:
     expire_in: 1 weeks
     paths:
       - package
+      
+dotnet-linux-package:
+  tags: [ "runner:main" ]
+  script: 
+    - bash ./dotnet/linux-package/package.sh
+  artifacts:
+    expire_in: 1 weeks
+    paths:
+      - dotnet-debian-package
 
 java-package:
   tags: [ "runner:main" ]
   script: 
     - echo "Installing dependencies"
     - apt-get update
-    - apt-get install unzip
+    - apt-get install unzip -y
     - bash ./java/build-packages.sh
   artifacts:
     expire_in: 1 weeks

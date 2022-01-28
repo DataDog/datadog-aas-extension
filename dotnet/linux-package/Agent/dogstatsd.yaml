@@ -1,0 +1,7 @@
+## disable sending the host metadata payload
+enable_metadata_collection: false
+use_dogstatsd: true
+log_file: /home/LogFiles/datadog/dogstatsd.txt
+## log_level: debug
+cloud_provider_metadata:
+  - "azure"
