@@ -1,6 +1,6 @@
 
 RELEASE_VERSION="0.1.0"
-DEVELOPMENT_VERSION="0.1.3-prerelease"
+DEVELOPMENT_VERSION="0.1.4-prerelease"
 AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.32.0-1-x86_64.zip" 
 TRACER_DOWNLOAD_URL="https://github.com/DataDog/dd-trace-java/releases/download/v0.94.1/dd-java-agent-0.94.1.jar"
 
