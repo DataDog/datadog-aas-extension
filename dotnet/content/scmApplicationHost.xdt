@@ -1,16 +1,20 @@
 ﻿<?xml version="1.0"?>
+<!-- This file exists to prevent applicationHost.xdt from being applied to scm host that runs other dotnet processes (dotnet build, csc etc. )-->
 <configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
-  <!-- This file exists to prevent applicationHost.xdt from being applied to scm host that runs
-      other dotnet processes (dotnet build, csc etc. )-->
-	<environmentVariables xdt:Transform="InsertIfMissing">
-	
-		<!-- These variables enable manual tracing and custom metrics from web jobs in the scm context -->
-        
+  <system.webServer>
+    <runtime xdt:Transform="InsertIfMissing" >
+      <environmentVariables xdt:Transform="InsertIfMissing">
+	  
+        <add name="DD_AZURE_APP_SERVICES" value="1" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+		
+        <add name="DD_TRACE_LOG_PATH" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_TRACE_LOG_PATH" value="%HOME%\LogFiles\datadog\vFOLDERUNKNOWN\dotnet-profiler.log" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+		
         <add name="DD_APM_WINDOWS_PIPE_NAME" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="DD_APM_WINDOWS_PIPE_NAME" value="datadogtrace-uniqueTracePipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Trace server variable -->
+        <add name="DD_APM_WINDOWS_PIPE_NAME" value="datadogtrace-uniqueTracePipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/>	
 		
         <add name="DD_TRACE_PIPE_NAME" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="DD_TRACE_PIPE_NAME" value="datadogtrace-uniqueTracePipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Trace client variable -->
+        <add name="DD_TRACE_PIPE_NAME" value="datadogtrace-uniqueTracePipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <add name="DD_AGENT_PIPE_NAME" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_AGENT_PIPE_NAME" value="dogstatsd-uniqueStatsPipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Dogstatsd client variable (LEGACY) -->
@@ -20,6 +24,8 @@
 		
         <add name="DD_DOGSTATSD_WINDOWS_PIPE_NAME" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_DOGSTATSD_WINDOWS_PIPE_NAME" value="dogstatsd-uniqueStatsPipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Dogstatsd server variable -->
+
+		<add name="DD_AAS_DOTNET_EXTENSION_VERSION" value="vUNKNOWN" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- For troubleshooting and tagging traces -->
 
       </environmentVariables>
     </runtime>
