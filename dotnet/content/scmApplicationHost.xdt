@@ -11,7 +11,7 @@
         <add name="DD_TRACE_LOG_PATH" value="%HOME%\LogFiles\datadog\vFOLDERUNKNOWN\dotnet-profiler.log" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 		
         <add name="DD_APM_WINDOWS_PIPE_NAME" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="DD_APM_WINDOWS_PIPE_NAME" value="datadogtrace-uniqueTracePipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/>	
+        <add name="DD_APM_WINDOWS_PIPE_NAME" value="datadogtrace-uniqueTracePipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 		
         <add name="DD_TRACE_PIPE_NAME" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_TRACE_PIPE_NAME" value="datadogtrace-uniqueTracePipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
