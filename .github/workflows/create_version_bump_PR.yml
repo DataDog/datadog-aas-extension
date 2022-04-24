@@ -9,16 +9,34 @@ on:
       tracer_version:
         description: 'Next Version Number (x.y.z). To be used for a tracer version bump.'
         required: false
+  repository_dispatch:
+    types: [dd-trace-dotnet-release]
 
 jobs:
   bump_version:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-      Version: "${{ github.event.inputs.version }}"
-      IsPrerelease: "${{ github.event.inputs.is_prerelease }}"
 
     steps:
+
+      - name: "Set Variables"
+        id: "input"
+        run: |
+          if [[ ! -z "${{ github.event.inputs.version }}" ]]; then
+            echo "::set-output name=version::${{ github.event.inputs.version }}"
+            echo "::set-output name=tracer_version::${{ github.event.inputs.tracer_version }}"
+          elif [[ ! -z "${{ github.event.client_payload.version }}" ]]; then
+            TRACERVERSION=${{ github.event.client_payload.version }}
+            echo "Version reveived from dd-trace-dotnet: $TRACERVERSION"
+            TRACERVERSION=${TRACERVERSION:1}
+            echo "Version reveived once normalized: $TRACERVERSION"
+            echo "::set-output name=version::${TRACERVERSION}00"
+            echo "::set-output name=tracer_version::$TRACERVERSION"
+          else
+            echo "Error. Input versions aren't set"
+            exit 1
+          fi
       - name: Checkout
         uses: actions/checkout@v2
 
@@ -42,7 +60,7 @@ jobs:
           CURRENT_DEV_VERSION="$(grep -o -e DEVELOPMENT_VERSION\=\"$versionRegex dotnet/build-packages.sh | sed 's/DEVELOPMENT_VERSION="//')"
           echo Current dev version is: $CURRENT_DEV_VERSION
 
-          VERSION=${{ github.event.inputs.version }}
+          VERSION=${{ steps.input.outputs.version }}
           echo Bumping extension version to $VERSION
 
           sed -i -e "s/RELEASE_VERSION=\"$CURRENTVERSION\"/RELEASE_VERSION=\"$VERSION\"/g" dotnet/build-packages.sh
@@ -64,17 +82,17 @@ jobs:
           sed -i -e "s/DEVELOPMENT_VERSION=\"$CURRENT_DEV_VERSION/DEVELOPMENT_VERSION=\"$DEV_VERSION/g" dotnet/build-packages.sh
           echo Replaced dev version in file.
 
-          PR_BODY="Bumps the release version to $VERSION."
+          PR_BODY="Bumps the release version to $VERSION"
 
-          TRACER_VERSION=${{ github.event.inputs.tracer_version }}
+          TRACER_VERSION=${{steps.input.outputs.tracer_version}}
           if [ -n "$TRACER_VERSION" ]; then
             CURRENT_TRACER_VERSION="$(grep -o -e dd-trace-dotnet/releases/download/v$versionRegex dotnet/build-packages.sh | sed 's#dd-trace-dotnet/releases/download/v##')"
             echo Current tracer version is: $CURRENT_TRACER_VERSION
-  
+
             echo Bumping tracer version to $TRACER_VERSION
             sed -i -e "s#dd-trace-dotnet/releases/download/v$CURRENT_TRACER_VERSION#dd-trace-dotnet/releases/download/v$TRACER_VERSION#" dotnet/build-packages.sh
             echo Replaced release version in file.
-            PR_BODY="$PR_BODY\nAlso updates the tracer url to use the last version of the .NET Tracer: $TRACER_VERSION"
+            PR_BODY="$PR_BODY, updates the tracer version to: $TRACER_VERSION "
           fi
 
           CURRENT_AGENT_VERSION="$(grep -o -e agent-binaries-$versionRegex  dotnet/build-packages.sh | sed 's/agent-binaries-//')"
@@ -93,7 +111,6 @@ jobs:
             minor="${BASH_REMATCH[2]}"
             build="${BASH_REMATCH[3]}"
           fi
-
           if [[ $AGENT_VERSION =~ $splitVersionRegex ]]; then
             agent_major="${BASH_REMATCH[1]}"
             agent_minor="${BASH_REMATCH[2]}"
@@ -110,12 +127,12 @@ jobs:
 
           if [[ "$updateAgent" == "1" ]]; then
             echo Updating agent version
-  
             sed -i -e "s/agent-binaries-$CURRENT_AGENT_VERSION/agent-binaries-$AGENT_VERSION/" dotnet/build-packages.sh
             echo Replaced agent version in file.
-            PR_BODY="$PR_BODY\nAlso updates the agent URL to use the latest version: $AGENT_VERSION"
+            PR_BODY="$PR_BODY, and updates the agent version to: $AGENT_VERSION"
           fi
 
+          PR_BODY="$PR_BODY."
           echo "::set-output name=version::$VERSION"
           echo "::set-output name=tracer_version::$TRACER_VERSION"
           echo "::set-output name=pr_body::$PR_BODY"
