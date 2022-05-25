@@ -9,6 +9,11 @@ on:
       tracer_version:
         description: 'Next Version Number (x.y.z). To be used for a tracer version bump.'
         required: false
+      update_agent:
+        description: 'Update the agent as well'
+        type: boolean
+        required: false
+        default: false
   repository_dispatch:
     types: [dd-trace-dotnet-release]
 
@@ -88,48 +93,52 @@ jobs:
           if [ -n "$TRACER_VERSION" ]; then
             CURRENT_TRACER_VERSION="$(grep -o -e dd-trace-dotnet/releases/download/v$versionRegex dotnet/build-packages.sh | sed 's#dd-trace-dotnet/releases/download/v##')"
             echo Current tracer version is: $CURRENT_TRACER_VERSION
-
             echo Bumping tracer version to $TRACER_VERSION
             sed -i -e "s#dd-trace-dotnet/releases/download/v$CURRENT_TRACER_VERSION#dd-trace-dotnet/releases/download/v$TRACER_VERSION#" dotnet/build-packages.sh
             echo Replaced release version in file.
             PR_BODY="$PR_BODY, updates the tracer version to: $TRACER_VERSION "
           fi
 
-          CURRENT_AGENT_VERSION="$(grep -o -e agent-binaries-$versionRegex  dotnet/build-packages.sh | sed 's/agent-binaries-//')"
-          AGENT_VERSION=${{ steps.last_release.outputs.release }}
-          echo Current agent version is: $CURRENT_AGENT_VERSION
-          echo "Latest Agent version: $AGENT_VERSION"
+          if [ "${{ github.event.inputs.update_agent }}" == "true" ]; then
+            CURRENT_AGENT_VERSION="$(grep -o -e agent-binaries-$versionRegex  dotnet/build-packages.sh | sed 's/agent-binaries-//')"
+            AGENT_VERSION=${{ steps.last_release.outputs.release }}
 
-          major=0
-          minor=0
-          build=0
-          agent_major=0
-          agent_minor=0
-          agent_build=0
-          if [[ $CURRENT_AGENT_VERSION =~ $splitVersionRegex ]]; then
-            major="${BASH_REMATCH[1]}"
-            minor="${BASH_REMATCH[2]}"
-            build="${BASH_REMATCH[3]}"
-          fi
-          if [[ $AGENT_VERSION =~ $splitVersionRegex ]]; then
-            agent_major="${BASH_REMATCH[1]}"
-            agent_minor="${BASH_REMATCH[2]}"
-            agent_build="${BASH_REMATCH[3]}"
-          fi
+            echo Current agent version is: $CURRENT_AGENT_VERSION
+            echo "Latest Agent version: $AGENT_VERSION"
 
-          if [[ $agent_major > $major ]]; then
-            updateAgent=1
-          elif [[ $agent_minor > $minor ]]; then
-            updateAgent=1
-          elif [[ $agent_build > $build ]]; then
-            updateAgent=1
-          fi
+            major=0
+            minor=0
+            build=0
+            agent_major=0
+            agent_minor=0
+            agent_build=0
 
-          if [[ "$updateAgent" == "1" ]]; then
-            echo Updating agent version
-            sed -i -e "s/agent-binaries-$CURRENT_AGENT_VERSION/agent-binaries-$AGENT_VERSION/" dotnet/build-packages.sh
-            echo Replaced agent version in file.
-            PR_BODY="$PR_BODY, and updates the agent version to: $AGENT_VERSION"
+            if [[ $CURRENT_AGENT_VERSION =~ $splitVersionRegex ]]; then
+              major="${BASH_REMATCH[1]}"
+              minor="${BASH_REMATCH[2]}"
+              build="${BASH_REMATCH[3]}"
+            fi
+
+            if [[ $AGENT_VERSION =~ $splitVersionRegex ]]; then
+              agent_major="${BASH_REMATCH[1]}"
+              agent_minor="${BASH_REMATCH[2]}"
+              agent_build="${BASH_REMATCH[3]}"
+            fi
+
+            if [[ $agent_major > $major ]]; then
+              newAgentAvailable=1
+            elif [[ $agent_minor > $minor ]]; then
+              newAgentAvailable=1
+            elif [[ $agent_build > $build ]]; then
+              newAgentAvailable=1
+            fi
+
+            if [[ "$newAgentAvailable" == "1" ]]; then
+              echo Updating agent version
+              sed -i -e "s/agent-binaries-$CURRENT_AGENT_VERSION/agent-binaries-$AGENT_VERSION/" dotnet/build-packages.sh
+              echo Replaced agent version in file.
+              PR_BODY="$PR_BODY, and updates the agent version to: $AGENT_VERSION"
+            fi
           fi
 
           PR_BODY="$PR_BODY."
