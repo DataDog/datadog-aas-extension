@@ -7,7 +7,7 @@ on:
         description: 'Hash commit of dd-trace-dotnet build'
         required: true
   repository_dispatch:
-    types: [dd-trace-dotnet-release]
+    types: [dd-trace-dotnet-nightly]
 
 jobs:
   bump_version:
