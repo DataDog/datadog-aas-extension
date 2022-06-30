@@ -1,6 +1,4 @@
-
 RELEASE_VERSION="2.11.000"
-DEVELOPMENT_VERSION="0.2.114-prerelease"
 AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.35.2-1-x86_64.zip"
 TRACER_DOWNLOAD_URL="https://github.com/DataDog/dd-trace-dotnet/releases/download/v2.11.0/windows-tracer-home.zip"
 
@@ -10,9 +8,7 @@ echo "Unzipping tracer"
 unzip tracer.zip -d dotnet/content/Tracer
 
 RELEASE_VERSION_FILE=$( echo ${RELEASE_VERSION} | tr '.' '_' )
-DEVELOPMENT_VERSION_FILE=$( echo ${DEVELOPMENT_VERSION} | tr '.' '_' )
 RELEASE_DIR=$CI_PROJECT_DIR/dotnet/content/v${RELEASE_VERSION_FILE}
-DEVELOPMENT_DIR=$CI_PROJECT_DIR/dev-dotnet/content/v${DEVELOPMENT_VERSION_FILE}
 
 echo "Downloading agent from ${AGENT_DOWNLOAD_URL}"
 wget -O agent.zip $AGENT_DOWNLOAD_URL
@@ -44,25 +40,3 @@ mv -v dotnet/content/Agent $RELEASE_DIR/Agent
 echo "Creating release nuget package"
 echo "Packing nuspec file via arcane roundabout csproj process"
 dotnet pack dotnet/Datadog.AzureAppServices.DotNet.csproj -p:Version=${RELEASE_VERSION} -p:NoBuild=true -p:NoDefaultExcludes=true -o package
-
-echo "Versioning development files"
-sed -i "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" dev-dotnet/content/Agent/datadog.yaml
-sed -i "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" dev-dotnet/content/Agent/dogstatsd.yaml
-sed -i "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" dev-dotnet/content/applicationHost.xdt
-sed -i "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" dev-dotnet/content/install.cmd
-sed -i "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" dev-dotnet/content/install.ps1
-sed -i "s/vUNKNOWN/v${DEVELOPMENT_VERSION}/g" dev-dotnet/content/applicationHost.xdt
-sed -i "s/vUNKNOWN/v${DEVELOPMENT_VERSION}/g" dev-dotnet/content/install.cmd
-sed -i "s/vUNKNOWN/v${DEVELOPMENT_VERSION}/g" dev-dotnet/content/install.ps1
-
-echo "Updating paths from Datadog.AzureAppServices.DotNet to DevelopmentVerification.DdDotNet.Apm for testing package"
-sed -i 's/Datadog.AzureAppServices.DotNet/DevelopmentVerification.DdDotNet.Apm/g' dev-dotnet/content/applicationHost.xdt
-
-echo "Moving content to development versioned folder"
-mkdir $DEVELOPMENT_DIR
-mv -v dev-dotnet/content/Tracer $DEVELOPMENT_DIR/Tracer
-mv -v dev-dotnet/content/Agent $DEVELOPMENT_DIR/Agent
-
-echo "Creating development nuget package"
-echo "Packing nuspec file via arcane roundabout csproj process"
-dotnet pack dev-dotnet/DevelopmentVerification.DdDotNet.Apm.csproj -p:Version=${DEVELOPMENT_VERSION} -p:NoBuild=true -p:NoDefaultExcludes=true -o package

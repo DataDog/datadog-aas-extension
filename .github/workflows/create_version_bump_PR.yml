@@ -42,6 +42,7 @@ jobs:
             echo "Error. Versions weren't provided in input."
             exit 1
           fi
+
       - name: Checkout
         uses: actions/checkout@v2
 
@@ -62,30 +63,11 @@ jobs:
           CURRENTVERSION="$(grep -o -e RELEASE_VERSION\=\"$versionRegex dotnet/build-packages.sh | sed 's/RELEASE_VERSION="//')"
           echo Current version is: $CURRENTVERSION
 
-          CURRENT_DEV_VERSION="$(grep -o -e DEVELOPMENT_VERSION\=\"$versionRegex dotnet/build-packages.sh | sed 's/DEVELOPMENT_VERSION="//')"
-          echo Current dev version is: $CURRENT_DEV_VERSION
-
           VERSION=${{ steps.set_variables.outputs.version }}
           echo Bumping extension version to $VERSION
 
           sed -i -e "s/RELEASE_VERSION=\"$CURRENTVERSION\"/RELEASE_VERSION=\"$VERSION\"/g" dotnet/build-packages.sh
           echo Replaced release version in file.
-
-          major=0
-          minor=0
-          build=0
-
-          if [[ $CURRENT_DEV_VERSION =~ $splitVersionRegex ]]; then
-            major="${BASH_REMATCH[1]}"
-            minor="${BASH_REMATCH[2]}"
-            build="${BASH_REMATCH[3]}"
-          fi
-
-          DEV_VERSION=$major.$minor.$(echo $build+1 | bc)
-          echo New dev version is $DEV_VERSION
-
-          sed -i -e "s/DEVELOPMENT_VERSION=\"$CURRENT_DEV_VERSION/DEVELOPMENT_VERSION=\"$DEV_VERSION/g" dotnet/build-packages.sh
-          echo Replaced dev version in file.
 
           PR_BODY="Bumps the release version to $VERSION"
 
