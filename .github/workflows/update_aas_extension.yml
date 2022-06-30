@@ -1,0 +1,92 @@
+name: Update extension on AAS, triggered by dd-trace-dotnet nightly build
+
+on:
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: 'Hash commit of dd-trace-dotnet build'
+        required: true
+  repository_dispatch:
+    types: [dd-trace-dotnet-nightly]
+
+jobs:
+  bump_version:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+    steps:
+      - name: "Set Variables"
+        id: "set_variables"
+        run: |
+          if [[ ! -z "${{ github.event.inputs.sha }}" ]]; then
+            echo "::set-output name=sha::${{ github.event.inputs.sha }}"
+          else
+            echo "Error. Hash commit wasn't provided in input."
+            exit 1
+          fi
+          
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: "Modify build-packages-dev"
+        id: "versions"
+        run: |
+          splitVersionRegex="([0-9]+).([0-9]+).([0-9]+)"
+
+          CURRENT_DEV_VERSION="$(grep -o -e DEVELOPMENT_VERSION\=\"$versionRegex dotnet/build-packages-dev.sh | sed 's/DEVELOPMENT_VERSION="//')"
+          echo Current dev version is: $CURRENT_DEV_VERSION
+
+          major=0
+          minor=0
+          build=${{ env.GITHUB_RUN_ID }}
+          build="${build:1}"
+
+          if [[ $CURRENT_DEV_VERSION =~ $splitVersionRegex ]]; then
+            major="${BASH_REMATCH[1]}"
+            minor="${BASH_REMATCH[2]}"
+          fi
+
+          DEV_VERSION=$major.$minor.$(echo $build+1 | bc)
+          echo New dev version is $DEV_VERSION
+          echo "::set-output name=dev_version::$DEV_VERSION
+
+          sed -i -e "s/DEVELOPMENT_VERSION=\"$CURRENT_DEV_VERSION/DEVELOPMENT_VERSION=\"$DEV_VERSION/g" dotnet/build-packages-dev.sh
+          echo Replaced dev version in file.
+
+          INSTALL_SHA=${{steps.set_variables.outputs.sha}}
+          echo Setting install sha: $INSTALL_SHA
+          sed -i -e "s/INSTALL_SHA/$INSTALL_SHA/g" dotnet/build-packages-dev.sh
+          echo Replaced install sha in file.
+
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.100'
+
+      - name: "Build nuget package"
+        run: |
+          bash dotnet/build-packages-dev.sh
+
+      - name: "Upload dev nuget"
+        run: |
+          dotnet nuget add source https://pkgs.dev.azure.com/datadoghq/dd-trace-dotnet/_packaging/Public_Feed/nuget/v3/index.json --name Public_Feed --username any_string --password ${{ secrets.AZDO_PAT }}
+          
+          DEVELOPMENT_VERSION=${{steps.versions.outputs.dev_version}}
+          DEVELOPMENT_VERSION_FILE=$( echo ${DEVELOPMENT_VERSION} | tr '.' '_' )
+          dotnet nuget push $CI_PROJECT_DIR/dev-dotnet/content/v${DEVELOPMENT_VERSION_FILE} --source Public_Feed --api-key any_string
+
+      - name: Azure CLI script
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            resourceGroupName="apm-aas-junkyard"
+            aasName="dd-dotnet-perf-tests"
+
+            echo "Login"
+            az login --service-principal -u ${{ secrets.AZURE_APP_ID }} -p ${{ secrets.AZURE_PASSWORD }} --tenant ${{ secrets.AZURE_TENANT }}
+            
+            echo "Update Site Extension"
+            az resource create --resource-group $resourceGroupName --resource-type "Microsoft.Web/sites/siteextensions" --name "$aasName/siteextensions/DevelopmentVerification.DdDotNet.Apm" -p "{}"            
+
+            echo "Restart Application"
+            az webapp restart --resource-group $resourceGroupName --name $aasName          
