@@ -25,7 +25,7 @@ jobs:
             echo "Error. Hash commit wasn't provided in input."
             exit 1
           fi
-          
+
       - name: Checkout
         uses: actions/checkout@v2
 
@@ -71,7 +71,7 @@ jobs:
       - name: "Upload dev nuget"
         run: |
           dotnet nuget add source https://pkgs.dev.azure.com/datadoghq/dd-trace-dotnet/_packaging/Public_Feed/nuget/v3/index.json --name Public_Feed --username any_string --password ${{ secrets.AZDO_PAT }} --store-password-in-clear-text
-          
+
           dev_version="${{steps.versions.outputs.dev_version}}-prerelease"
           dotnet nuget push package/DevelopmentVerification.DdDotNet.Apm.$dev_version.nupkg --source Public_Feed --api-key any_string
 
@@ -80,16 +80,16 @@ jobs:
         with:
           inlineScript: |
             resourceGroupName="apm-aas-junkyard"
-            aasName="dd-dotnet-perf-tests"
+            aasName="dd-dotnet-latest-build"
 
             echo "Login"
             az login --service-principal -u ${{ secrets.AZURE_APP_ID }} -p ${{ secrets.AZURE_PASSWORD }} --tenant ${{ secrets.AZURE_TENANT }}
-            
+
             echo "Update Site Extension"
-            az resource create --resource-group $resourceGroupName --resource-type "Microsoft.Web/sites/siteextensions" --name "$aasName/siteextensions/DevelopmentVerification.DdDotNet.Apm" -p "{}"            
+            az resource create --resource-group $resourceGroupName --resource-type "Microsoft.Web/sites/siteextensions" --name "$aasName/siteextensions/DevelopmentVerification.DdDotNet.Apm" -p "{}"
 
             echo "Waiting 10 seconds for extension to be actually installed"
             sleep 10
 
             echo "Restart Application"
-            az webapp restart --resource-group $resourceGroupName --name $aasName          
+            az webapp restart --resource-group $resourceGroupName --name $aasName
