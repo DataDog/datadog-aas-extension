@@ -1,21 +1,27 @@
-DEVELOPMENT_VERSION="0.2.114-prerelease"
-AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.35.2-1-x86_64.zip"
-TRACER_DOWNLOAD_URL="https://apmdotnetci.blob.core.windows.net/apm-dotnet-ci-artifacts-master/INSTALL_SHA/windows-tracer-home.zip"
+DEVELOPMENT_VERSION="$1"
+TRACER_SHA="$2"
 
-echo "Downloading tracer from ${TRACER_DOWNLOAD_URL}"
-wget -O tracer.zip $TRACER_DOWNLOAD_URL
+AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.35.2-1-x86_64.zip"
+TRACER_DOWNLOAD_URL="https://apmdotnetci.blob.core.windows.net/apm-dotnet-ci-artifacts-master/$TRACER_SHA/windows-tracer-home.zip"
+
+echo "Downloading tracer from $TRACER_DOWNLOAD_URL"
+#wget -O tracer.zip $TRACER_DOWNLOAD_URL
+
 echo "Unzipping tracer"
 unzip tracer.zip -d dotnet/content/Tracer
 
 DEVELOPMENT_VERSION_FILE=$( echo ${DEVELOPMENT_VERSION} | tr '.' '_' )
 DEVELOPMENT_DIR=dotnet/content/v${DEVELOPMENT_VERSION_FILE}
 
+echo "Clean previous runs"
+rm -r dotnet/content/v*
+
 echo "Downloading agent from ${AGENT_DOWNLOAD_URL}"
-wget -O agent.zip $AGENT_DOWNLOAD_URL
+#wget -O agent.zip $AGENT_DOWNLOAD_URL
 unzip agent.zip -d dotnet-agent-extract
 
 echo "Moving agent executables"
-mv dotnet-agent-extract/bin/agent/dogstatsd.exe dotnet/content/Agent
+mv dotnet-agent-extract/bin/agent/dogstatsd.exe dotnet/content/Agent/dogstatsd.exe
 mv dotnet-agent-extract/bin/agent/trace-agent.exe dotnet/content/Agent/datadog-trace-agent.exe
 
 echo "Versioning development files"

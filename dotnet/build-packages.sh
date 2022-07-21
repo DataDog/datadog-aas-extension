@@ -16,7 +16,7 @@ unzip agent.zip -d dotnet-agent-extract
 
 echo "Moving agent executables"
 mkdir dotnet/content/Agent
-mv dotnet-agent-extract/bin/agent/dogstatsd.exe dotnet/content/Agent
+mv dotnet-agent-extract/bin/agent/dogstatsd.exe dotnet/content/Agent/dogstatsd.exe
 mv dotnet-agent-extract/bin/agent/trace-agent.exe dotnet/content/Agent/datadog-trace-agent.exe
 
 echo "Copying files for development version"
