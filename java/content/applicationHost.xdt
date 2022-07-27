@@ -52,8 +52,8 @@
         <add name="DD_LOG_LEVEL" value="WARN" xdt:Locator="Match(name)" xdt:Transform="InsertIfMissing"/> <!-- Keep agent logs reasonably quiet for v1, until logging levels are settled in tracer -->
 		
 		<!-- Java Tracer Specific Variables -->
-        <add name="JAVA_OPTS" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="JAVA_OPTS" value="-javaagent:%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Tracer\dd-java-agent.jar -Ddatadog.slf4j.simpleLogger.logFile=%HOME%\LogFiles\datadog\java\vFOLDERUNKNOWN\dd-java-agent.log" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="JAVA_TOOL_OPTIONS" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="JAVA_TOOL_OPTIONS" value="-javaagent:%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Tracer\dd-java-agent.jar -Ddatadog.slf4j.simpleLogger.logFile=%HOME%\LogFiles\datadog\java\vFOLDERUNKNOWN\dd-java-agent.log" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
       </environmentVariables>
     </runtime>
