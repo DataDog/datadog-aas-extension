@@ -11,3 +11,4 @@ obj/
 /dotnet/content/Tracer/*
 /package/*
 *.zip
+.idea
