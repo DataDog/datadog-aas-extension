@@ -5,7 +5,7 @@ AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpac
 TRACER_DOWNLOAD_URL="https://apmdotnetci.blob.core.windows.net/apm-dotnet-ci-artifacts-master/$TRACER_SHA/windows-tracer-home.zip"
 
 echo "Downloading tracer from $TRACER_DOWNLOAD_URL"
-#wget -O tracer.zip $TRACER_DOWNLOAD_URL
+wget -O tracer.zip $TRACER_DOWNLOAD_URL
 
 echo "Unzipping tracer"
 unzip tracer.zip -d dotnet/content/Tracer
@@ -17,7 +17,7 @@ echo "Clean previous runs"
 rm -r dotnet/content/v*
 
 echo "Downloading agent from ${AGENT_DOWNLOAD_URL}"
-#wget -O agent.zip $AGENT_DOWNLOAD_URL
+wget -O agent.zip $AGENT_DOWNLOAD_URL
 unzip agent.zip -d dotnet-agent-extract
 
 echo "Moving agent executables"
