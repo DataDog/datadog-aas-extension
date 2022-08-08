@@ -54,7 +54,6 @@
 		<!-- Node Specific Variables -->
         <add name="NODE_OPTIONS" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="NODE_OPTIONS" value=" --require=%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Tracer\node_modules\dd-trace\init" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Tracer\
       </environmentVariables>
     </runtime>
   </system.webServer>

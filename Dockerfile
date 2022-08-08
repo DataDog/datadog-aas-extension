@@ -8,3 +8,4 @@ ENV CI_PROJECT_DIR=/home/datadog-aas-extension
 COPY . /home/datadog-aas-extension
 WORKDIR /home/datadog-aas-extension
 RUN mkdir output
+RUN ./node/build-packages.sh

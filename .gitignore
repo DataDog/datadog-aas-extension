@@ -19,3 +19,4 @@ java/content/Agent/
 java/content/Tracer/
 dotnet/content/v0*/
 .DS_Store
+packages
