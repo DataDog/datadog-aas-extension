@@ -32,33 +32,12 @@ jobs:
       - name: "Modify build-packages-dev"
         id: "versions"
         run: |
-          versionRegex="[0-9]*.[0-9]*.[0-9]*"
-          splitVersionRegex="([0-9]+).([0-9]+).([0-9]+)"
-
-          CURRENT_DEV_VERSION="$(grep -o -e DEVELOPMENT_VERSION\=\"$versionRegex dotnet/build-packages-dev.sh | sed 's/DEVELOPMENT_VERSION="//')"
-          echo Current dev version is: $CURRENT_DEV_VERSION
-
-          major=0
-          minor=0
           build=${{ github.run_id }}
           build="${build:1}"
 
-          if [[ $CURRENT_DEV_VERSION =~ $splitVersionRegex ]]; then
-            major="${BASH_REMATCH[1]}"
-            minor="${BASH_REMATCH[2]}"
-          fi
-
-          DEV_VERSION=$major.$minor.$(echo $build | bc)
+          DEV_VERSION=0.2.$(echo $build | bc)
           echo New dev version is $DEV_VERSION
           echo "::set-output name=dev_version::$DEV_VERSION"
-
-          sed -i -e "s/DEVELOPMENT_VERSION=\"$CURRENT_DEV_VERSION/DEVELOPMENT_VERSION=\"$DEV_VERSION/g" dotnet/build-packages-dev.sh
-          echo Replaced dev version in file.
-
-          sha=${{ steps.set_variables.outputs.sha }}
-          echo Setting install sha to $sha
-          sed -i -e "s/INSTALL_SHA/$sha/g" dotnet/build-packages-dev.sh
-          echo Replaced install sha in file.
 
       - uses: actions/setup-dotnet@v1
         with:
@@ -66,14 +45,15 @@ jobs:
 
       - name: "Build nuget package"
         run: |
-          bash dotnet/build-packages-dev.sh
+          sha=${{ steps.set_variables.outputs.sha }}
+          dev_version=${{steps.versions.outputs.dev_version}}
+
+          bash dotnet/build-packages-dev.sh $dev_version $sha
 
       - name: "Upload dev nuget"
         run: |
-          dotnet nuget add source https://pkgs.dev.azure.com/datadoghq/dd-trace-dotnet/_packaging/Public_Feed/nuget/v3/index.json --name Public_Feed --username any_string --password ${{ secrets.AZDO_PAT }} --store-password-in-clear-text
-
-          dev_version="${{steps.versions.outputs.dev_version}}-prerelease"
-          dotnet nuget push package/DevelopmentVerification.DdDotNet.Apm.$dev_version.nupkg --source Public_Feed --api-key any_string
+          dev_version=${{steps.versions.outputs.dev_version}}
+          bash dotnet/upload-dev-nuget.sh $dev_version ${{ secrets.AZDO_PAT }}
 
       - name: Azure CLI script
         uses: azure/CLI@v1
