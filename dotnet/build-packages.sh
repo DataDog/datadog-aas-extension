@@ -4,8 +4,15 @@ TRACER_DOWNLOAD_URL="https://github.com/DataDog/dd-trace-dotnet/releases/downloa
 
 echo "Downloading tracer from ${TRACER_DOWNLOAD_URL}"
 wget -O tracer.zip $TRACER_DOWNLOAD_URL
+if [ $? -ne 0 ]; then
+    exit 1;
+fi
+
 echo "Unzipping tracer"
 unzip tracer.zip -d dotnet/content/Tracer
+if [ $? -ne 0 ]; then
+    exit 1;
+fi
 
 RELEASE_VERSION_FILE=$( echo ${RELEASE_VERSION} | tr '.' '_' )
 RELEASE_DIR=$CI_PROJECT_DIR/dotnet/content/v${RELEASE_VERSION_FILE}
