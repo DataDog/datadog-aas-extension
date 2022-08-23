@@ -7,7 +7,7 @@ on:
         description: 'Hash commit of dd-trace-dotnet build'
         required: true
   repository_dispatch:
-    types: [dd-trace-dotnet-nightly]
+    types: [dd-trace-dotnet-nightly, dd-trace-code-freeze]
 
 jobs:
   update_extension:
@@ -21,6 +21,8 @@ jobs:
         run: |
           if [[ ! -z "${{ github.event.inputs.sha }}" ]]; then
             echo "::set-output name=sha::${{ github.event.inputs.sha }}"
+          elif [[ ! -z "${{ github.event.client_payload.sha }}" ]]; then
+            echo "::set-output name=sha::${{ github.event.client_payload.sha }}"
           else
             echo "Error. Hash commit wasn't provided in input."
             exit 1
