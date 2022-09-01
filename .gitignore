@@ -9,3 +9,4 @@ obj/
 /dotnet/content/Agent/datadog-trace-agent.exe
 /package/*
 .idea
+trace-agent*
