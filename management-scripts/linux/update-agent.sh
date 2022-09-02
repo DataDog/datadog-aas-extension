@@ -30,5 +30,5 @@ curl -L "https://s3.amazonaws.com/apt.datadoghq.com/pool/d/da/$agentversion" -o 
 cd "$temp" && tar -xf agent.deb && tar -xf data.tar.gz
 mv "$temp"/opt/datadog-agent/embedded/bin/trace-agent ../trace-agent"$agentname"
 
-echo "Exiting script"
+echo "Removing temp directory"
 trap 'rm -rf $temp' EXIT

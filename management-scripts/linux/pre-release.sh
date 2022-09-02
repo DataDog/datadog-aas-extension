@@ -13,7 +13,9 @@ if [ -n "$UPDATE_AGENT" ]; then
 
         AGENT=$(find . -type f -name "trace-agent*")
 
-        cp $AGENT ../../dotnet/linux/datadog-dotnet/trace-agent
+        cp $AGENT ../../dotnet/linux/datadog-aas-dotnet-linux/trace-agent
+        cp $AGENT ../../node/linux/datadog-aas-node-linux/trace-agent
+
     else
         echo "Please provide an Agent Version"
         exit 1
@@ -28,6 +30,9 @@ dotnet restore && dotnet build
 
 cp "$PWD"/bin/Debug/net6.0/datadog-startup-hook.dll ../datadog-aas-dotnet-linux/
 
-#zip the package
+#zip the packages
 cd ../
 zip -r datadog-aas-dotnet-linux datadog-aas-dotnet-linux
+
+cd ../../node/linux/
+zip -r datadog-aas-node-linux datadog-aas-node-linux
