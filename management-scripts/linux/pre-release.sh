@@ -21,11 +21,13 @@ if [ -n "$UPDATE_AGENT" ]; then
 
 fi
 
+# Dotnet
 #Build and add the Startup Hook
 cd ../../dotnet/linux/startup-hook
 dotnet restore && dotnet build
 
 cp "$PWD"/bin/Debug/net6.0/datadog-startup-hook.dll ../datadog-dotnet/
 
+#zip the package
 cd ../
 zip -r datadog-dotnet datadog-dotnet
