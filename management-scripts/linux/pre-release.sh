@@ -3,7 +3,7 @@
 # If UPDATE_AGENT=true, you must also provide an AGENT_VERSION, e.g. datadog-agent_7.38.2-1_amd64.deb.
 # check for the latest version here https://apt.datadoghq.com/pool/d/da/
 
-#Add the agent
+# Add the agent
 SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 cd $SCRIPTS_DIR/
 
@@ -22,12 +22,12 @@ if [ -n "$UPDATE_AGENT" ]; then
 fi
 
 # Dotnet
-#Build and add the Startup Hook
+# Build and add the Startup Hook
 cd ../../dotnet/linux/startup-hook
 dotnet restore && dotnet build
 
-cp "$PWD"/bin/Debug/net6.0/datadog-startup-hook.dll ../datadog-dotnet/
+cp "$PWD"/bin/Debug/net6.0/datadog-startup-hook.dll ../datadog-aas-dotnet-linux/
 
 #zip the package
 cd ../
-zip -r datadog-dotnet datadog-dotnet
+zip -r datadog-aas-dotnet-linux datadog-aas-dotnet-linux
