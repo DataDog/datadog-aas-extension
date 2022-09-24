@@ -35,22 +35,17 @@ jobs:
         id: "versions"
         run: |
           versionRegex="[0-9]*.[0-9]*.[0-9]*"
-          splitVersionRegex="([0-9]+).([0-9]+).([0-9]+)"
 
           CURRENT_DEV_VERSION="$(grep -o -e DEVELOPMENT_VERSION\=\"$versionRegex dotnet/build-packages-dev.sh | sed 's/DEVELOPMENT_VERSION="//')"
           echo Current dev version is: $CURRENT_DEV_VERSION
 
-          major=0
-          minor=0
+                    major=$(date +%G)
+          major=$(echo "$major % 2022" | bc)
+          minor=$(date +%j)
           build=${{ github.run_id }}
           build="${build:1}"
 
-          if [[ $CURRENT_DEV_VERSION =~ $splitVersionRegex ]]; then
-            major="${BASH_REMATCH[1]}"
-            minor="${BASH_REMATCH[2]}"
-          fi
-
-          DEV_VERSION=$major.$minor.$(echo $build | bc)
+          DEV_VERSION=$major.$minor.$build
           echo New dev version is $DEV_VERSION
           echo "::set-output name=dev_version::$DEV_VERSION"
 
