@@ -1,5 +1,5 @@
 DEVELOPMENT_VERSION="0.2.114-prerelease"
-AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.35.2-1-x86_64.zip"
+AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.40.0-1-x86_64.zip"
 TRACER_DOWNLOAD_URL="https://apmdotnetci.blob.core.windows.net/apm-dotnet-ci-artifacts-master/INSTALL_SHA/windows-tracer-home.zip"
 
 echo "Downloading tracer from ${TRACER_DOWNLOAD_URL}"
