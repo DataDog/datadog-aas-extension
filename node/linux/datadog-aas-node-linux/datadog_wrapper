@@ -3,10 +3,12 @@
 setUpNodeEnv() {
     echo "Setting up Datadog tracing for Node"
     DD_DIR="/home/site/wwwroot/datadog-js"
-    mkdir -p $DD_DIR
+    mkdir -p $DD_DIR || return
 
-    curl -L "https://gist.github.com/jcstorms1/7e73ab0da121f42d1843dac5b75c21cb/raw/datadog-js.tar.gz" -o $DD_DIR/datadog-js.tar.gz
-    tar -xzf $DD_DIR/datadog-js.tar.gz && rm $DD_DIR/datadog-js.tar.gz
+    curl -L "https://gist.github.com/jcstorms1/7e73ab0da121f42d1843dac5b75c21cb/raw/datadog-js.tar.gz" -o $DD_DIR/datadog-js.tar.gz || return
+
+    tar -xzf $DD_DIR/datadog-js.tar.gz || return
+    rm $DD_DIR/datadog-js.tar.gz
 
     export NODE_OPTIONS="--require=$DD_DIR/node_modules/dd-trace/init --require=$DD_DIR/start-trace-agent.js"
 }
@@ -14,11 +16,12 @@ setUpNodeEnv() {
 setUpDotnetEnv() {
     echo "Setting up Datadog tracing for .NET"
 
-    echo "Downloading "
-    curl -L "https://gist.github.com/jcstorms1/a712f0df568e81b055b2234b4ec71cd9/raw/datadog-dotnet.tar.gz" -o /home/datadog-dotnet.tar.gz
+    echo "Downloading"
+    curl -L "https://gist.github.com/jcstorms1/a712f0df568e81b055b2234b4ec71cd9/raw/datadog-dotnet.tar.gz" -o /home/datadog-dotnet.tar.gz || return
 
     cd /home/
-    tar -xzf datadog-dotnet.tar.gz && rm datadog-dotnet.tar.gz
+    tar -xzf datadog-dotnet.tar.gz || return
+    rm datadog-dotnet.tar.gz
 
     echo "Starting application"
     export CORECLR_ENABLE_PROFILING=1
