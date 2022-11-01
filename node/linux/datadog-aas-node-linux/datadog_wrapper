@@ -32,16 +32,14 @@ setUpDotnetEnv() {
     ./datadog-dotnet/trace-agent &
 
     cd /home/site/wwwroot
-    $DD_START_APP
 }
 
 if [ -z "$DD_RUNTIME" ]; then
     echo "Runtime is not set. Skipping Datadog startup"
-    $DD_START_APP
-    exit
 elif [ "$DD_RUNTIME" = "node" ]; then
     setUpNodeEnv;
-    $DD_START_APP
 elif [ "$DD_RUNTIME" = "dotnet" ]; then
     setUpDotnetEnv;
 fi
+
+$DD_START_APP
