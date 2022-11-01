@@ -7,7 +7,7 @@ setUpCommonEnv() {
     DD_DIR="/home/site/wwwroot/datadog"
     mkdir -p $DD_DIR || return
 
-    echo "Downloading required datadog modules"
+    echo "Downloading required datadog binaries"
     DD_BINARIES="https://gist.github.com/jcstorms1/7e73ab0da121f42d1843dac5b75c21cb/raw"
     curl -L ${DD_BINARIES}/datadog-${DD_RUNTIME}.tar.gz -o $DD_DIR/datadog.tar.gz || return
 
