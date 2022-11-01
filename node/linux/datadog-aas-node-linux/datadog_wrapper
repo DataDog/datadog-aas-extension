@@ -1,0 +1,44 @@
+#!/usr/bin/env sh 
+
+setUpNodeEnv() {
+    echo "Setting up Datadog tracing for Node"
+    DD_DIR="/home/site/wwwroot/datadog-js"
+    mkdir -p $DD_DIR
+
+    curl -L "https://gist.github.com/jcstorms1/7e73ab0da121f42d1843dac5b75c21cb/raw/datadog-js.tar.gz" -o $DD_DIR/datadog-js.tar.gz
+    tar -xzf $DD_DIR/datadog-js.tar.gz && rm $DD_DIR/datadog-js.tar.gz
+    
+    export NODE_OPTIONS="--require=$DD_DIR/node_modules/dd-trace/init --require=$DD_DIR/start-trace-agent.js"
+}
+
+setUpDotnetEnv() {
+    echo "Setting up Datadog tracing for .NET"
+
+    echo "Downloading "
+    curl -L "https://gist.github.com/jcstorms1/a712f0df568e81b055b2234b4ec71cd9/raw/datadog-dotnet.tar.gz" -o /home/datadog-dotnet.tar.gz
+    
+    cd /home/
+    tar -xzf datadog-dotnet.tar.gz && rm datadog-dotnet.tar.gz
+
+    echo "Starting application"
+    export CORECLR_ENABLE_PROFILING=1
+    export CORECLR_PROFILER={846F5F1C-F9AE-4B07-969E-05C26BC060D8}
+    export CORECLR_PROFILER_PATH=/home/datadog-dotnet/datadog/Datadog.Trace.ClrProfiler.Native.so
+    export DD_DOTNET_TRACER_HOME=/home/datadog-dotnet/datadog
+
+    ./datadog-dotnet/trace-agent &
+    
+    cd /home/site/wwwroot
+    $DD_START_APP
+}
+
+if [ -z "$DD_RUNTIME" ]; then
+    echo "Runtime is not set. Skipping Datadog startup"
+    $DD_START_APP
+    exit
+elif [ "$DD_RUNTIME" = "node" ]; then
+    setUpNodeEnv;
+    $DD_START_APP
+elif [ "$DD_RUNTIME" = "dotnet" ]; then
+    setUpDotnetEnv;
+fi
