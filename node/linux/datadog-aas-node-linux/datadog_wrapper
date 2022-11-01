@@ -5,7 +5,8 @@ setUpCommonEnv() {
     mkdir -p $DD_DIR || return
 
     echo "Downloading required datadog modules"
-    curl -L "https://gist.github.com/jcstorms1/7e73ab0da121f42d1843dac5b75c21cb/raw/datadog-${DD_RUNTIME}.tar.gz" -o $DD_DIR/datadog.tar.gz || return
+    DD_BINARIES="https://gist.github.com/jcstorms1/7e73ab0da121f42d1843dac5b75c21cb/raw"
+    curl -L ${DD_BINARIES}/datadog-${DD_RUNTIME}.tar.gz -o $DD_DIR/datadog.tar.gz || return
 
     echo "Decompressing files"
     tar -xzf $DD_DIR/datadog.tar.gz || return
