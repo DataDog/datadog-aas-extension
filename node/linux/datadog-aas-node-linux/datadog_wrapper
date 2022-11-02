@@ -5,18 +5,18 @@ CURRENT_DIR=$(pwd)
 setUpCommonEnv() {
     echo "Creating datadog directory"
     DD_DIR="/home/site/wwwroot/datadog"
-    mkdir -p $DD_DIR || return
+    mkdir -p $DD_DIR && cd $DD_DIR || return
 
     echo "Downloading required datadog binaries"
     DD_BINARIES="https://gist.github.com/jcstorms1/7e73ab0da121f42d1843dac5b75c21cb/raw"
-    curl -L ${DD_BINARIES}/datadog-${DD_RUNTIME}.tar.gz -o $DD_DIR/datadog.tar.gz || return
+    curl -L $DD_BINARIES/datadog.tar.gz -o datadog.tar.gz || return
 
     echo "Decompressing files"
-    tar -xzf $DD_DIR/datadog.tar.gz || return
-    rm $DD_DIR/datadog.tar.gz
+    tar -xzf datadog.tar.gz || return
+    rm datadog.tar.gz
 
     echo "Starting trace agent"
-    ./datadog/trace-agent &
+    ./trace-agent &
 }
 
 setUpNodeEnv() {
@@ -24,8 +24,10 @@ setUpNodeEnv() {
 
     setUpCommonEnv || return
 
+    npm install dd-trace || return
+
     # if any of the above fails, we must not update the NODE_OPTIONS
-    export NODE_OPTIONS="--require=$DD_DIR/node_modules/dd-trace/init --require=$DD_DIR/start-trace-agent.js $NODE_OPTIONS"
+    export NODE_OPTIONS="--require=$DD_DIR/node_modules/dd-trace/init $NODE_OPTIONS"
 }
 
 setUpDotnetEnv() {
@@ -49,4 +51,4 @@ fi
 
 echo "Executing start command: \"$DD_START_APP\""
 cd $CURRENT_DIR
-$DD_START_APP
+eval "$DD_START_APP"
