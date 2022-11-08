@@ -17,6 +17,8 @@ setUpCommonEnv() {
 
     echo "Starting trace agent"
     ./trace-agent &
+    TRACER_PID=$!
+    trap 'kill $TRACER_PID ; exit' INT
 }
 
 setUpNodeEnv() {
