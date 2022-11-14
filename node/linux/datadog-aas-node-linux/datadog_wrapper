@@ -32,10 +32,13 @@ setUpNodeEnv() {
 
     setUpCommonEnv || return
 
-    npm install dd-trace || return
+    npm install --prefix $DD_DIR dd-trace || return
 
-    # if any of the above fails, we must not update the NODE_OPTIONS
-    export NODE_OPTIONS="--require=$DD_DIR/node_modules/dd-trace/init $NODE_OPTIONS"
+    ORIG_NODE_OPTIONS=$NODE_OPTIONS
+    export NODE_OPTIONS="--require=$DD_DIR/node_modules/dd-trace/init $ORIG_NODE_OPTIONS"
+
+    # confirm updates to NODE_OPTIONS
+    node --help >/dev/null || (export NODE_OPTIONS=$ORIG_NODE_OPTIONS && return)
 }
 
 setUpDotnetEnv() {
