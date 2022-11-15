@@ -32,6 +32,7 @@ setUpNodeEnv() {
 
     setUpCommonEnv || return
 
+    echo "Installing Node tracer"
     npm install --prefix $DD_DIR dd-trace || return
 
     ORIG_NODE_OPTIONS=$NODE_OPTIONS
@@ -46,10 +47,20 @@ setUpDotnetEnv() {
 
     setUpCommonEnv || return
 
+    if [ -z "$DD_DOTNET_TRACER_VERSION" ]; then
+        DD_DOTNET_TRACER_VERSION=2.19.0
+    fi
+    DD_DOTNET_TRACER_FILE=datadog-dotnet-apm-${DD_DOTNET_TRACER_VERSION}.tar.gz
+    DD_DOTNET_TRACER_URL=https://github.com/DataDog/dd-trace-dotnet/releases/download/v${DD_DOTNET_TRACER_VERSION}/${DD_DOTNET_TRACER_FILE}
+
+    echo "Installing .NET tracer from $DD_DOTNET_TRACER_URL"
+    wget $DD_DOTNET_TRACER_URL || return
+    tar -xzf $DD_DOTNET_TRACER_FILE || return
+
     export CORECLR_ENABLE_PROFILING=1
     export CORECLR_PROFILER={846F5F1C-F9AE-4B07-969E-05C26BC060D8}
-    export CORECLR_PROFILER_PATH=/home/datadog-dotnet/datadog/Datadog.Trace.ClrProfiler.Native.so
-    export DD_DOTNET_TRACER_HOME=/home/datadog-dotnet/datadog
+    export CORECLR_PROFILER_PATH=${DD_DIR}/Datadog.Trace.ClrProfiler.Native.so
+    export DD_DOTNET_TRACER_HOME=${DD_DIR}
 }
 
 if [ -z "$DD_RUNTIME" ]; then
