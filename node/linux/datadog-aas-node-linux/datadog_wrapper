@@ -14,7 +14,7 @@ setUpCommonEnv() {
     echo "Creating datadog directory"
     mkdir -p $DD_DIR && cd $DD_DIR || return
 
-    echo "Downloading required datadog binaries"
+    echo "Downloading required datadog binaries from $DD_BINARIES_URL"
     curl -L $DD_BINARIES_URL/datadog.tar.gz -o datadog.tar.gz || return
 
     echo "Decompressing files"
