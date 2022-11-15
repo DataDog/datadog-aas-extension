@@ -1,1 +1,46 @@
-* @DataDog/apm-dotnet
+# Package code owners
+
+# The listed owners will be automatically added as reviewers for PRs,
+# to ensure code quality and consistency of the package, and identify
+# possible side effects.
+# PRs should still be peer-reviewed by the team opening the PR
+
+# See https://help.github.com/articles/about-codeowners/ for syntax
+# Rules are matched bottom-to-top, so one team can own subdirectories
+# and another the rest of the directory.
+
+# Config files for various CI systems / tasks
+
+/.github/CODEOWNERS                                     # do not notify anyone
+/.github/workflows/auto_tag_and_release                 @DataDog/apm-dotnet
+/.github/workflows/create_version_bump_PR               @DataDog/apm-dotnet
+/.github/workflows/update_aas_extension.yml             @DataDog/apm-dotnet
+
+/ARM/                                                   @DataDog/apm-dotnet
+
+/dotnet/bin/                                            @DataDog/apm-dotnet
+/dotnet/content/                                        @DataDog/apm-dotnet
+/dotnet/image/                                          @DataDog/apm-dotnet
+/dotnet/obj/                                            @DataDog/apm-dotnet
+/dotnet/build-packages-dev.sh                           @DataDog/apm-dotnet
+/dotnet/build-packages.sh                               @DataDog/apm-dotnet
+/dotnet/Datadog.AzureAppServices.DotNet.csproj          @DataDog/apm-dotnet
+/dotnet/Datadog.AzureAppServices.DotNet.nuspec          @DataDog/apm-dotnet
+/dotnet/DevelopmentVerification.DdDotNet.Apm.csproj     @DataDog/apm-dotnet
+/dotnet/DevelopmentVerification.DdDotNet.Apm.nuspec     @DataDog/apm-dotnet
+/dotnet/linux/                                          @DataDog/serverless
+
+
+/java/                                                  @DataDog/apm-dotnet
+
+
+/management-scripts/extension                           @DataDog/apm-dotnet
+/management-scripts/forcefully-resync-samples.ps1       @DataDog/apm-dotnet
+/management-scripts/full-stop-start.ps1                 @DataDog/apm-dotnet
+/management-scripts/manage-samples.ps1                  @DataDog/apm-dotnet
+/management-scripts/recycle-all-samples.ps1             @DataDog/apm-dotnet
+/management-scripts/update-all-samples.ps1              @DataDog/apm-dotnet
+
+/LICENSE*                                               # do not notify anyone
+/NOTICE                                                 @DataDog/apm-dotnet
+/README.md                                              @DataDog/apm-dotnet
