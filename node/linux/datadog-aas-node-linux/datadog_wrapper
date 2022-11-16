@@ -54,7 +54,7 @@ setUpDotnetEnv() {
     DD_DOTNET_TRACER_URL=https://github.com/DataDog/dd-trace-dotnet/releases/download/v${DD_DOTNET_TRACER_VERSION}/${DD_DOTNET_TRACER_FILE}
 
     echo "Installing .NET tracer from $DD_DOTNET_TRACER_URL"
-    wget $DD_DOTNET_TRACER_URL || return
+    curl -L $DD_DOTNET_TRACER_URL -o $DD_DOTNET_TRACER_FILE|| return
     tar -xzf $DD_DOTNET_TRACER_FILE || return
 
     export CORECLR_ENABLE_PROFILING=1
