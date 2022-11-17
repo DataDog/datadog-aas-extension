@@ -1,0 +1,76 @@
+#!/usr/bin/env sh
+
+CURRENT_DIR=$(pwd)
+
+if [ -z "$DD_DIR" ]; then
+    DD_DIR="/home/datadog"
+fi
+
+if [ -z "$DD_BINARIES_URL" ]; then
+    DD_BINARIES_URL="https://gist.github.com/jcstorms1/7e73ab0da121f42d1843dac5b75c21cb/raw"
+fi
+
+setUpCommonEnv() {
+    echo "Creating datadog directory"
+    mkdir -p $DD_DIR && cd $DD_DIR || return
+
+    echo "Downloading required datadog binaries from $DD_BINARIES_URL"
+    curl -L $DD_BINARIES_URL/datadog.tar.gz -o datadog.tar.gz || return
+
+    echo "Decompressing files"
+    tar -xzf datadog.tar.gz || return
+    rm datadog.tar.gz
+
+    echo "Starting trace agent"
+    ./trace-agent &
+    TRACER_PID=$!
+    trap 'kill $TRACER_PID ; exit' INT
+}
+
+setUpNodeEnv() {
+    echo "Setting up Datadog tracing for Node"
+
+    setUpCommonEnv || return
+
+    echo "Installing Node tracer"
+    npm install --prefix $DD_DIR dd-trace || return
+
+    ORIG_NODE_OPTIONS=$NODE_OPTIONS
+    export NODE_OPTIONS="--require=$DD_DIR/node_modules/dd-trace/init $ORIG_NODE_OPTIONS"
+
+    # confirm updates to NODE_OPTIONS
+    node --help >/dev/null || (export NODE_OPTIONS=$ORIG_NODE_OPTIONS && return)
+}
+
+setUpDotnetEnv() {
+    echo "Setting up Datadog tracing for .NET"
+
+    setUpCommonEnv || return
+
+    if [ -z "$DD_DOTNET_TRACER_VERSION" ]; then
+        DD_DOTNET_TRACER_VERSION=2.19.0
+    fi
+    DD_DOTNET_TRACER_FILE=datadog-dotnet-apm-${DD_DOTNET_TRACER_VERSION}.tar.gz
+    DD_DOTNET_TRACER_URL=https://github.com/DataDog/dd-trace-dotnet/releases/download/v${DD_DOTNET_TRACER_VERSION}/${DD_DOTNET_TRACER_FILE}
+
+    echo "Installing .NET tracer from $DD_DOTNET_TRACER_URL"
+    curl -L $DD_DOTNET_TRACER_URL -o $DD_DOTNET_TRACER_FILE|| return
+    tar -xzf $DD_DOTNET_TRACER_FILE || return
+
+    export CORECLR_ENABLE_PROFILING=1
+    export CORECLR_PROFILER={846F5F1C-F9AE-4B07-969E-05C26BC060D8}
+    export CORECLR_PROFILER_PATH=${DD_DIR}/Datadog.Trace.ClrProfiler.Native.so
+    export DD_DOTNET_TRACER_HOME=${DD_DIR}
+}
+
+if [ -z "$DD_RUNTIME" ]; then
+    echo "Runtime is not set. Skipping Datadog startup"
+elif [ "$DD_RUNTIME" = "node" ]; then
+    setUpNodeEnv;
+elif [ "$DD_RUNTIME" = "dotnet" ]; then
+    setUpDotnetEnv;
+fi
+
+echo "Executing start command: \"$DD_START_APP\""
+cd $CURRENT_DIR
+eval "$DD_START_APP"
