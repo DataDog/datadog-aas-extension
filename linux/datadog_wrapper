@@ -2,6 +2,9 @@
 
 CURRENT_DIR=$(pwd)
 
+# Required to add the AAS metadata 
+export DD_AZURE_APP_SERVICES=1
+
 if [ -z "$DD_DIR" ]; then
     DD_DIR="/home/datadog"
 fi
