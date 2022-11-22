@@ -63,11 +63,9 @@ setUpDotnetEnv() {
     export DD_DOTNET_TRACER_HOME=${DD_DIR}
 }
 
-if [ -z "$DD_RUNTIME" ]; then
-    echo "Runtime is not set. Skipping Datadog startup"
-elif [ "$DD_RUNTIME" = "node" ]; then
+if [ "$WEBSITE_STACK" = "NODE" ]; then
     setUpNodeEnv;
-elif [ "$DD_RUNTIME" = "dotnet" ]; then
+elif [ "$WEBSITE_STACK" = "DOTNETCORE" ]; then
     setUpDotnetEnv;
 fi
 
