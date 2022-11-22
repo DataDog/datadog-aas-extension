@@ -18,11 +18,12 @@ setUpCommonEnv() {
     mkdir -p $DD_DIR && cd $DD_DIR || return
 
     echo "Downloading required datadog binaries from $DD_BINARIES_URL"
-    curl -L $DD_BINARIES_URL/datadog.tar.gz -o datadog.tar.gz || return
+    curl -L $DD_BINARIES_URL/datadog.gz -o datadog.gz || return
 
     echo "Decompressing files"
-    tar -xzf datadog.tar.gz || return
-    rm datadog.tar.gz
+    # tar -xzf datadog.tar.gz || return
+    gzip -d datadog.gz || return
+    # rm datadog.tar.gz
 
     echo "Starting trace agent"
     ./trace-agent &
