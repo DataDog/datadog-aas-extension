@@ -10,7 +10,7 @@ if [ -z "$DD_DIR" ]; then
 fi
 
 if [ -z "$DD_BINARIES_URL" ]; then
-    DD_BINARIES_URL="https://github.com/DataDog/datadog-aas-extension/releases/download/linux-v0.1.0-beta"
+    DD_BINARIES_URL="https://github.com/DataDog/datadog-aas-extension/releases/download/linux-v0.1.1-beta"
 fi
 
 setUpCommonEnv() {
