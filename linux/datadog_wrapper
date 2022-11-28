@@ -10,7 +10,7 @@ if [ -z "$DD_DIR" ]; then
 fi
 
 if [ -z "$DD_BINARIES_URL" ]; then
-    DD_BINARIES_URL="https://gist.github.com/jcstorms1/7e73ab0da121f42d1843dac5b75c21cb/raw"
+    DD_BINARIES_URL="https://github.com/DataDog/datadog-aas-extension/releases/download/linux-v0.1.0-beta"
 fi
 
 setUpCommonEnv() {
@@ -18,12 +18,10 @@ setUpCommonEnv() {
     mkdir -p $DD_DIR && cd $DD_DIR || return
 
     echo "Downloading required datadog binaries from $DD_BINARIES_URL"
-    curl -L $DD_BINARIES_URL/datadog.gz -o datadog.gz || return
+    curl -L $DD_BINARIES_URL/trace-agent.gz -o trace-agent.gz || return
 
     echo "Decompressing files"
-    # tar -xzf datadog.tar.gz || return
-    gzip -d datadog.gz || return
-    # rm datadog.tar.gz
+    gzip -d trace-agent.gz || return
 
     echo "Starting trace agent"
     ./trace-agent &
