@@ -5,6 +5,7 @@ _Note: Currently only NODE is supported._
 - ### Application Settings
     - `DD_API_KEY` is your Datadog API key 
     - `DD_SITE` is the Datadog site [parameter](https://docs.datadoghq.com/getting_started/site/#access-the-datadog-site) (defaults to datadoghq.com)
+    - `DD_SERVICE` is the service name used for this program. Defaults to the name field value in package.json.
     - `DD_START_APP` is the command used to start your application. For example, `node ./bin/www`
 
 - ### General Settings
