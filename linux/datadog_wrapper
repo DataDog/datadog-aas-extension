@@ -27,7 +27,7 @@ setUpCommonEnv() {
 
         if [ -f "trace-agent" ]; then 
             echo "Removing old versions of the trace agent"
-            rm trace-agnet* 
+            rm trace-agent* 
         fi
 
         echo "Downloading required datadog binaries from $DD_BINARIES_URL"
