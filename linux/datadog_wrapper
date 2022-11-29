@@ -10,7 +10,7 @@ if [ -z "$DD_DIR" ]; then
 fi
 
 if [ -z "$DD_BINARIES_URL" ]; then
-    DD_BINARIES_URL="https://github.com/DataDog/datadog-aas-extension/releases/download/"
+    DD_BINARIES_URL="https://github.com/DataDog/datadog-aas-extension/releases/download"
 fi
 
 if [ -z "$DD_AAS_LINUX_VERSION" ]; then
@@ -31,12 +31,12 @@ setUpCommonEnv() {
         fi
 
         echo "Downloading required datadog binaries from $DD_BINARIES_URL"
-        curl -L $DD_BINARIES_URL/trace-agent-${DD_AAS_LINUX_VERSION}.tar.gz -o trace-agent-${DD_AAS_LINUX_VERSION}.tar.gz || return
+        curl -L $DD_BINARIES_URL/$FILE -o $FILE || return
 
         echo "Decompressing files"
-        tar -zxf trace-agent-${DD_AAS_LINUX_VERSION}.tar.gz || return
+        tar -zxf $FILE || return
     else
-        echo "Most recent version of the trace agent previously installed"
+        echo "Version $DD_AAS_LINUX_VERSION of the trace agent previously installed"
     fi
     
     echo "Starting trace agent"
