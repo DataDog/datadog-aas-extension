@@ -31,7 +31,7 @@ setUpCommonEnv() {
         fi
 
         echo "Downloading required datadog binaries from $DD_BINARIES_URL"
-        curl -L $DD_BINARIES_URL/$FILE -o $FILE || return
+        curl -L $DD_BINARIES_URL/$DD_AAS_LINUX_VERSION/$FILE -o $FILE || return
 
         echo "Decompressing files"
         tar -zxf $FILE || return
