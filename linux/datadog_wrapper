@@ -10,19 +10,35 @@ if [ -z "$DD_DIR" ]; then
 fi
 
 if [ -z "$DD_BINARIES_URL" ]; then
-    DD_BINARIES_URL="https://github.com/DataDog/datadog-aas-extension/releases/download/linux-v0.1.1-beta"
+    DD_BINARIES_URL="https://github.com/DataDog/datadog-aas-extension/releases/download/"
+fi
+
+if [ -z "$DD_AAS_LINUX_VERSION" ]; then
+    DD_AAS_LINUX_VERSION="linux-v0.1.2-beta"
 fi
 
 setUpCommonEnv() {
     echo "Creating datadog directory"
     mkdir -p $DD_DIR && cd $DD_DIR || return
 
-    echo "Downloading required datadog binaries from $DD_BINARIES_URL"
-    curl -L $DD_BINARIES_URL/trace-agent.gz -o trace-agent.gz || return
+    FILE=trace-agent-${DD_AAS_LINUX_VERSION}.tar.gz
 
-    echo "Decompressing files"
-    gzip -d trace-agent.gz || return
+    if [ ! -f $FILE ]; then 
 
+        if [ -f "trace-agent" ]; then 
+            echo "Removing old versions of the trace agent"
+            rm trace-agnet* 
+        fi
+
+        echo "Downloading required datadog binaries from $DD_BINARIES_URL"
+        curl -L $DD_BINARIES_URL/trace-agent-${DD_AAS_LINUX_VERSION}.tar.gz -o trace-agent-${DD_AAS_LINUX_VERSION}.tar.gz || return
+
+        echo "Decompressing files"
+        tar -zxf trace-agent-${DD_AAS_LINUX_VERSION}.tar.gz || return
+    else
+        echo "Most recent version of the Trace agent previously installed"
+    fi
+    
     echo "Starting trace agent"
     ./trace-agent &
     TRACER_PID=$!
@@ -35,8 +51,8 @@ setUpNodeEnv() {
     setUpCommonEnv || return
 
     echo "Installing Node tracer"
-    npm install --prefix $DD_DIR dd-trace || return
-
+    yarn add dd-trace
+    
     ORIG_NODE_OPTIONS=$NODE_OPTIONS
     export NODE_OPTIONS="--require=$DD_DIR/node_modules/dd-trace/init $ORIG_NODE_OPTIONS"
 
