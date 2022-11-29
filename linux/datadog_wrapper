@@ -36,7 +36,7 @@ setUpCommonEnv() {
         echo "Decompressing files"
         tar -zxf trace-agent-${DD_AAS_LINUX_VERSION}.tar.gz || return
     else
-        echo "Most recent version of the Trace agent previously installed"
+        echo "Most recent version of the trace agent previously installed"
     fi
     
     echo "Starting trace agent"
@@ -51,7 +51,7 @@ setUpNodeEnv() {
     setUpCommonEnv || return
 
     echo "Installing Node tracer"
-    yarn add dd-trace
+    yarn add dd-trace || return
     
     ORIG_NODE_OPTIONS=$NODE_OPTIONS
     export NODE_OPTIONS="--require=$DD_DIR/node_modules/dd-trace/init $ORIG_NODE_OPTIONS"
