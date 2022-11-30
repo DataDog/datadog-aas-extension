@@ -14,7 +14,7 @@ if [ -z "$DD_BINARIES_URL" ]; then
 fi
 
 if [ -z "$DD_AAS_LINUX_VERSION" ]; then
-    DD_AAS_LINUX_VERSION="linux-v0.1.2-beta"
+    DD_AAS_LINUX_VERSION="linux-v0.1.3-beta"
 fi
 
 setUpCommonEnv() {
@@ -31,10 +31,13 @@ setUpCommonEnv() {
         fi
 
         echo "Downloading required datadog binaries from $DD_BINARIES_URL"
-        curl -L $DD_BINARIES_URL/$DD_AAS_LINUX_VERSION/$FILE -o $FILE || return
-
-        echo "Decompressing files"
-        tar -zxf $FILE || return
+        if curl -L --fail $DD_BINARIES_URL/$DD_AAS_LINUX_VERSION/$FILE -o $FILE; then
+            echo "Decompressing files"
+            tar -zxf $FILE || return
+        else 
+            echo "Failed to download the datadog binary succesfully."
+        fi
+        
     else
         echo "Version $DD_AAS_LINUX_VERSION of the trace agent previously installed"
     fi
