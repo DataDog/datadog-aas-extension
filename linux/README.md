@@ -11,4 +11,4 @@ _Note: Currently only NODE is supported._
 - ### General Settings
     - Add the following to the startup command box
     
-          curl -s https://raw.githubusercontent.com/DataDog/datadog-aas-extension/linux-v0.1.2-beta/linux/datadog_wrapper | bash
+          curl -s https://raw.githubusercontent.com/DataDog/datadog-aas-extension/linux-v0.1.3-beta/linux/datadog_wrapper | bash
