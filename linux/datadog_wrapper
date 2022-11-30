@@ -31,11 +31,12 @@ setUpCommonEnv() {
         fi
 
         echo "Downloading required Datadog binaries from $DD_BINARIES_URL/$DD_AAS_LINUX_VERSION/$FILE"
-        if curl -L --fail $DD_BINARIES_URL/$DD_AAS_LINUX_VERSION/$FILE -o $FILE; then
+        if curl -L --fail $DD_BINARIES_URL/$DD_AAS_LINUX_VERSION/$FILE -o $FILE; then echo
             echo "Decompressing files"
             tar -zxf $FILE || return
         else 
             echo "Failed to download the Datadog binary succesfully."
+            return
         fi
         
     else
