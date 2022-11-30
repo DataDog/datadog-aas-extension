@@ -30,7 +30,7 @@ setUpCommonEnv() {
             rm trace-agent* 
         fi
 
-        echo "Downloading required Datadog binaries from $DD_BINARIES_URL"
+        echo "Downloading required Datadog binaries from $DD_BINARIES_URL/$DD_AAS_LINUX_VERSION/$FILE"
         if curl -L --fail $DD_BINARIES_URL/$DD_AAS_LINUX_VERSION/$FILE -o $FILE; then
             echo "Decompressing files"
             tar -zxf $FILE || return
