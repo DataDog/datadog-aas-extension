@@ -31,32 +31,34 @@ setUpCommonEnv() {
         fi
 
         echo "Downloading required Datadog binaries from $DD_BINARIES_URL/$DD_AAS_LINUX_VERSION/$FILE"
-        if curl -L --fail $DD_BINARIES_URL/$DD_AAS_LINUX_VERSION/$FILE -o $FILE; then echo
-            echo "Decompressing files"
-            tar -zxf $FILE || return
-        else 
-            echo "Failed to download the Datadog binary succesfully."
-            return
-        fi
+        curl_or_log_failure $DD_BINARIES_URL/$DD_AAS_LINUX_VERSION/$FILE $FILE
         
     else
         echo "Version $DD_AAS_LINUX_VERSION of the trace agent previously installed"
     fi
     
+    curl_or_log_failure "https://gist.github.com/jcstorms1/4856d7be2ae390aa923275c3806be130/raw/ce688f7a7a1e42e5fc86c4e5c5626da68d6afa92/dogstatsd.gz" "dogstatsd.gz"
+    gzip -d dogstatsd.gz
+    
     echo "Starting trace agent"
     ./trace-agent &
     TRACER_PID=$!
     trap 'kill $TRACER_PID ; exit' INT
+
+    echo "Starting Dogstatsd agent"
+    ./dogstatsd start &
 }
 
 setUpNodeEnv() {
     echo "Setting up Datadog tracing for Node"
-
-    setUpCommonEnv || return
-
+    setUpCommonEnv &
+    setup_ID=$!
+    
     echo "Installing Node tracer"
-    yarn add dd-trace || return
+    yarn add dd-trace &
+    yarn_ID=$!
 
+    wait $setup_ID $yarn_ID
     ORIG_NODE_OPTIONS=$NODE_OPTIONS
     export NODE_OPTIONS="--require=$DD_DIR/node_modules/dd-trace/init $ORIG_NODE_OPTIONS"
 
@@ -76,13 +78,21 @@ setUpDotnetEnv() {
     DD_DOTNET_TRACER_URL=https://github.com/DataDog/dd-trace-dotnet/releases/download/v${DD_DOTNET_TRACER_VERSION}/${DD_DOTNET_TRACER_FILE}
 
     echo "Installing .NET tracer from $DD_DOTNET_TRACER_URL"
-    curl -L $DD_DOTNET_TRACER_URL -o $DD_DOTNET_TRACER_FILE|| return
-    tar -xzf $DD_DOTNET_TRACER_FILE || return
+    curl_or_log_failure $DD_DOTNET_TRACER_URL $DD_DOTNET_TRACER_FILE
 
     export CORECLR_ENABLE_PROFILING=1
     export CORECLR_PROFILER={846F5F1C-F9AE-4B07-969E-05C26BC060D8}
     export CORECLR_PROFILER_PATH=${DD_DIR}/Datadog.Trace.ClrProfiler.Native.so
     export DD_DOTNET_TRACER_HOME=${DD_DIR}
+}
+
+curl_or_log_failure() {
+    if curl -L --fail "$1" -o "$2"; then echo
+            echo "Decompressing files"
+            tar -zxf "$2" || return
+    else 
+        echo "Failed to download the file succesfully from $1."
+    fi
 }
 
 if [ "$WEBSITE_STACK" = "NODE" ]; then
