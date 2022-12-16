@@ -70,9 +70,10 @@ setUpNodeEnv() {
     
     echo "Installing Node tracer"
     yarn add dd-trace &
+    yarn_ID=$!
 
     # We ran these in parallel and need to wait for both to complete.
-    wait 
+    wait $yarn_ID
     ORIG_NODE_OPTIONS=$NODE_OPTIONS
     export NODE_OPTIONS="--require=$DD_DIR/node_modules/dd-trace/init $ORIG_NODE_OPTIONS"
 
