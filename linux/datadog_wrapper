@@ -67,14 +67,12 @@ setUpCommonEnv() {
 setUpNodeEnv() {
     echo "Setting up Datadog tracing for Node"
     setUpCommonEnv &
-    setup_ID=$!
     
     echo "Installing Node tracer"
     yarn add dd-trace &
-    yarn_ID=$!
 
     # We ran these in parallel and need to wait for both to complete.
-    wait $setup_ID $yarn_ID
+    wait 
     ORIG_NODE_OPTIONS=$NODE_OPTIONS
     export NODE_OPTIONS="--require=$DD_DIR/node_modules/dd-trace/init $ORIG_NODE_OPTIONS"
 
