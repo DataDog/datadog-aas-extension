@@ -1,14 +1,17 @@
 #!/usr/bin/env sh
 
 main() {
-    # Required to add the AAS metadata 
+    # Required to add the AAS metadata
     export DD_AZURE_APP_SERVICES=1
 
-    CURRENT_DIR=$(pwd)
-    echo "Set current directory to $CURRENT_DIR"
-
+    echo "Setting application directory as $APP_DIR"
+    APP_DIR=$(pwd)
+   
     echo "Setting Datadog environment variables"
     setEnvVars
+
+    echo "Creating and switching to the Datadog directory at $DD_DIR"
+    mkdir -p $DD_DIR && cd $DD_DIR || return
 
     if [ "$WEBSITE_STACK" = "NODE" ]; then
         echo "Initializing setup for a Node environment"
@@ -19,7 +22,7 @@ main() {
     fi
 
     echo "Executing start command: \"$DD_START_APP\""
-    cd "$CURRENT_DIR" || return
+    cd "$APP_DIR" || return
     eval "$DD_START_APP"
 }
 
@@ -45,11 +48,7 @@ setEnvVars() {
     fi
 }
 
-setUpCommonEnv() {
-    # Sets up the directory, downloads and installs the required binaries
-    echo "Creating Datadog directory"
-    mkdir -p $DD_DIR && cd $DD_DIR || return
-
+getBinaries() {
     if [ "$DD_TRACE_ENABLED" ]; then
         echo "Setting up the trace agent"
         setUpTraceAgent &
@@ -59,18 +58,22 @@ setUpCommonEnv() {
         echo "Setting up DogStatsD"
         setUpDogStatsD &
     fi
-    
+
     echo "Completed Datadog binary installation"
 }
 
 setUpNodeEnv() {
-    echo "Setting up Datadog tracing for Node"
-    setUpCommonEnv &
-    
+    echo "Checking for Datadog binaries"
+    getBinaries &
+    binary_ID=$!
     echo "Installing Node tracer"
-    yarn add dd-trace
+    yarn add dd-trace &
+    yarn_ID=$!
 
     # We ran these in parallel and need to wait for both to complete.
+    wait $binary_ID $yarn_ID
+
+    echo "Extending NODE_OPTIONS with dd-trace"
     ORIG_NODE_OPTIONS=$NODE_OPTIONS
     export NODE_OPTIONS="--require=$DD_DIR/node_modules/dd-trace/init $ORIG_NODE_OPTIONS"
 
@@ -81,7 +84,7 @@ setUpNodeEnv() {
 setUpDotnetEnv() {
     echo "Setting up Datadog tracing for .NET"
 
-    setUpCommonEnv || return
+    getBinaries || return
 
     if [ -z "$DD_DOTNET_TRACER_VERSION" ]; then
         DD_DOTNET_TRACER_VERSION=2.19.0
@@ -104,6 +107,7 @@ setUpTraceAgent() {
     REMOTE_TRACE_AGENT=trace-agent-${DD_AAS_LINUX_VERSION}.tar.gz
     LOCAL_TRACE_AGENT="trace-agent"
 
+    # Curl for the binaries or skip if the most recent version is already present
     check_file_exists_or_curl $REMOTE_TRACE_AGENT $LOCAL_TRACE_AGENT
 
     echo "Starting trace agent"
