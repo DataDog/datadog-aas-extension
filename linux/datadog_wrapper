@@ -117,7 +117,7 @@ setUpTraceAgent() {
 }
 
 setUpDogStatsD() {
-    curl_or_log_failure "https://gist.github.com/jcstorms1/4856d7be2ae390aa923275c3806be130/raw/ce688f7a7a1e42e5fc86c4e5c5626da68d6afa92/dogstatsd.gz" "dogstatsd.gz"
+    curl_or_log_failure "https://gist.github.com/jcstorms1/4856d7be2ae390aa923275c3806be130/raw/48f4dadef6dca0c1066bfcfbf8b56da9ab4f0baf/dogstatsd.gz" "dogstatsd.gz"
     gzip -d dogstatsd.gz
     
     echo "Starting Dogstatsd agent"
