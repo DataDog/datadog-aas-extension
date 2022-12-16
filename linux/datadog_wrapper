@@ -66,7 +66,7 @@ setUpCommonEnv() {
 
 setUpNodeEnv() {
     echo "Setting up Datadog tracing for Node"
-    setUpCommonEnv
+    setUpCommonEnv &
     setup_ID=$!
     
     echo "Installing Node tracer"
