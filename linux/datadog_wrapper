@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 main() {
     # Required to add the AAS metadata
@@ -6,29 +6,33 @@ main() {
 
     echo "Setting application directory as $APP_DIR"
     APP_DIR=$(pwd)
-   
+
     echo "Setting Datadog environment variables"
     setEnvVars
 
     echo "Creating and switching to the Datadog directory at $DD_DIR"
     mkdir -p "$DD_DIR" && cd "$DD_DIR" || return
 
-    if [ "$WEBSITE_STACK" = "NODE" ]; then
-        echo "Initializing setup for a Node environment"
-        setUpNodeEnv;
-    elif [ "$WEBSITE_STACK" = "DOTNETCORE" ]; then
-        echo "Initializing setup for a .NET environment"
-        setUpDotnetEnv;
-    fi
+    echo "Getting the required Datadog binaries"
+    STARTUP_PIDS=()
+    getBinaries
+    
+    case "$WEBSITE_STACK" in
+        "NODE")
+            echo "Initializing setup for a Node environment"
+            setUpNodeEnv;;
+        "DOTNETCORE")
+            echo "Initializing setup for a .NET environment"
+            setUpDotnetEnv;;
+    esac
 
-    echo "Executing start command: \"$DD_START_APP\""
-    cd "$APP_DIR" || return
-    eval "$DD_START_APP"
+    for i in "${STARTUP_PIDS[@]}"; do wait "$i"; done
+    echo "Completed Datadog setup"
 }
 
 setEnvVars() {
     if [ -z "$DD_DIR" ]; then
-    DD_DIR="/home/datadog"
+        DD_DIR="/home/datadog"
     fi
 
     if [ -z "$DD_BINARIES_URL" ]; then
@@ -44,35 +48,27 @@ setEnvVars() {
     fi
 
     if [ -z "$DD_CUSTOM_METRICS_ENABLED" ]; then
-        DD_CUSTOM_METRICS_ENABLED="true"
+        DD_CUSTOM_METRICS_ENABLED="false"
     fi
 }
 
 getBinaries() {
     if [ "$DD_TRACE_ENABLED" ]; then
         echo "Setting up the trace agent"
-        setUpTraceAgent &
+        setUpTraceAgent & STARTUP_PIDS+=($!)
     fi
 
     if [ "$DD_CUSTOM_METRICS_ENABLED" ]; then
         echo "Setting up DogStatsD"
-        setUpDogStatsD &
+        setUpDogStatsD & STARTUP_PIDS+=($!)
     fi
-
-    echo "Completed Datadog binary installation"
 }
 
 setUpNodeEnv() {
-    echo "Checking for Datadog binaries"
-    getBinaries &
-    binary_ID=$!
     echo "Installing Node tracer"
-    yarn add dd-trace &
-    yarn_ID=$!
+    yarn add dd-trace & yarn_ID=$!
 
-    # We ran these in parallel and need to wait for both to complete.
-    wait $binary_ID $yarn_ID
-
+    wait $yarn_ID
     echo "Extending NODE_OPTIONS with dd-trace"
     ORIG_NODE_OPTIONS=$NODE_OPTIONS
     export NODE_OPTIONS="--require=$DD_DIR/node_modules/dd-trace/init $ORIG_NODE_OPTIONS"
@@ -144,7 +140,6 @@ check_file_exists_or_curl() {
 
         echo "Downloading required Datadog binaries from $DD_BINARIES_URL/$DD_AAS_LINUX_VERSION/$ARCHIVED_BINARY"
         curl_or_log_failure "$DD_BINARIES_URL/$DD_AAS_LINUX_VERSION/$ARCHIVED_BINARY" "$ARCHIVED_BINARY"
-        
     else
         echo "Version $DD_AAS_LINUX_VERSION previously installed for the $UNARCHIVED_BINARY binary"
     fi
@@ -165,3 +160,6 @@ curl_or_log_failure() {
 }
 
 main
+echo "Executing start command: \"$DD_START_APP\""
+cd "$APP_DIR" || return
+eval "$DD_START_APP"
