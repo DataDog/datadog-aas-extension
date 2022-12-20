@@ -26,8 +26,44 @@ main() {
             setUpDotnetEnv;;
     esac
 
+    #wait for all startup functions to finish before exiting
     for i in "${STARTUP_PIDS[@]}"; do wait "$i"; done
     echo "Completed Datadog setup"
+}
+
+setUpNodeEnv() {
+    echo "Installing Node tracer"
+    yarn add dd-trace & yarn_ID=$!
+
+    wait $yarn_ID
+    echo "Extending NODE_OPTIONS with dd-trace"
+    ORIG_NODE_OPTIONS=$NODE_OPTIONS
+    export NODE_OPTIONS="--require=$DD_DIR/node_modules/dd-trace/init $ORIG_NODE_OPTIONS"
+
+    # confirm updates to NODE_OPTIONS
+    node --help >/dev/null || (export NODE_OPTIONS="$ORIG_NODE_OPTIONS" && return)
+}
+
+setUpDotnetEnv() {
+    echo "Setting up Datadog tracing for .NET"
+
+    if [ -z "$DD_DOTNET_TRACER_VERSION" ]; then
+        DD_DOTNET_TRACER_VERSION=2.19.0
+    fi
+    
+    echo "Using version $DD_DOTNET_TRACER of the .NET tracer"
+    DD_DOTNET_TRACER_FILE="datadog-dotnet-apm-${DD_DOTNET_TRACER_VERSION}.tar.gz"
+    DD_DOTNET_TRACER_URL="https://github.com/DataDog/dd-trace-dotnet/releases/download/v${DD_DOTNET_TRACER_VERSION}/${DD_DOTNET_TRACER_FILE}"
+
+    echo "Installing .NET tracer from $DD_DOTNET_TRACER_URL"
+    curl_or_log_failure "$DD_DOTNET_TRACER_URL" "$DD_DOTNET_TRACER_FILE"; 
+    # set env vars only if the tracer was curled successfully
+    if [ "$?" -eq 0 ]; then
+        export CORECLR_ENABLE_PROFILING=1
+        export CORECLR_PROFILER="{846F5F1C-F9AE-4B07-969E-05C26BC060D8}"
+        export CORECLR_PROFILER_PATH="${DD_DIR}/Datadog.Trace.ClrProfiler.Native.so"
+        export DD_DOTNET_TRACER_HOME="${DD_DIR}"
+    fi
 }
 
 setEnvVars() {
@@ -55,73 +91,35 @@ setEnvVars() {
 getBinaries() {
     if [ "$DD_TRACE_ENABLED" ]; then
         echo "Setting up the trace agent"
-        setUpTraceAgent & STARTUP_PIDS+=($!)
+        setUpBinary "trace-agent" & STARTUP_PIDS+=($!)
     fi
 
     if [ "$DD_CUSTOM_METRICS_ENABLED" ]; then
         echo "Setting up DogStatsD"
-        setUpDogStatsD & STARTUP_PIDS+=($!)
+        setUpBinary "dogstatsd" & STARTUP_PIDS+=($!)
     fi
 }
 
-setUpNodeEnv() {
-    echo "Installing Node tracer"
-    yarn add dd-trace & yarn_ID=$!
-
-    wait $yarn_ID
-    echo "Extending NODE_OPTIONS with dd-trace"
-    ORIG_NODE_OPTIONS=$NODE_OPTIONS
-    export NODE_OPTIONS="--require=$DD_DIR/node_modules/dd-trace/init $ORIG_NODE_OPTIONS"
-
-    # confirm updates to NODE_OPTIONS
-    node --help >/dev/null || (export NODE_OPTIONS="$ORIG_NODE_OPTIONS" && return)
-}
-
-setUpDotnetEnv() {
-    echo "Setting up Datadog tracing for .NET"
-
-    getBinaries || return
-
-    if [ -z "$DD_DOTNET_TRACER_VERSION" ]; then
-        DD_DOTNET_TRACER_VERSION=2.19.0
+setUpBinary() {
+    BINARY="$1"
+    ARCHIVED_BINARY="$BINARY-${DD_AAS_LINUX_VERSION}.tar.gz"
+    
+    check_file_exists_or_curl "$ARCHIVED_BINARY" "$BINARY"
+    # do not start the binary if curling failed
+    if [ "$?" -ne 0 ]; then 
+        echo "Curling $BINARY was unsuccesful and the binary will not be initialized"
+        return
     fi
     
-    echo "Using version $DD_DOTNET_TRACER of the .NET tracer"
-    DD_DOTNET_TRACER_FILE=datadog-dotnet-apm-${DD_DOTNET_TRACER_VERSION}.tar.gz
-    DD_DOTNET_TRACER_URL=https://github.com/DataDog/dd-trace-dotnet/releases/download/v${DD_DOTNET_TRACER_VERSION}/${DD_DOTNET_TRACER_FILE}
+    echo "Starting $BINARY"
+    if [ $BINARY = "dogstatsd" ]; then
+        ./$BINARY start &
+        trap 'kill $! : exit' INT
+        return
+    fi
 
-    echo "Installing .NET tracer from $DD_DOTNET_TRACER_URL"
-    curl_or_log_failure $DD_DOTNET_TRACER_URL $DD_DOTNET_TRACER_FILE
-
-    export CORECLR_ENABLE_PROFILING=1
-    export CORECLR_PROFILER={846F5F1C-F9AE-4B07-969E-05C26BC060D8}
-    export CORECLR_PROFILER_PATH=${DD_DIR}/Datadog.Trace.ClrProfiler.Native.so
-    export DD_DOTNET_TRACER_HOME=${DD_DIR}
-}
-
-setUpTraceAgent() {
-    REMOTE_TRACE_AGENT="trace-agent-${DD_AAS_LINUX_VERSION}.tar.gz"
-    LOCAL_TRACE_AGENT="trace-agent"
-
-    # Curl for the binaries or skip if the most recent version is already present
-    check_file_exists_or_curl "$REMOTE_TRACE_AGENT" "$LOCAL_TRACE_AGENT"
-
-    echo "Starting trace agent"
-    ./trace-agent &
-    TRACER_PID=$!
-    trap 'kill $TRACER_PID ; exit' INT
-}
-
-setUpDogStatsD() {
-    REMOTE_DOGSTATSD="dogstatsd-${DD_AAS_LINUX_VERSION}.tar.gz"
-    LOCAL_DOGSTATSD="dogstatsd"
-
-    check_file_exists_or_curl "$REMOTE_DOGSTATSD" "$LOCAL_DOGSTATSD"
-    
-    echo "Starting Dogstatsd agent"
-    ./dogstatsd start &
-    DSD_PID=$!
-    trap 'kill $DSD_PID ; exit' INT
+    ./"$1" &
+    trap 'kill $! : exit' INT
 }
 
 check_file_exists_or_curl() {
@@ -153,7 +151,6 @@ curl_or_log_failure() {
 
     if curl -L --fail "$ARCHIVED_BINARY_URL" -o "$ARCHIVED_BINARY"; then echo
             echo "Decompressing $ARCHIVED_BINARY_URL"
-            tar -zxf "$ARCHIVED_BINARY" || return
     else 
         echo "Failed to download $ARCHIVED_BINARY succesfully from $ARCHIVED_BINARY_URL."
     fi
