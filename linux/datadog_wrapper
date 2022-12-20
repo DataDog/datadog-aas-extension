@@ -24,6 +24,9 @@ main() {
         "DOTNETCORE")
             echo "Initializing setup for a .NET environment"
             setUpDotnetEnv;;
+        "*")
+            echo "Unsupported runtime. Exiting Datadog startup"
+            return;;
     esac
 
     #wait for all startup functions to finish before exiting
@@ -33,9 +36,8 @@ main() {
 
 setUpNodeEnv() {
     echo "Installing Node tracer"
-    yarn add dd-trace & yarn_ID=$!
+    yarn add dd-trace
 
-    wait $yarn_ID
     echo "Extending NODE_OPTIONS with dd-trace"
     ORIG_NODE_OPTIONS=$NODE_OPTIONS
     export NODE_OPTIONS="--require=$DD_DIR/node_modules/dd-trace/init $ORIG_NODE_OPTIONS"
