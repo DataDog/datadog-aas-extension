@@ -16,7 +16,7 @@ main() {
     echo "Getting the required Datadog binaries"
     STARTUP_PIDS=()
     getBinaries
-    
+
     case "$WEBSITE_STACK" in
         "NODE")
             echo "Initializing setup for a Node environment"
@@ -50,13 +50,13 @@ setUpDotnetEnv() {
     if [ -z "$DD_DOTNET_TRACER_VERSION" ]; then
         DD_DOTNET_TRACER_VERSION=2.19.0
     fi
-    
+
     echo "Using version $DD_DOTNET_TRACER of the .NET tracer"
     DD_DOTNET_TRACER_FILE="datadog-dotnet-apm-${DD_DOTNET_TRACER_VERSION}.tar.gz"
     DD_DOTNET_TRACER_URL="https://github.com/DataDog/dd-trace-dotnet/releases/download/v${DD_DOTNET_TRACER_VERSION}/${DD_DOTNET_TRACER_FILE}"
 
     echo "Installing .NET tracer from $DD_DOTNET_TRACER_URL"
-    curl_or_log_failure "$DD_DOTNET_TRACER_URL" "$DD_DOTNET_TRACER_FILE"; 
+    curl_or_log_failure "$DD_DOTNET_TRACER_URL" "$DD_DOTNET_TRACER_FILE";
     # set env vars only if the tracer was curled successfully
     if [ "$?" -eq 0 ]; then
         export CORECLR_ENABLE_PROFILING=1
@@ -103,14 +103,14 @@ getBinaries() {
 setUpBinary() {
     BINARY="$1"
     ARCHIVED_BINARY="$BINARY-${DD_AAS_LINUX_VERSION}.tar.gz"
-    
+
     check_file_exists_or_curl "$ARCHIVED_BINARY" "$BINARY"
     # do not start the binary if curling failed
-    if [ "$?" -ne 0 ]; then 
+    if [ "$?" -ne 0 ]; then
         echo "Curling $BINARY was unsuccesful and the binary will not be initialized"
         return
     fi
-    
+
     echo "Starting $BINARY"
     if [ $BINARY = "dogstatsd" ]; then
         ./$BINARY start &
@@ -131,9 +131,9 @@ check_file_exists_or_curl() {
 
     if [ ! -f "$ARCHIVED_BINARY" ]; then
 
-        if [ -f "$UNARCHIVED_BINARY" ]; then 
+        if [ -f "$UNARCHIVED_BINARY" ]; then
             echo "Removing old versions of the $UNARCHIVED_BINARY binary"
-            rm "$UNARCHIVED_BINARY*" 
+            rm "$UNARCHIVED_BINARY*"
         fi
 
         echo "Downloading required Datadog binaries from $DD_BINARIES_URL/$DD_AAS_LINUX_VERSION/$ARCHIVED_BINARY"
@@ -151,7 +151,7 @@ curl_or_log_failure() {
 
     if curl -L --fail "$ARCHIVED_BINARY_URL" -o "$ARCHIVED_BINARY"; then echo
             echo "Decompressing $ARCHIVED_BINARY_URL"
-    else 
+    else
         echo "Failed to download $ARCHIVED_BINARY succesfully from $ARCHIVED_BINARY_URL."
     fi
 }
