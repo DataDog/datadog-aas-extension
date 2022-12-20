@@ -11,7 +11,7 @@ main() {
     setEnvVars
 
     echo "Creating and switching to the Datadog directory at $DD_DIR"
-    mkdir -p $DD_DIR && cd $DD_DIR || return
+    mkdir -p "$DD_DIR" && cd "$DD_DIR" || return
 
     if [ "$WEBSITE_STACK" = "NODE" ]; then
         echo "Initializing setup for a Node environment"
@@ -78,7 +78,7 @@ setUpNodeEnv() {
     export NODE_OPTIONS="--require=$DD_DIR/node_modules/dd-trace/init $ORIG_NODE_OPTIONS"
 
     # confirm updates to NODE_OPTIONS
-    node --help >/dev/null || (export NODE_OPTIONS=$ORIG_NODE_OPTIONS && return)
+    node --help >/dev/null || (export NODE_OPTIONS="$ORIG_NODE_OPTIONS" && return)
 }
 
 setUpDotnetEnv() {
@@ -108,7 +108,7 @@ setUpTraceAgent() {
     LOCAL_TRACE_AGENT="trace-agent"
 
     # Curl for the binaries or skip if the most recent version is already present
-    check_file_exists_or_curl $REMOTE_TRACE_AGENT $LOCAL_TRACE_AGENT
+    check_file_exists_or_curl "$REMOTE_TRACE_AGENT" "$LOCAL_TRACE_AGENT"
 
     echo "Starting trace agent"
     ./trace-agent &
@@ -120,7 +120,7 @@ setUpDogStatsD() {
     REMOTE_DOGSTATSD="dogstatsd-${DD_AAS_LINUX_VERSION}.tar.gz"
     LOCAL_DOGSTATSD="dogstatsd"
 
-    check_file_exists_or_curl $REMOTE_DOGSTATSD $LOCAL_DOGSTATSD
+    check_file_exists_or_curl "$REMOTE_DOGSTATSD" "$LOCAL_DOGSTATSD"
     
     echo "Starting Dogstatsd agent"
     ./dogstatsd start &
@@ -130,31 +130,37 @@ setUpDogStatsD() {
 
 check_file_exists_or_curl() {
     # We don't want to curl the binary if the same version is already present in AAS
-    # $1 is the remote filename on github, eg trace-agent-${DD_AAS_LINUX_VERSION}.tar.gz
-    # $2 is the local filename after the script has completed
-    if [ ! -f "$1" ]; then 
+    # $1 is the remote, archived and versioned binary on github, eg trace-agent-${DD_AAS_LINUX_VERSION}.tar.gz
+    # $2 is the local binary after it is unarchived
+    ARCHIVED_BINARY="$1"
+    UNARCHIVED_BINARY="$2"
 
-        if [ -f "$2" ]; then 
-            echo "Removing old versions of the "$2" binary"
-            rm "$2"* 
+    if [ ! -f "$ARCHIVED_BINARY" ]; then
+
+        if [ -f "$UNARCHIVED_BINARY" ]; then 
+            echo "Removing old versions of the $UNARCHIVED_BINARY binary"
+            rm "$UNARCHIVED_BINARY*" 
         fi
 
-        echo "Downloading required Datadog binaries from $DD_BINARIES_URL/$DD_AAS_LINUX_VERSION/$1"
-        curl_or_log_failure $DD_BINARIES_URL/$DD_AAS_LINUX_VERSION/$1 $2
+        echo "Downloading required Datadog binaries from $DD_BINARIES_URL/$DD_AAS_LINUX_VERSION/$ARCHIVED_BINARY"
+        curl_or_log_failure "$DD_BINARIES_URL/$DD_AAS_LINUX_VERSION/$ARCHIVED_BINARY" "$ARCHIVED_BINARY"
         
     else
-        echo "Version $DD_AAS_LINUX_VERSION previously installed for the $2 binary"
+        echo "Version $DD_AAS_LINUX_VERSION previously installed for the $UNARCHIVED_BINARY binary"
     fi
 }
 
 curl_or_log_failure() {
-    # $1 is the binary url
+    # $1 is the URL of the archived binary
     # $2 is the unarchived filename we expect, eg. trace-agent
-    if curl -L --fail "$1" -o "$2"; then echo
-            echo "Decompressing $1"
-            tar -zxf "$2" || return
+    ARCHIVED_BINARY_URL="$1"
+    ARCHIVED_BINARY="$2"
+
+    if curl -L --fail "$ARCHIVED_BINARY_URL" -o "$ARCHIVED_BINARY"; then echo
+            echo "Decompressing $ARCHIVED_BINARY_URL"
+            tar -zxf "$ARCHIVED_BINARY" || return
     else 
-        echo "Failed to download the file succesfully from $1."
+        echo "Failed to download $ARCHIVED_BINARY succesfully from $ARCHIVED_BINARY_URL."
     fi
 }
 
