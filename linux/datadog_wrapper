@@ -78,7 +78,7 @@ setEnvVars() {
     fi
 
     if [ -z "$DD_AAS_LINUX_VERSION" ]; then
-        DD_AAS_LINUX_VERSION="linux-v0.1.4-beta"
+        DD_AAS_LINUX_VERSION="linux-v0.1.3-beta"
     fi
 
     if [ -z "$DD_TRACE_ENABLED" ]; then
