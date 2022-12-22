@@ -1,59 +1,103 @@
 #!/usr/bin/env sh
 
-CURRENT_DIR=$(pwd)
+main() {
+    # Required to add the AAS metadata
+    export DD_AZURE_APP_SERVICES=1
 
-# Required to add the AAS metadata 
-export DD_AZURE_APP_SERVICES=1
+    CURRENT_DIR=$(pwd)
+    echo "Set application directory as $CURRENT_DIR"
 
-if [ -z "$DD_DIR" ]; then
-    DD_DIR="/home/datadog"
-fi
+    echo "Setting Datadog environment variables"
+    setEnvVars
 
-if [ -z "$DD_BINARIES_URL" ]; then
-    DD_BINARIES_URL="https://github.com/DataDog/datadog-aas-extension/releases/download"
-fi
+    echo "Creating and switching to the Datadog directory at $DD_DIR"
+    mkdir -p "$DD_DIR" && cd "$DD_DIR" || return
 
-if [ -z "$DD_AAS_LINUX_VERSION" ]; then
-    DD_AAS_LINUX_VERSION="linux-v0.1.3-beta"
-fi
+    case "$WEBSITE_STACK" in
+        "NODE")
+            setUpNodeEnv;;
+        "DOTNETCORE")
+            setUpDotnetEnv;;
+        "*")
+            echo "Unsupported runtime. Exiting Datadog startup"
+            return;;
+    esac
+    echo "Completed Datadog setup"
+}
 
-setUpCommonEnv() {
-    echo "Creating Datadog directory"
-    mkdir -p $DD_DIR && cd $DD_DIR || return
+setEnvVars() {
+    if [ -z "$DD_DIR" ]; then
+        DD_DIR="/home/datadog"
+    fi
 
-    FILE=trace-agent-${DD_AAS_LINUX_VERSION}.tar.gz
+    if [ -z "$DD_BINARIES_URL" ]; then
+        DD_BINARIES_URL="https://github.com/DataDog/datadog-aas-extension/releases/download"
+    fi
 
-    if [ ! -f $FILE ]; then 
+    if [ -z "$DD_AAS_LINUX_VERSION" ]; then
+        DD_AAS_LINUX_VERSION="linux-v0.1.3-beta"
+    fi
 
-        if [ -f "trace-agent" ]; then 
-            echo "Removing old versions of the trace agent"
-            rm trace-agent* 
+    if [ -z "$DD_TRACE_ENABLED" ]; then
+        DD_TRACE_ENABLED="true"
+    fi
+
+    if [ -z "$DD_CUSTOM_METRICS_ENABLED" ]; then
+        DD_CUSTOM_METRICS_ENABLED="false"
+    fi
+}
+
+getBinaries() {
+    if [ "$DD_TRACE_ENABLED" = "true" ]; then
+        echo "Setting up the trace agent"
+        setUpBinary "trace-agent"
+    fi
+
+    if [ "$DD_CUSTOM_METRICS_ENABLED" = "true" ]; then
+        echo "Setting up DogStatsD"
+        setUpBinary "dogstatsd"
+    fi
+}
+
+setUpBinary() {
+    # Binary is the name of the binary, trace-agent or dogstatsd
+    # File is the expected archived file name of the binary
+
+    BINARY="$1"
+    FILE="$BINARY-${DD_AAS_LINUX_VERSION}.tar.gz"
+
+    if [ ! -f "$FILE" ]; then
+
+        if [ -f "$BINARY" ]; then
+            echo "Removing old versions of $BINARY"
+            rm "$BINARY*"
         fi
 
         echo "Downloading required Datadog binaries from $DD_BINARIES_URL/$DD_AAS_LINUX_VERSION/$FILE"
-        if curl -L --fail $DD_BINARIES_URL/$DD_AAS_LINUX_VERSION/$FILE -o $FILE; then echo
+        if curl -L --fail "$DD_BINARIES_URL/$DD_AAS_LINUX_VERSION/$FILE" -o "$FILE"; then
             echo "Decompressing files"
-            tar -zxf $FILE || return
-        else 
+            tar -zxf "$FILE" || return
+        else
             echo "Failed to download the Datadog binary succesfully."
             return
         fi
-        
+
     else
-        echo "Version $DD_AAS_LINUX_VERSION of the trace agent previously installed"
+        echo "Version $DD_AAS_LINUX_VERSION of $BINARY previously installed"
     fi
-    
-    echo "Starting trace agent"
-    ./trace-agent &
-    TRACER_PID=$!
-    trap 'kill $TRACER_PID ; exit' INT
+
+    # Add start command for dogstatsd
+    if [ "$BINARY" = "dogstatsd" ]; then BINARY="dogstatsd start"; fi
+
+    echo "Starting $BINARY"
+    ./"$BINARY" &
+    BINARY_PID=$!
+    trap 'kill $BINARY_PID ; exit' INT
 }
 
 setUpNodeEnv() {
     echo "Setting up Datadog tracing for Node"
-
-    setUpCommonEnv || return
-
+    getBinaries || return
     echo "Installing Node tracer"
     yarn add dd-trace || return
 
@@ -61,13 +105,12 @@ setUpNodeEnv() {
     export NODE_OPTIONS="--require=$DD_DIR/node_modules/dd-trace/init $ORIG_NODE_OPTIONS"
 
     # confirm updates to NODE_OPTIONS
-    node --help >/dev/null || (export NODE_OPTIONS=$ORIG_NODE_OPTIONS && return)
+    node --help >/dev/null || (export NODE_OPTIONS="$ORIG_NODE_OPTIONS" && return)
 }
 
 setUpDotnetEnv() {
     echo "Setting up Datadog tracing for .NET"
-
-    setUpCommonEnv || return
+    getBinaries || return
 
     if [ -z "$DD_DOTNET_TRACER_VERSION" ]; then
         DD_DOTNET_TRACER_VERSION=2.19.0
@@ -76,21 +119,20 @@ setUpDotnetEnv() {
     DD_DOTNET_TRACER_URL=https://github.com/DataDog/dd-trace-dotnet/releases/download/v${DD_DOTNET_TRACER_VERSION}/${DD_DOTNET_TRACER_FILE}
 
     echo "Installing .NET tracer from $DD_DOTNET_TRACER_URL"
-    curl -L $DD_DOTNET_TRACER_URL -o $DD_DOTNET_TRACER_FILE|| return
-    tar -xzf $DD_DOTNET_TRACER_FILE || return
+    if curl -L --fail "$DD_DOTNET_TRACER_URL" -o "$DD_DOTNET_TRACER_FILE"; then
+        tar -xzf "$DD_DOTNET_TRACER_FILE" || return
+    else
+        echo "Downloading the tracer was unsuccessful"
+        return
+    fi
 
     export CORECLR_ENABLE_PROFILING=1
-    export CORECLR_PROFILER={846F5F1C-F9AE-4B07-969E-05C26BC060D8}
-    export CORECLR_PROFILER_PATH=${DD_DIR}/Datadog.Trace.ClrProfiler.Native.so
-    export DD_DOTNET_TRACER_HOME=${DD_DIR}
+    export CORECLR_PROFILER="{846F5F1C-F9AE-4B07-969E-05C26BC060D8}"
+    export CORECLR_PROFILER_PATH="${DD_DIR}/Datadog.Trace.ClrProfiler.Native.so"
+    export DD_DOTNET_TRACER_HOME="${DD_DIR}"
 }
 
-if [ "$WEBSITE_STACK" = "NODE" ]; then
-    setUpNodeEnv;
-elif [ "$WEBSITE_STACK" = "DOTNETCORE" ]; then
-    setUpDotnetEnv;
-fi
-
+main
 echo "Executing start command: \"$DD_START_APP\""
-cd $CURRENT_DIR
+cd "$CURRENT_DIR"
 eval "$DD_START_APP"
