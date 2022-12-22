@@ -72,9 +72,9 @@ setUpBinary() {
 
     if [ ! -f $FILE ]; then
 
-        if [ -f "trace-agent" ]; then
-            echo "Removing old versions of the trace agent"
-            rm trace-agent*
+        if [ -f "$BINARY" ]; then
+            echo "Removing old versions of $BINARY"
+            rm "$BINARY*"
         fi
 
         echo "Downloading required Datadog binaries from $DD_BINARIES_URL/$DD_AAS_LINUX_VERSION/$FILE"
