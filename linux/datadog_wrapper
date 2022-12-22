@@ -15,12 +15,8 @@ main() {
 
     case "$WEBSITE_STACK" in
         "NODE")
-            echo "Initializing setup for a Node environment"
-            getBinaries
             setUpNodeEnv;;
         "DOTNETCORE")
-            echo "Initializing setup for a .NET environment"
-            getBinaries
             setUpDotnetEnv;;
         "*")
             echo "Unsupported runtime. Exiting Datadog startup"
@@ -101,6 +97,7 @@ setUpBinary() {
 
 setUpNodeEnv() {
     echo "Setting up Datadog tracing for Node"
+    getBinaries || return
     echo "Installing Node tracer"
     yarn add dd-trace || return
 
@@ -113,6 +110,8 @@ setUpNodeEnv() {
 
 setUpDotnetEnv() {
     echo "Setting up Datadog tracing for .NET"
+    getBinaries || return
+
     if [ -z "$DD_DOTNET_TRACER_VERSION" ]; then
         DD_DOTNET_TRACER_VERSION=2.19.0
     fi
