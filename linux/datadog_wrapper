@@ -74,7 +74,7 @@ setUpBinary() {
         fi
 
         echo "Downloading required Datadog binaries from $DD_BINARIES_URL/$DD_AAS_LINUX_VERSION/$FILE"
-        if curl -L --fail $DD_BINARIES_URL/$DD_AAS_LINUX_VERSION/$FILE -o $FILE; then echo
+        if curl -L --fail $DD_BINARIES_URL/$DD_AAS_LINUX_VERSION/$FILE -o $FILE; then
             echo "Decompressing files"
             tar -zxf $FILE || return
         else
@@ -119,8 +119,12 @@ setUpDotnetEnv() {
     DD_DOTNET_TRACER_URL=https://github.com/DataDog/dd-trace-dotnet/releases/download/v${DD_DOTNET_TRACER_VERSION}/${DD_DOTNET_TRACER_FILE}
 
     echo "Installing .NET tracer from $DD_DOTNET_TRACER_URL"
-    curl -L $DD_DOTNET_TRACER_URL -o $DD_DOTNET_TRACER_FILE|| return
-    tar -xzf $DD_DOTNET_TRACER_FILE || return
+    if curl -L --fail $DD_DOTNET_TRACER_URL -o $DD_DOTNET_TRACER_FILE; then
+        tar -xzf $DD_DOTNET_TRACER_FILE || return
+    else
+        echo "Downloading the tracer was unsuccessful"
+        return
+    fi
 
     export CORECLR_ENABLE_PROFILING=1
     export CORECLR_PROFILER={846F5F1C-F9AE-4B07-969E-05C26BC060D8}
