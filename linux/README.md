@@ -24,7 +24,7 @@ _Note: Currently only NODE and .NET are supported._
 
 ### Custom Metrics
 
-To enable custom metrics for your application, add  `DD_CUSTOM_METRICS_ENABLED` and set it as `true` in your Application Settings.
+To enable custom metrics for your application with DogStatsD, add  `DD_CUSTOM_METRICS_ENABLED` and set it as `true` in your Application Settings.
 
 To configure your application to submit metrics, follow the appropriate steps for your runtime.
 
