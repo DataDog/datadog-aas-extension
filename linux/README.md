@@ -12,7 +12,7 @@ _Note: Currently only NODE and .NET are supported._
 ### General Settings
 - Add the following to the startup command box
 
-          curl -s https://raw.githubusercontent.com/DataDog/datadog-aas-extension/linux-v0.1.3-beta/linux/datadog_wrapper | bash
+      curl -s https://raw.githubusercontent.com/DataDog/datadog-aas-extension/linux-v0.1.4-beta/linux/datadog_wrapper | bash
 
 ![storms-nodejs-example - Microsoft Azure 2022-11-30 at 4 15 26 PM](https://p-qkfgo2.t2.n0.cdn.getcloudapp.com/items/P8uNWWQ6/02c4f33f-f4d9-42b3-b746-3d5c9d62a8f3.jpg?source=viewer&v=3db9f9bba7f342e88c43da5aed1218fd)
 
