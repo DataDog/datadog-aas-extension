@@ -19,7 +19,8 @@ main() {
         "DOTNETCORE")
             setUpDotnetEnv;;
         "JAVA")
-            setUpJavaEnv;;
+            echo "It is Java!";;
+            # setUpJavaEnv;;
         "*")
             echo "Unsupported runtime. Exiting Datadog startup"
             return;;
