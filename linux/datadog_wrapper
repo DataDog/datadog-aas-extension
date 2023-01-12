@@ -93,7 +93,7 @@ setUpBinary() {
 
     echo "Starting $BINARY"
     # Append DD_DIR in case we already changed back to pwd
-    "$DD_DIR$BINARY" &
+    "$DD_DIR/$BINARY" &
     BINARY_PID=$!
     trap 'kill $BINARY_PID ; exit' INT
 }
