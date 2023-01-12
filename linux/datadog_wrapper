@@ -144,7 +144,8 @@ setUpPyEnv() {
 
     # Python apps are run in a venv inside a tmp directory
     # We need to switch back to the original dir before installing
-    cd "$CURRENT_DIR" && pip install ddtrace || return
+    cd "$CURRENT_DIR"
+    pip install ddtrace &
 }
 
 main
