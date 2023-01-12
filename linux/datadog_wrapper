@@ -143,6 +143,8 @@ setUpPyEnv() {
     fi
 
     pip install ddtrace
+    # append ddtrace-run command to original start command
+    DD_START_APP="ddtrace-run ${DD_START_APP}"
 }
 
 main
