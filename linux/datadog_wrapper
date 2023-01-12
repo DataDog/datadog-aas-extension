@@ -92,7 +92,7 @@ setUpBinary() {
     if [ "$BINARY" = "dogstatsd" ]; then BINARY="dogstatsd start"; fi
 
     echo "Starting $BINARY"
-    ./"home/datadog/$BINARY" &
+    ./"$BINARY" &
     BINARY_PID=$!
     trap 'kill $BINARY_PID ; exit' INT
 }
