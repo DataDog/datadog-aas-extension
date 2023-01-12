@@ -142,10 +142,7 @@ setUpPyEnv() {
         DD_PYTHON_TRACER_VERSION=1.7.0
     fi
 
-    # Python apps are run in a venv inside a tmp directory
-    # We need to switch back to the original dir before installing
-    # cd "$CURRENT_DIR"
-    # pip install ddtrace &
+    pip install ddtrace
 }
 
 main
