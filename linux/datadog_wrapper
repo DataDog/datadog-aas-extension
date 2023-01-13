@@ -92,6 +92,7 @@ setUpBinary() {
     if [ "$BINARY" = "dogstatsd" ]; then BINARY="dogstatsd start"; fi
 
     echo "Starting $BINARY"
+    ls -lah
     # Append DD_DIR in case we already changed back to pwd
     "$DD_DIR/$BINARY" &
     BINARY_PID=$!
