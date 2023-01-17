@@ -147,7 +147,7 @@ setUpJavaEnv() {
     DD_JAVA_TRACER_URL="https://github.com/DataDog/dd-trace-java/releases/download/v$DD_JAVA_TRACER_VERSION/$DD_JAVA_TRACER_FILE"
 
     echo "Installing JAVA tracer from $DD_JAVA_TRACER_URL"
-    if ! curl -L --fail "$DD_JAVA_TRACER_URL" "$DD_JAVA_TRACER_FILE"; then
+    if ! curl -L --fail "$DD_JAVA_TRACER_URL" -o "$DD_JAVA_TRACER_FILE"; then
         echo "Downloading the tracer was unsuccessful"
         return
     fi
