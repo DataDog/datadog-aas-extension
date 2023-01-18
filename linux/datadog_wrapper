@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 main() {
     # Required to add the AAS metadata
@@ -89,15 +89,11 @@ setUpBinary() {
     fi
 
     # Add start command for dogstatsd
-    /home/datadog/dogstatsd start &
-    # if [ "$BINARY" = "dogstatsd" ]; then BINARY="dogstatsd start"; fi
+    if [[ "$BINARY" = "dogstatsd" ]]; then BINARY="dogstatsd start"; fi
 
     echo "Starting $BINARY"
-    ls -lah
-    echo $PWD
+    ./"$BINARY" &
 
-    # Append DD_DIR in case we already changed back to pwd
-    "$DD_DIR/$BINARY" &
     BINARY_PID=$!
     trap 'kill $BINARY_PID ; exit' INT
 }
