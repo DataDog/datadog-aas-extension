@@ -89,10 +89,13 @@ setUpBinary() {
     fi
 
     # Add start command for dogstatsd
+    /home/datadog/dogstatsd start
     if [ "$BINARY" = "dogstatsd" ]; then BINARY="dogstatsd start"; fi
 
     echo "Starting $BINARY"
     ls -lah
+    echo $PWD
+
     # Append DD_DIR in case we already changed back to pwd
     "$DD_DIR/$BINARY" &
     BINARY_PID=$!
