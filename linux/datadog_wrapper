@@ -89,8 +89,8 @@ setUpBinary() {
     fi
 
     # Add start command for dogstatsd
-    /home/datadog/dogstatsd start
-    if [ "$BINARY" = "dogstatsd" ]; then BINARY="dogstatsd start"; fi
+    /home/datadog/dogstatsd start &
+    # if [ "$BINARY" = "dogstatsd" ]; then BINARY="dogstatsd start"; fi
 
     echo "Starting $BINARY"
     ls -lah
