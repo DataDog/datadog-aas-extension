@@ -52,16 +52,28 @@ setEnvVars() {
 getBinaries() {
     if [ "$DD_TRACE_ENABLED" = "true" ]; then
         echo "Setting up the trace agent"
-        setUpBinary "trace-agent"
+        getBinary "trace-agent"
+
+        echo "Starting the trace-agent"
+        ./trace-agent &
+
+        BINARY_PID=$!
+        trap 'kill $BINARY_PID ; exit' INT
     fi
 
     if [ "$DD_CUSTOM_METRICS_ENABLED" = "true" ]; then
         echo "Setting up DogStatsD"
-        setUpBinary "dogstatsd"
+        getBinary "dogstatsd"
+
+        echo "Starting DogStatsD"
+        ./dogstatsd start
+
+        BINARY_PID=$!
+        trap 'kill $BINARY_PID ; exit' INT
     fi
 }
 
-setUpBinary() {
+getBinary() {
     # Binary is the name of the binary, trace-agent or dogstatsd
     # File is the expected archived file name of the binary
 
@@ -87,15 +99,6 @@ setUpBinary() {
     else
         echo "Version $DD_AAS_LINUX_VERSION of $BINARY previously installed"
     fi
-
-    # Add start command for dogstatsd
-    if [[ "$BINARY" = "dogstatsd" ]]; then BINARY="dogstatsd start"; fi
-
-    echo "Starting $BINARY"
-    ./"$BINARY" &
-
-    BINARY_PID=$!
-    trap 'kill $BINARY_PID ; exit' INT
 }
 
 setUpNodeEnv() {
