@@ -92,9 +92,7 @@ setUpBinary() {
     if [[ "$BINARY" = "dogstatsd" ]]; then BINARY="dogstatsd start"; fi
 
     echo "Starting $BINARY"
-
-    # Call absolute path to avoid any issues
-    eval "${DD_DIR}/${BINARY}"
+    eval "${DD_DIR}/${BINARY} &"
 
     BINARY_PID=$!
     trap 'kill $BINARY_PID ; exit' INT
