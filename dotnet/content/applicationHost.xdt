@@ -19,6 +19,8 @@
         <add name="DD_DOTNET_TRACER_HOME" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_INTEGRATIONS" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_TRACE_LOG_PATH" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_TRACE_LOG_DIRECTORY" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_PROFILING_LOG_DIR" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
 
         <add name="DD_AZURE_APP_SERVICES" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
 
@@ -58,8 +60,8 @@
 
         <add name="DD_DOTNET_TRACER_HOME" value="%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Tracer" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
         <add name="DD_INTEGRATIONS" value="%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Tracer\integrations.json" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="DD_TRACE_LOG_PATH" value="%HOME%\LogFiles\datadog\vFOLDERUNKNOWN\dotnet-native-tracer.log" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="DD_PROFILING_LOG_PATH" value="%HOME%\LogFiles\datadog\vFOLDERUNKNOWN\dotnet-native-profiler.log" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_TRACE_LOG_DIRECTORY" value="%HOME%\LogFiles\datadog\vFOLDERUNKNOWN\" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_PROFILING_LOG_DIR" value="%HOME%\LogFiles\datadog\vFOLDERUNKNOWN\" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <add name="DD_AZURE_APP_SERVICES" value="1" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
         <add name="DD_TRACE_AGENT_PATH" value="%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Agent\datadog-trace-agent.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
