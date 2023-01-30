@@ -30,3 +30,4 @@ To configure your application to submit metrics, follow the appropriate steps fo
 
 - [Node](https://github.com/brightcove/hot-shots)
 - [.NET](https://docs.datadoghq.com/developers/dogstatsd/?tab=hostagent&code-lang=dotnet#code)
+- [PHP](https://docs.datadoghq.com/developers/dogstatsd/?tab=hostagent&code-lang=php)
