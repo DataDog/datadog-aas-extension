@@ -1,6 +1,8 @@
 This readme outlines how to set up Datadog tracing with your Azure App Service Linux application. Making the following changes in the Azure portal will allow the tracer to initialize when your application is started.
 
+
 _Note: Currently Java, NODE, .NET, PHP and Python are supported._
+
 ### Application Settings
 - `DD_API_KEY` is your Datadog API key
 - `DD_SITE` is the Datadog site [parameter](https://docs.datadoghq.com/getting_started/site/#access-the-datadog-site) (defaults to datadoghq.com)
@@ -10,7 +12,6 @@ _Note: Currently Java, NODE, .NET, PHP and Python are supported._
 ![storms-nodejs-example - Microsoft Azure 2022-11-30 at 4 15 47 PM](https://p-qkfgo2.t2.n0.cdn.getcloudapp.com/items/YEuD88kN/57eceb6b-dd34-4d5f-a7ea-a8fcc2ec77ba.jpg?source=viewer&v=505cc168a458a4ec84b7d6a903f78493)
 
 ### General Settings
-
 ##### Node, .NET, PHP or Python
 
 Add the following to the startup command box
@@ -40,6 +41,7 @@ If you are already using a startup script, add the following curl command to the
 To enable custom metrics for your application with DogStatsD, add  `DD_CUSTOM_METRICS_ENABLED` and set it as `true` in your Application Settings.
 
 To configure your application to submit metrics, follow the appropriate steps for your runtime.
+
 
 - [Java](https://docs.datadoghq.com/developers/dogstatsd/?tab=hostagent&code-lang=java)
 - [Node](https://github.com/brightcove/hot-shots)
