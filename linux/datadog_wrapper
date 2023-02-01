@@ -20,6 +20,8 @@ main() {
             setUpDotnetEnv;;
         "JAVA")
             setUpJavaEnv;;
+        "PHP")
+            setupPHPEnv;;
         "*")
             echo "Unsupported runtime. Exiting Datadog startup"
             return;;
@@ -156,6 +158,24 @@ setUpJavaEnv() {
     echo "Adding the JAVA tracer to the startup command"
     DD_JAVAAGENT="-javaagent:$DD_DIR/$DD_JAVA_TRACER_FILE"
     DD_START_APP=$(echo "${DD_START_APP//-jar/$DD_JAVAAGENT -jar}")
+
+setupPHPEnv() {
+    echo "Setting up Datadog tracing for PHP"
+    getBinaries || return
+
+    if [ -z "$DD_PHP_TRACER_VERSION" ]; then
+        DD_PHP_TRACER_VERSION=0.83.1
+    fi
+
+    DD_PHP_TRACER_URL=https://github.com/DataDog/dd-trace-php/releases/download/${DD_PHP_TRACER_VERSION}/datadog-setup.php
+
+    echo "Installing PHP tracer from $DD_PHP_TRACER_URL"
+    if curl -LO --fail "$DD_PHP_TRACER_URL"; then
+        eval "php datadog-setup.php --php-bin=all"
+    else
+        echo "Downloading the tracer was unsuccessful"
+        return
+    fi
 }
 
 main
