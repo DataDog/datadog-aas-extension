@@ -1,5 +1,6 @@
 This readme outlines how to set up Datadog tracing with your Azure App Service Linux application. Making the following changes in the Azure portal will allow the tracer to initialize when your application is started.
 
+
 _Note: Currently Java, NODE, .NET, PHP and Python are supported._
 
 ### Application Settings
@@ -45,3 +46,4 @@ To configure your application to submit metrics, follow the appropriate steps fo
 - [Node](https://github.com/brightcove/hot-shots)
 - [.NET](https://docs.datadoghq.com/developers/dogstatsd/?tab=hostagent&code-lang=dotnet#code)
 - [PHP](https://docs.datadoghq.com/developers/dogstatsd/?tab=hostagent&code-lang=php)
+- [Python](https://docs.datadoghq.com/developers/dogstatsd/?tab=hostagent&code-lang=python)
