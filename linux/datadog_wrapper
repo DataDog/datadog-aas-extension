@@ -18,6 +18,8 @@ main() {
             setUpNodeEnv;;
         "DOTNETCORE")
             setUpDotnetEnv;;
+        "PHP")
+            setupPHPEnv;;
         "*")
             echo "Unsupported runtime. Exiting Datadog startup"
             return;;
@@ -90,7 +92,8 @@ setUpBinary() {
     if [ "$BINARY" = "dogstatsd" ]; then BINARY="dogstatsd start"; fi
 
     echo "Starting $BINARY"
-    ./"$BINARY" &
+    eval "${DD_DIR}/${BINARY} &"
+
     BINARY_PID=$!
     trap 'kill $BINARY_PID ; exit' INT
 }
@@ -130,6 +133,25 @@ setUpDotnetEnv() {
     export CORECLR_PROFILER="{846F5F1C-F9AE-4B07-969E-05C26BC060D8}"
     export CORECLR_PROFILER_PATH="${DD_DIR}/Datadog.Trace.ClrProfiler.Native.so"
     export DD_DOTNET_TRACER_HOME="${DD_DIR}"
+}
+
+setupPHPEnv() {
+    echo "Setting up Datadog tracing for PHP"
+    getBinaries || return
+
+    if [ -z "$DD_PHP_TRACER_VERSION" ]; then
+        DD_PHP_TRACER_VERSION=0.83.1
+    fi
+
+    DD_PHP_TRACER_URL=https://github.com/DataDog/dd-trace-php/releases/download/${DD_PHP_TRACER_VERSION}/datadog-setup.php
+
+    echo "Installing PHP tracer from $DD_PHP_TRACER_URL"
+    if curl -LO --fail "$DD_PHP_TRACER_URL"; then
+        eval "php datadog-setup.php --php-bin=all"
+    else
+        echo "Downloading the tracer was unsuccessful"
+        return
+    fi
 }
 
 main
