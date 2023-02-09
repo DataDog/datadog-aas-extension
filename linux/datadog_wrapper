@@ -160,6 +160,7 @@ setUpJavaEnv() {
     echo "Adding the JAVA tracer to the startup command"
     DD_JAVAAGENT="-javaagent:$DD_DIR/$DD_JAVA_TRACER_FILE"
     DD_START_APP=$(echo "${DD_START_APP//-jar/$DD_JAVAAGENT -jar}")
+}
 
 setupPHPEnv() {
     echo "Setting up Datadog tracing for PHP"
