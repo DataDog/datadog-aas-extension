@@ -100,6 +100,8 @@ setUpBinary() {
 
     BINARY_PID=$!
     trap 'kill $BINARY_PID ; exit' INT
+
+    (crontab -l; echo "*/1 * * * * bash -l -c 'if ! pidof $DD_DIR/$BINARY; then $DD_DIR/$BINARY & fi'") | crontab -
 }
 
 setUpNodeEnv() {
