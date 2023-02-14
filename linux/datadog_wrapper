@@ -98,9 +98,7 @@ setUpBinary() {
     echo "Starting $BINARY"
     eval "${DD_DIR}/${BINARY} &"
 
-    BINARY_PID=$!
-    trap 'kill $BINARY_PID ; exit' INT
-
+    # Add a cron job to check the process is running. If not, restart the process. Removed from crontab on restart.
     (crontab -l; echo "*/1 * * * * bash -l -c 'if ! pidof $DD_DIR/$BINARY; then $DD_DIR/$BINARY & fi'") | crontab -
 }
 
