@@ -13,6 +13,13 @@ main() {
     echo "Creating and switching to the Datadog directory at $DD_DIR"
     mkdir -p "$DD_DIR" && cd "$DD_DIR" || return
 
+    echo "Installing and configuring Monit"
+    # Azure App Service images do not utilize systemd.
+    # Monit must be set up on every restart since only /home persists
+    apt-get update && apt-get install monit -y
+    # Monit will poll Datadog processes every 15 seconds and restart if necessary.
+    sed -i -e 's/set daemon 120/set daemon 15/g' /etc/monit/monitrc
+
     case "$WEBSITE_STACK" in
         "NODE")
             setUpNodeEnv;;
@@ -28,6 +35,10 @@ main() {
             echo "Unsupported runtime. Exiting Datadog startup"
             return;;
     esac
+
+    echo "Starting Monit to monitor Datadog processes"
+    monit
+
     echo "Completed Datadog setup"
 }
 
@@ -57,11 +68,23 @@ getBinaries() {
     if [ "$DD_TRACE_ENABLED" = "true" ]; then
         echo "Setting up the trace agent"
         setUpBinary "trace-agent"
+        # Create conf file and only add process check if the file is empty
+        CONF_FILE="/etc/monit/conf.d/trace-agent.conf" && touch $CONF_FILE
+        if ! [ -s "$CONF_FILE" ]; then
+            echo "check process trace-agent matching $DD_DIR/trace-agent" > $CONF_FILE
+            echo "restart = \"/bin/bash -l -c '$DD_DIR/trace-agent &'\"" >> $CONF_FILE
+        fi
     fi
 
     if [ "$DD_CUSTOM_METRICS_ENABLED" = "true" ]; then
         echo "Setting up DogStatsD"
         setUpBinary "dogstatsd"
+        # Create conf file and only add process check if the file is empty
+        CONF_FILE="/etc/monit/conf.d/dogstatsd.conf" && touch $CONF_FILE
+        if ! [ -s "$CONF_FILE" ]; then
+            echo "check process dogstatsd matching $DD_DIR/dogstatsd" > $CONF_FILE
+            echo "restart = \"/bin/bash -l -c '$DD_DIR/dogstatsd start &'\"" >> $CONF_FILE
+        fi
     fi
 }
 
@@ -98,8 +121,8 @@ setUpBinary() {
     echo "Starting $BINARY"
     eval "${DD_DIR}/${BINARY} &"
 
-    # Add a cron job to check the process is running. If not, restart the process. Removed from crontab on restart.
-    (crontab -l; echo "*/1 * * * * bash -l -c 'if ! pidof $DD_DIR/$BINARY; then $DD_DIR/$BINARY & fi'") | crontab -
+    # # Add a cron job to check the process is running. If not, restart the process. Removed from crontab on restart.
+    # (crontab -l; echo "*/1 * * * * bash -l -c 'if ! pidof $DD_DIR/$BINARY; then $DD_DIR/$BINARY & fi'") | crontab -
 }
 
 setUpNodeEnv() {
