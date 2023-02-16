@@ -83,7 +83,7 @@ getBinaries() {
         CONF_FILE="/etc/monit/conf.d/dogstatsd.conf" && touch $CONF_FILE
         if ! [ -s "$CONF_FILE" ]; then
             echo "check process dogstatsd matching $DD_DIR/dogstatsd" > $CONF_FILE
-            echo "start program = \"/bin/bash -l -c '$DD_DIR/dogstatsd start &'\"" >> $CONF_FILE
+            echo "start \"/bin/bash -l -c '$DD_DIR/dogstatsd start &'\"" >> $CONF_FILE
         fi
     fi
 }
