@@ -85,6 +85,7 @@ jobs:
             aasName="dd-dotnet-latest-build"
             aasStatsName="dd-dotnet-latest-build-stats"
             aasProfilerOnlyName="dd-dotnet-latest-build-profiler-only"
+            aasProfilerBackendName="dd-dotnet-profiler-backend-test-latest-build"
 
             echo "Login"
             az login --service-principal -u ${{ secrets.AZURE_APP_ID }} -p ${{ secrets.AZURE_PASSWORD }} --tenant ${{ secrets.AZURE_TENANT }}
@@ -93,6 +94,7 @@ jobs:
             az resource create --resource-group $resourceGroupName --resource-type "Microsoft.Web/sites/siteextensions" --name "$aasName/siteextensions/DevelopmentVerification.DdDotNet.Apm" -p "{}"
             az resource create --resource-group $resourceGroupName --resource-type "Microsoft.Web/sites/siteextensions" --name "$aasStatsName/siteextensions/DevelopmentVerification.DdDotNet.Apm" -p "{}"
             az resource create --resource-group $resourceGroupName --resource-type "Microsoft.Web/sites/siteextensions" --name "$aasProfilerOnlyName/siteextensions/DevelopmentVerification.DdDotNet.Apm" -p "{}"
+            az resource create --resource-group $resourceGroupName --resource-type "Microsoft.Web/sites/siteextensions" --name "$aasProfilerBackendName/siteextensions/DevelopmentVerification.DdDotNet.Apm" -p "{}"
 
             echo "Waiting 10 seconds for extension to be actually installed"
             sleep 10
@@ -101,3 +103,4 @@ jobs:
             az webapp restart --resource-group $resourceGroupName --name $aasName
             az webapp restart --resource-group $resourceGroupName --name $aasStatsName
             az webapp restart --resource-group $resourceGroupName --name $aasProfilerOnlyName
+            az webapp restart --resource-group $resourceGroupName --name $aasProfilerBackendName
