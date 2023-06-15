@@ -1,11 +1,18 @@
-RELEASE_VERSION="2.13.000"
-AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.35.2-1-x86_64.zip"
-TRACER_DOWNLOAD_URL="https://github.com/DataDog/dd-trace-dotnet/releases/download/v2.13.0/windows-tracer-home.zip"
+RELEASE_VERSION="2.31.001"
+AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.45.0-1-x86_64.zip"
+TRACER_DOWNLOAD_URL="https://github.com/DataDog/dd-trace-dotnet/releases/download/v2.31.0/windows-tracer-home.zip"
 
 echo "Downloading tracer from ${TRACER_DOWNLOAD_URL}"
 wget -O tracer.zip $TRACER_DOWNLOAD_URL
+if [ $? -ne 0 ]; then
+    exit 1;
+fi
+
 echo "Unzipping tracer"
 unzip tracer.zip -d dotnet/content/Tracer
+if [ $? -ne 0 ]; then
+    exit 1;
+fi
 
 RELEASE_VERSION_FILE=$( echo ${RELEASE_VERSION} | tr '.' '_' )
 RELEASE_DIR=$CI_PROJECT_DIR/dotnet/content/v${RELEASE_VERSION_FILE}

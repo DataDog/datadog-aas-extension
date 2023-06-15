@@ -19,6 +19,8 @@
         <add name="DD_DOTNET_TRACER_HOME" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_INTEGRATIONS" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_TRACE_LOG_PATH" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_TRACE_LOG_DIRECTORY" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_PROFILING_LOG_DIR" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
 
         <add name="DD_AZURE_APP_SERVICES" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
 
@@ -33,6 +35,7 @@
         <add name="DD_TRACE_TRANSPORT" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_APM_WINDOWS_PIPE_NAME" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_TRACE_PIPE_NAME" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_APM_REMOTE_TAGGER" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
 		
         <add name="DD_AGENT_PIPE_NAME" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_DOGSTATSD_PIPE_NAME" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
@@ -58,7 +61,8 @@
 
         <add name="DD_DOTNET_TRACER_HOME" value="%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Tracer" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
         <add name="DD_INTEGRATIONS" value="%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Tracer\integrations.json" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="DD_TRACE_LOG_PATH" value="%HOME%\LogFiles\datadog\vFOLDERUNKNOWN\dotnet-profiler.log" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_TRACE_LOG_DIRECTORY" value="%HOME%\LogFiles\datadog\vFOLDERUNKNOWN\" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_PROFILING_LOG_DIR" value="%HOME%\LogFiles\datadog\vFOLDERUNKNOWN\" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <add name="DD_AZURE_APP_SERVICES" value="1" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
         <add name="DD_TRACE_AGENT_PATH" value="%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Agent\datadog-trace-agent.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
@@ -72,6 +76,7 @@
         <add name="DD_TRACE_TRANSPORT" value="DATADOG-NAMED-PIPES" xdt:Locator="Match(name)" xdt:Transform="Insert"/>	
         <add name="DD_APM_WINDOWS_PIPE_NAME" value="datadogtrace-uniqueTracePipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/>	
         <add name="DD_TRACE_PIPE_NAME" value="datadogtrace-uniqueTracePipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_APM_REMOTE_TAGGER" value="0" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Remote tagger is in the core agent, which is not included, so disable to improve startup time -->
 
         <add name="DD_AGENT_PIPE_NAME" value="dogstatsd-uniqueStatsPipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Dogstatsd client variable (LEGACY) -->
         <add name="DD_DOGSTATSD_PIPE_NAME" value="dogstatsd-uniqueStatsPipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Dogstatsd client variable (CURRENT) -->

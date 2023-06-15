@@ -4,6 +4,10 @@ TRACER_DOWNLOAD_URL="https://apmdotnetci.blob.core.windows.net/apm-dotnet-ci-art
 
 echo "Downloading tracer from ${TRACER_DOWNLOAD_URL}"
 wget -O tracer.zip $TRACER_DOWNLOAD_URL
+if [ $? -ne 0 ]; then
+    exit 1;
+fi
+
 echo "Unzipping tracer"
 unzip tracer.zip -d dotnet/content/Tracer
 
@@ -12,6 +16,10 @@ DEVELOPMENT_DIR=dotnet/content/v${DEVELOPMENT_VERSION_FILE}
 
 echo "Downloading agent from ${AGENT_DOWNLOAD_URL}"
 wget -O agent.zip $AGENT_DOWNLOAD_URL
+if [ $? -ne 0 ]; then
+    exit 1;
+fi
+
 unzip agent.zip -d dotnet-agent-extract
 
 echo "Moving agent executables"

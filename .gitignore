@@ -9,14 +9,4 @@ obj/
 /dotnet/content/Agent/datadog-trace-agent.exe
 /package/*
 .idea
-dev-*/
-agent.zip
-java-agent-extract
-tracer.zip
-dotnet-agent-extract
-dotnent/content/v0*/
-java/content/Agent/
-java/content/Tracer/
-dotnet/content/v0*/
-.DS_Store
-packages
+trace-agent*
