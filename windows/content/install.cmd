@@ -14,8 +14,7 @@ IF EXIST .\applicationHost.xdt (
 
 REM node tracer download logic, make this detect runtime later. might also need to tweak the paths
 echo %log_prefix% Downloading tracer >> %log_file%
-mkdir %XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Tracer
-npm install --prefix %XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Tracer dd-trace
+npm install --prefix %HOME%\datadog\Tracer dd-trace
 
 echo %log_prefix% Successfully installed. >> %log_file%
 exit /B 0
