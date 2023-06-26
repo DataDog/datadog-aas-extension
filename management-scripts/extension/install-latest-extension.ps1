@@ -14,6 +14,9 @@
     [Parameter(Mandatory=$false)][string]$DDEnv="<not-set>",
     [Parameter(Mandatory=$false)][string]$DDService="<not-set>",
     [Parameter(Mandatory=$false)][string]$DDVersion="<not-set>",
+    [Parameter(Mandatory=$false)][string]$DDLogsInjection="<not-set>",
+    [Parameter(Mandatory=$false)][string]$DDLogsDirectSubmissionIntegrations="<not-set>",
+    [Parameter(Mandatory=$false)][string]$DDLogsDirectSubmissionMinimumLevel="<not-set>",
     [Parameter(Mandatory=$false)][string]$ExtensionVersion,
     [Parameter(Mandatory=$false)][Switch]$Remove
  )
@@ -83,6 +86,18 @@ if ($DDService -ne $skipVar) {
 
 if ($DDVersion -ne $skipVar) {
 	az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --settings DD_VERSION=$DDVersion
+}
+
+if ($DDLogsInjection -ne $skipVar) {
+	az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --settings DD_LOGS_INJECTION=$DDLogsInjection
+}
+
+if ($DDLogsDirectSubmissionIntegrations -ne $skipVar) {
+	az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --settings DD_LOGS_DIRECT_SUBMISSION_INTEGRATIONS=$DDLogsDirectSubmissionIntegrations
+}
+
+if ($DDLogsDirectSubmissionMinimumLevel -ne $skipVar) {
+	az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --settings DD_LOGS_DIRECT_SUBMISSION_MINIMUM_LEVEL=$DDLogsDirectSubmissionMinimumLevel
 }
 
 if ($Remove) {
