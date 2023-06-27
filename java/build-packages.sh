@@ -1,6 +1,6 @@
 #!/bin/bash
-RELEASE_VERSION="0.4.4"
-DEVELOPMENT_VERSION="0.4.4-prerelease"
+RELEASE_VERSION="0.4.5"
+DEVELOPMENT_VERSION="0.4.5-prerelease"
 AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.45.1-1-x86_64.zip"
 TRACER_DOWNLOAD_URL="https://github.com/DataDog/dd-trace-java/releases/download/v0.115.1/dd-java-agent-0.115.1.jar"
 
