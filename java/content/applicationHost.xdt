@@ -16,10 +16,10 @@
         <add name="DD_TRACE_AGENT_ARGS" value="--config %XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Agent\datadog.yaml" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <add name="DD_TELEMETRY_ENABLED" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="DD_TELEMETRY_ENABLED" value="false" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_TELEMETRY_ENABLED" value="0" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <add name="DD_TRACE_TELEMETRY" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="DD_TRACE_TELEMETRY" value="false" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_TRACE_TELEMETRY" value="0" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <add name="DD_DOGSTATSD_PATH" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_DOGSTATSD_PATH" value="%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Agent\dogstatsd.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
