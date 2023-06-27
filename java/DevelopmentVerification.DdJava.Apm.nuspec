@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>DevelopmentVerification.DdJava.Apm</id>
+    <title>Experimental Java Extension</title>
+    <authors>Datadog</authors>
+    <version>0.0.0</version> <!-- placeholder that is overridden -->
+    <icon>icon.png</icon>
+    <license type="expression">Apache-2.0</license>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>
+      Experimental Java Extension. Do not use.
+    </description>
+    <tags>AzureSiteExtension</tags>
+    <packageTypes>
+      <packageType name="AzureSiteExtension" />
+    </packageTypes>
+  </metadata>
+  <files>
+    <file src="content\**\*.*" target="content" />
+    <file src="image\icon.png" target="" />
+  </files>
+</package>
