@@ -118,6 +118,7 @@ jobs:
             if [[ "$newAgentAvailable" == "1" ]]; then
               echo Updating agent version
               sed -i -e "s/agent-binaries-$CURRENT_AGENT_VERSION/agent-binaries-$AGENT_VERSION/" dotnet/build-packages.sh
+              sed -i -e "s/agent-binaries-$CURRENT_AGENT_VERSION/agent-binaries-$AGENT_VERSION/" dotnet/build-packages-dev.sh
               echo Replaced agent version in file.
               PR_BODY="$PR_BODY, and updates the agent version to: $AGENT_VERSION"
             fi
