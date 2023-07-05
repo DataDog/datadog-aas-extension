@@ -3,10 +3,6 @@ DEVELOPMENT_VERSION="0.1.0-prerelease"
 AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.35.2-1-x86_64.zip"
 RUNTIME_NAME=node # remove
 
-# echo "Downloading tracer"
-# mkdir $RUNTIME_NAME/content/Tracer
-# npm install --prefix $RUNTIME_NAME/content/Tracer dd-trace
-
 RELEASE_VERSION_FILE=$( echo ${RELEASE_VERSION} | tr '.' '_' )
 DEVELOPMENT_VERSION_FILE=$( echo ${DEVELOPMENT_VERSION} | tr '.' '_' )
 RELEASE_DIR=$CI_PROJECT_DIR/$RUNTIME_NAME/content/v${RELEASE_VERSION_FILE}

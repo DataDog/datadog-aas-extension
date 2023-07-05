@@ -3,8 +3,9 @@
   <system.webServer>
     <runtime xdt:Transform="InsertIfMissing">
       <environmentVariables xdt:Transform="InsertIfMissing">
+        <!-- Disable tag setting and agent launching done in the tracers -->
         <add name="DD_AZURE_APP_SERVICES" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="DD_AZURE_APP_SERVICES" value="1" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_AZURE_APP_SERVICES" value="0" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <!-- change this to datadog-trace-agent -->
         <add name="DD_TRACE_AGENT_PATH" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
@@ -21,18 +22,38 @@
 
         <add name="DD_AGENT_HOST" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
 
-        <add name="DD_AAS_NODE_EXTENSION_VERSION" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="DD_AAS_NODE_EXTENSION_VERSION" value="vUNKNOWN" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- For troubleshooting and tagging traces -->
+        <add name="DD_AAS_EXTENSION_VERSION" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_AAS_EXTENSION_VERSION" value="vUNKNOWN" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- For troubleshooting and tagging traces -->
 
         <add name="DD_LOG_LEVEL" value="DEBUG" xdt:Locator="Match(name)" xdt:Transform="InsertIfMissing"/>
 
-		    <!-- Node Specific Variables (remove because we'll set these programmatically) -->
+		    <!-- Start of Node Variables -->
         <add name="NODE_OPTIONS" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="NODE_OPTIONS" value=" --require=%XDT_EXTENSIONPATH%\Tracer\node_modules\dd-trace\init" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <!-- End of Node Variables -->
+
+		    <!-- Start of Java Variables -->
+        <add name="DD_PROFILING_DDPROF_ENABLED" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_PROFILING_DDPROF_ENABLED" value="false" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+
+        <add name="DD_TELEMETRY_ENABLED" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_TELEMETRY_ENABLED" value="false" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+
+        <add name="DD_TRACE_TELEMETRY" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_TRACE_TELEMETRY" value="false" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+
+        <add name="JAVA_OPTS" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="JAVA_OPTS" value="-javaagent:%XDT_EXTENSIONPATH%\Tracer\dd-java-agent.jar -Ddatadog.slf4j.simpleLogger.logFile=%HOME%\LogFiles\datadog\java\dd-java-agent.log" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <!-- End of Java Variables -->
+
+		    <!-- Start of .NET Variables -->
+        <add name="DD_DOTNET_TRACER_HOME" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_DOTNET_TRACER_HOME" value="%XDT_EXTENSIONPATH%\Tracer" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <!-- End of .NET Variables -->
       </environmentVariables>
     </runtime>
     <globalModules>
-      <add name="HelloWorld" image="\home\SiteExtensions\content\HelloWorld.dll" xdt:Locator="Match(name)" xdt:Transform="InsertIfMissing" />
+      <add name="AgentProcessManager" image="\home\SiteExtensions\content\AgentProcessManager.dll" xdt:Locator="Match(name)" xdt:Transform="InsertIfMissing" />
     </globalModules>
   </system.webServer>
 </configuration>

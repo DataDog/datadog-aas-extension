@@ -56,7 +56,7 @@ private:
             cmd,        // Command line
             NULL,       // Process handle not inheritable
             NULL,       // Thread handle not inheritable
-            TRUE,       // Set handle inheritance to TRUE
+            TRUE,       // Set handle inheritance to TRUE for output redirect
             0,          // No creation flags
             NULL,       // Use parent's environment block
             NULL,       // Use parent's starting directory
@@ -71,8 +71,6 @@ private:
         } else {
             WriteLog(L"CreateProcess succeeded");
         }
-
-        // WaitForSingleObject(pi.hProcess, INFINITE);
 
         CloseHandle(pi.hProcess);
         CloseHandle(pi.hThread);
