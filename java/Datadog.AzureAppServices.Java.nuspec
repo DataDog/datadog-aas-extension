@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <metadata>
-    <id>Datadog.AzureAppServices.Java</id>
+    <id>Datadog.AzureAppServices.Java.Apm</id> <!-- ending with .Java blocks installation-->
     <title>Java Datadog APM</title>
     <authors>Datadog</authors>
     <version>0.0.0</version> <!-- placeholder that is overridden -->
@@ -15,7 +15,7 @@
     <tags>AzureSiteExtension Datadog Java APM Tracing Tracer Monitoring</tags>
     <packageTypes>
       <packageType name="AzureSiteExtension" />
-    </packageTypes>  
+    </packageTypes>
   </metadata>
   <files>
     <file src="content\**\*.*" target="content" />
