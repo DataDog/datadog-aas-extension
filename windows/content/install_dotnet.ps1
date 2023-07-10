@@ -1,1 +1,0 @@
-Expand-Archive -Path tracer.zip -DestinationPath \home\SiteExtensions\content\Tracer

@@ -8,14 +8,9 @@ set log_file=..\..\Datadog.AzureAppServices.Install.txt
 
 echo %log_prefix% Starting install. >> %log_file%
 
-@REM we can remove this right?
-IF EXIST .\applicationHost.xdt (
-  echo %log_prefix% Upgrade will not apply until full application stop. >> %log_file%
-)
-
 mkdir \home\SiteExtensions\content\Tracer
 
-IF "%WEBSITE_STACK%" == "NODE" (
+IF DEFINED WEBSITE_NODE_DEFAULT_VERSION (
   echo %log_prefix% Downloading Node tracer >> %log_file%
   npm install --prefix \home\SiteExtensions\content\Tracer dd-trace >> "%log_file%"
 ) ELSE (
@@ -34,7 +29,8 @@ IF DEFINED DOTNET_CLI_TELEMETRY_PROFILE (
   echo %log_prefix% Downloading .NET tracer >> %log_file%
   curl -L -o \home\SiteExtensions\content\Tracer\tracer.zip https://github.com/DataDog/dd-trace-dotnet/releases/download/v2.32.0/windows-tracer-home.zip
   echo %log_prefix% Unzipping .NET tracer >> %log_file%
-  POWERSHELL .\install_dotnet.ps1 >> %log_file%
+  unzip \home\SiteExtensions\content\Tracer\tracer.zip -d \home\SiteExtensions\content\Tracer
+  rm \home\SiteExtensions\content\Tracer\tracer.zip
 )
 
 echo %log_prefix% Successfully installed. >> %log_file%
