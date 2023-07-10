@@ -9,16 +9,16 @@
 
         <!-- change this to datadog-trace-agent -->
         <add name="DD_TRACE_AGENT_PATH" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="DD_TRACE_AGENT_PATH" value="%XDT_EXTENSIONPATH%\Agent\trace-agent.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_TRACE_AGENT_PATH" value="%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Agent\trace-agent.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <add name="DD_TRACE_AGENT_ARGS" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="DD_TRACE_AGENT_ARGS" value="--config %XDT_EXTENSIONPATH%\Agent\datadog.yaml" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_TRACE_AGENT_ARGS" value="--config %XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Agent\datadog.yaml" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <add name="DD_DOGSTATSD_PATH" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="DD_DOGSTATSD_PATH" value="%XDT_EXTENSIONPATH%\Agent\dogstatsd.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_DOGSTATSD_PATH" value="%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Agent\dogstatsd.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <add name="DD_DOGSTATSD_ARGS" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="DD_DOGSTATSD_ARGS" value="start -c %XDT_EXTENSIONPATH%\Agent" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_DOGSTATSD_ARGS" value="start -c %XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Agent" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <add name="DD_AGENT_HOST" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
 
@@ -29,7 +29,7 @@
 
 		    <!-- Start of Node Variables -->
         <add name="NODE_OPTIONS" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="NODE_OPTIONS" value=" --require=%XDT_EXTENSIONPATH%\Tracer\node_modules\dd-trace\init" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="NODE_OPTIONS" value=" --require=%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Tracer\node_modules\dd-trace\init" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
         <!-- End of Node Variables -->
 
 		    <!-- Start of Java Variables -->
@@ -43,12 +43,12 @@
         <add name="DD_TRACE_TELEMETRY" value="false" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <add name="JAVA_OPTS" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="JAVA_OPTS" value="-javaagent:%XDT_EXTENSIONPATH%\Tracer\dd-java-agent.jar -Ddatadog.slf4j.simpleLogger.logFile=%HOME%\LogFiles\datadog\java\dd-java-agent.log" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="JAVA_OPTS" value="-javaagent:%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Tracer\dd-java-agent.jar -Ddatadog.slf4j.simpleLogger.logFile=%HOME%\LogFiles\datadog\java\dd-java-agent.log" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
         <!-- End of Java Variables -->
 
 		    <!-- Start of .NET Variables -->
         <add name="DD_DOTNET_TRACER_HOME" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="DD_DOTNET_TRACER_HOME" value="%XDT_EXTENSIONPATH%\Tracer" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_DOTNET_TRACER_HOME" value="%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Tracer" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <add name="COMPLUS_LoaderOptimization" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="COMPLUS_LoaderOptimization" value="1" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
@@ -60,13 +60,13 @@
         <add name="COR_PROFILER" value="{846F5F1C-F9AE-4B07-969E-05C26BC060D8}" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <add name="COR_PROFILER_PATH" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="COR_PROFILER_PATH" value="%XDT_EXTENSIONPATH%\Tracer\win-x64\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="COR_PROFILER_PATH" value="%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Tracer\win-x64\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <add name="COR_PROFILER_PATH_32" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="COR_PROFILER_PATH_32" value="%XDT_EXTENSIONPATH%\Tracer\win-x86\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="COR_PROFILER_PATH_32" value="%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Tracer\win-x86\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <add name="COR_PROFILER_PATH_64" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="COR_PROFILER_PATH_64" value="%XDT_EXTENSIONPATH%\Tracer\win-x64\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="COR_PROFILER_PATH_64" value="%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Tracer\win-x64\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <add name="CORECLR_ENABLE_PROFILING" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="CORECLR_ENABLE_PROFILING" value="1" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
@@ -75,10 +75,10 @@
         <add name="CORECLR_PROFILER" value="{846F5F1C-F9AE-4B07-969E-05C26BC060D8}" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <add name="CORECLR_PROFILER_PATH_32" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="CORECLR_PROFILER_PATH_32" value="%XDT_EXTENSIONPATH%\Tracer\win-x86\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="CORECLR_PROFILER_PATH_32" value="%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Tracer\win-x86\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <add name="CORECLR_PROFILER_PATH_64" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="CORECLR_PROFILER_PATH_64" value="%XDT_EXTENSIONPATH%\Tracer\win-x64\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="CORECLR_PROFILER_PATH_64" value="%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Tracer\win-x64\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
         <!-- End of .NET Variables -->
       </environmentVariables>
     </runtime>
