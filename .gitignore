@@ -1,9 +1,11 @@
 **/content/Tracer/
 **/content/Agent/*.exe
-content.zip
+**/content/v*
+*.zip
 obj/
 /set-versions-log.txt
 /bin/*
 /package/*
 .idea
 .DS_STORE
+**/*-agent-extract

@@ -83,7 +83,7 @@
       </environmentVariables>
     </runtime>
     <globalModules>
-      <add name="AgentProcessManager" image="\home\SiteExtensions\content\AgentProcessManager.dll" xdt:Locator="Match(name)" xdt:Transform="InsertIfMissing" />
+      <add name="AgentProcessManager" image="%XDT_EXTENSIONPATH%\AgentProcessManager.dll" xdt:Locator="Match(name)" xdt:Transform="InsertIfMissing" />
     </globalModules>
   </system.webServer>
 </configuration>

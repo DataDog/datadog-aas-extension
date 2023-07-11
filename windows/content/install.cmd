@@ -8,29 +8,24 @@ set log_file=..\..\Datadog.AzureAppServices.Install.txt
 
 echo %log_prefix% Starting install. >> %log_file%
 
-mkdir \home\SiteExtensions\dev-universal\content\Tracer
+mkdir \home\SiteExtensions\DevelopmentVerification.DdWindows.Apm\vFOLDERUNKNOWN\Tracer
 
 IF DEFINED WEBSITE_NODE_DEFAULT_VERSION (
   echo %log_prefix% Downloading Node tracer >> %log_file%
-  npm install --prefix \home\SiteExtensions\dev-universal\content\Tracer dd-trace >> "%log_file%"
-) ELSE (
-  IF DEFINED WEBSITE_NODE_DEFAULT_VERSION (
-    echo %log_prefix% Downloading Node tracer >> %log_file%
-    npm install --prefix \home\SiteExtensions\dev-universal\content\Tracer dd-trace >> "%log_file%"
-  )
+  npm install --prefix \home\SiteExtensions\DevelopmentVerification.DdWindows.Apm\vFOLDERUNKNOWN\Tracer dd-trace >> "%log_file%"
 )
 
 IF "%WEBSITE_STACK%" == "JAVA" (
   echo %log_prefix% Downloading Java tracer >> %log_file%
-  curl -L -o \home\SiteExtensions\dev-universal\content\Tracer\dd-java-agent.jar https://github.com/DataDog/dd-trace-java/releases/download/v0.104.0/dd-java-agent-0.104.0.jar
+  curl -L -o \home\SiteExtensions\DevelopmentVerification.DdWindows.Apm\vFOLDERUNKNOWN\Tracer\dd-java-agent.jar https://github.com/DataDog/dd-trace-java/releases/download/v0.104.0/dd-java-agent-0.104.0.jar
 )
 
 IF DEFINED DOTNET_CLI_TELEMETRY_PROFILE (
   echo %log_prefix% Downloading .NET tracer >> %log_file%
-  curl -L -o \home\SiteExtensions\dev-universal\content\Tracer\tracer.zip https://github.com/DataDog/dd-trace-dotnet/releases/download/v2.32.0/windows-tracer-home.zip
+  curl -L -o \home\SiteExtensions\DevelopmentVerification.DdWindows.Apm\vFOLDERUNKNOWN\Tracer\tracer.zip https://github.com/DataDog/dd-trace-dotnet/releases/download/v2.32.0/windows-tracer-home.zip
   echo %log_prefix% Unzipping .NET tracer >> %log_file%
-  unzip \home\SiteExtensions\dev-universal\content\Tracer\tracer.zip -d \home\SiteExtensions\dev-universal\content\Tracer
-  rm \home\SiteExtensions\dev-universal\content\Tracer\tracer.zip
+  unzip \home\SiteExtensions\DevelopmentVerification.DdWindows.Apm\vFOLDERUNKNOWN\Tracer\tracer.zip -d \home\SiteExtensions\DevelopmentVerification.DdWindows.Apm\vFOLDERUNKNOWN\Tracer
+  rm \home\SiteExtensions\DevelopmentVerification.DdWindows.Apm\vFOLDERUNKNOWN\Tracer\tracer.zip
 )
 
 echo %log_prefix% Successfully installed. >> %log_file%
