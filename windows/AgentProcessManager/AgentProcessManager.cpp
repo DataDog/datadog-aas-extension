@@ -108,7 +108,7 @@ private:
 
         ZeroMemory(&pi, sizeof(pi));
 
-        std::wstring cmd = L"/home/SiteExtensions/content/process_manager /home/SiteExtensions/content/Agent/" + agentName + (agentName == L"dogstatsd" ? L" start" : L"");
+        std::wstring cmd = L"/home/SiteExtensions/DevelopmentVerification.DdWindows.Apm/process_manager /home/SiteExtensions/DevelopmentVerification.DdWindows.Apm/vFOLDERUNKNOWN/Agent/" + agentName + (agentName == L"dogstatsd" ? L" start" : L"");
 
         if (!CreateProcess(NULL, const_cast<LPWSTR>(cmd.c_str()), NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi))
         {
@@ -155,7 +155,7 @@ private:
         {
             while (Process32Next(snapshot, &entry))
             {
-                if (_stricmp(ConvertWCharToStdString(entry.szExeFile).c_str(), processName.c_str()) == 0)
+                if (_stricmp(ConvertWCharToStdString(entry.szExeFile).c_str(), (processName + ".exe").c_str()) == 0)
                 {
                     CloseHandle(snapshot);
                     return TRUE;

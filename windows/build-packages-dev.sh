@@ -1,4 +1,4 @@
-DEVELOPMENT_VERSION="0.1.5-prerelease"
+DEVELOPMENT_VERSION="0.1.8-prerelease"
 AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.35.2-1-x86_64.zip"
 RUNTIME_NAME=windows
 
@@ -35,4 +35,4 @@ echo "Packing nuspec file via arcane roundabout csproj process"
 dotnet pack windows/DevelopmentVerification.DdWindows.Apm.csproj -p:Version=${DEVELOPMENT_VERSION} -p:NoBuild=true -p:NoDefaultExcludes=true -o package
 
 echo "Cleanup"
-rm -rfv agent-extract agent.zip
+rm -rfv agent-extract agent.zip **/content/v*

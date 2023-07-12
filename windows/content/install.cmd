@@ -3,29 +3,28 @@ REM Entrypoint: https://github.com/projectkudu/kudu/blob/13824205c60a4bdb53896b9
 @echo off
 
 set version=vUNKNOWN
+set tracer_path=\home\SiteExtensions\DevelopmentVerification.DdWindows.Apm\vFOLDERUNKNOWN\Tracer
 set log_prefix=%date% %time% ^[%version%^]
 set log_file=..\..\Datadog.AzureAppServices.Install.txt
 
 echo %log_prefix% Starting install. >> %log_file%
 
-mkdir \home\SiteExtensions\DevelopmentVerification.DdWindows.Apm\vFOLDERUNKNOWN\Tracer
+mkdir %tracer_path%
 
 IF DEFINED WEBSITE_NODE_DEFAULT_VERSION (
   echo %log_prefix% Downloading Node tracer >> %log_file%
-  npm install --prefix \home\SiteExtensions\DevelopmentVerification.DdWindows.Apm\vFOLDERUNKNOWN\Tracer dd-trace >> "%log_file%"
-)
-
-IF "%WEBSITE_STACK%" == "JAVA" (
-  echo %log_prefix% Downloading Java tracer >> %log_file%
-  curl -L -o \home\SiteExtensions\DevelopmentVerification.DdWindows.Apm\vFOLDERUNKNOWN\Tracer\dd-java-agent.jar https://github.com/DataDog/dd-trace-java/releases/download/v0.104.0/dd-java-agent-0.104.0.jar
-)
-
-IF DEFINED DOTNET_CLI_TELEMETRY_PROFILE (
-  echo %log_prefix% Downloading .NET tracer >> %log_file%
-  curl -L -o \home\SiteExtensions\DevelopmentVerification.DdWindows.Apm\vFOLDERUNKNOWN\Tracer\tracer.zip https://github.com/DataDog/dd-trace-dotnet/releases/download/v2.32.0/windows-tracer-home.zip
-  echo %log_prefix% Unzipping .NET tracer >> %log_file%
-  unzip \home\SiteExtensions\DevelopmentVerification.DdWindows.Apm\vFOLDERUNKNOWN\Tracer\tracer.zip -d \home\SiteExtensions\DevelopmentVerification.DdWindows.Apm\vFOLDERUNKNOWN\Tracer
-  rm \home\SiteExtensions\DevelopmentVerification.DdWindows.Apm\vFOLDERUNKNOWN\Tracer\tracer.zip
+  npm install --prefix %tracer_path% dd-trace >> "%log_file%"
+) ELSE (
+  IF "%WEBSITE_STACK%" == "JAVA" (
+    echo %log_prefix% Downloading Java tracer >> %log_file%
+    curl -L -o %tracer_path%\dd-java-agent.jar https://github.com/DataDog/dd-trace-java/releases/download/v0.104.0/dd-java-agent-0.104.0.jar
+  ) ELSE (
+      echo %log_prefix% Downloading .NET tracer >> %log_file%
+      curl -L -o %tracer_path%\tracer.zip https://github.com/DataDog/dd-trace-dotnet/releases/download/v2.32.0/windows-tracer-home.zip
+      echo %log_prefix% Unzipping .NET tracer >> %log_file%
+      unzip %tracer_path%\tracer.zip -d %tracer_path%
+      rm %tracer_path%\tracer.zip
+  )
 )
 
 echo %log_prefix% Successfully installed. >> %log_file%
