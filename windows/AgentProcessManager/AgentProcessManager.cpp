@@ -20,7 +20,7 @@ public:
     {
         UNREFERENCED_PARAMETER(pProvider);
         StartAgent(L"trace-agent");
-        // StartAgent(L"dogstatsd");
+        StartAgent(L"dogstatsd");
         return GL_NOTIFICATION_CONTINUE;
     }
 
@@ -28,7 +28,7 @@ public:
     {
         UNREFERENCED_PARAMETER(pProvider);
         StartAgent(L"trace-agent");
-        // StartAgent(L"dogstatsd");
+        StartAgent(L"dogstatsd");
         return GL_NOTIFICATION_CONTINUE;
     }
 
@@ -39,9 +39,9 @@ public:
         {
             StartAgent(L"trace-agent");
         }
-        // if (!ProcessExists("dogstatsd")) {
-        //     StartAgent(L"dogstatsd");
-        // }
+        if (!ProcessExists("dogstatsd")) {
+            StartAgent(L"dogstatsd");
+        }
         return GL_NOTIFICATION_CONTINUE;
     }
 

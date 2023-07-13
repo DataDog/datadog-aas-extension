@@ -1,5 +1,5 @@
-DEVELOPMENT_VERSION="0.1.8-prerelease"
-AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.35.2-1-x86_64.zip"
+DEVELOPMENT_VERSION="0.1.11-prerelease"
+AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.46.0-1-x86_64.zip"
 RUNTIME_NAME=windows
 
 DEVELOPMENT_VERSION_FILE=$( echo ${DEVELOPMENT_VERSION} | tr '.' '_' )
@@ -29,6 +29,7 @@ sed -i "" "s/vUNKNOWN/v${DEVELOPMENT_VERSION}/g" $RUNTIME_NAME/content/install.c
 echo "Moving content to development versioned folder"
 mkdir $DEVELOPMENT_DIR
 mv -v $RUNTIME_NAME/content/Agent $DEVELOPMENT_DIR/Agent
+# mv -v $RUNTIME_NAME/content/process_manager.exe $RUNTIME_NAME/content/AgentProcessManager.dll $DEVELOPMENT_DIR
 
 echo "Creating development nuget package"
 echo "Packing nuspec file via arcane roundabout csproj process"
