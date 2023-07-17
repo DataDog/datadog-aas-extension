@@ -1,5 +1,6 @@
 #define _WINSOCKAPI_
 
+#include <algorithm>
 #include <codecvt>
 #include <fstream>
 #include <iostream>
@@ -70,8 +71,8 @@ private:
     int StartAgent(const std::wstring &agentName)
     {
         /*
-        This prevents a race condition where two threads from a .NET app are
-        triggered from two user requests at the same time. Being the first
+        This prevents a race condition where multiple threads from a .NET app are
+        triggered from multiple user requests at the same time. Being the first
         request, they'll both bypass the previous check. The lock will ensure
         that only the first request spawns an agent.
         */
@@ -108,7 +109,11 @@ private:
 
         ZeroMemory(&pi, sizeof(pi));
 
-        std::wstring cmd = L"/home/SiteExtensions/DevelopmentVerification.DdWindows.Apm/process_manager /home/SiteExtensions/DevelopmentVerification.DdWindows.Apm/vFOLDERUNKNOWN/Agent/" + agentName + (agentName == L"dogstatsd" ? L" start" : L"");
+        std::wstring versionDir = GetEnvironmentVariableAsString(L"DD_AAS_EXTENSION_VERSION");
+        std::replace(versionDir.begin(), versionDir.end(), L'.', L'_');
+        versionDir.erase(std::remove(versionDir.begin(), versionDir.end(), L'\0'), versionDir.end());
+
+        std::wstring cmd = L"/home/SiteExtensions/DevelopmentVerification.DdWindows.Apm/process_manager /home/SiteExtensions/DevelopmentVerification.DdWindows.Apm/" + versionDir + L"/Agent/" + agentName + (agentName == L"dogstatsd" ? L" start" : L"");
 
         if (!CreateProcess(NULL, const_cast<LPWSTR>(cmd.c_str()), NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi))
         {
