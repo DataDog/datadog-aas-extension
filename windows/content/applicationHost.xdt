@@ -7,7 +7,11 @@
         <add name="DD_AZURE_APP_SERVICES" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_AZURE_APP_SERVICES" value="0" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
-        <!-- change this to datadog-trace-agent -->
+        <!-- Sets the host tag to none for billing -->
+        <add name="DD_HOSTNAME" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_HOSTNAME" value="none" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+
+        <!-- TODO: change this to datadog-trace-agent -->
         <add name="DD_TRACE_AGENT_PATH" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_TRACE_AGENT_PATH" value="%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Agent\trace-agent.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
@@ -83,7 +87,7 @@
       </environmentVariables>
     </runtime>
     <globalModules>
-      <add name="AgentProcessManager" image="%XDT_EXTENSIONPATH%\AgentProcessManager.dll" xdt:Locator="Match(name)" xdt:Transform="InsertIfMissing" />
+      <add name="AgentProcessManager" image="%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\AgentProcessManager.dll" xdt:Locator="Match(name)" xdt:Transform="InsertIfMissing" />
     </globalModules>
   </system.webServer>
 </configuration>
