@@ -2,10 +2,13 @@
 
 #include <algorithm>
 #include <codecvt>
+#include <ctime>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <locale>
 #include <mutex>
+#include <sstream>
 #include <string>
 
 #include <windows.h>
@@ -90,7 +93,7 @@ private:
         sa.lpSecurityDescriptor = NULL;
         sa.bInheritHandle = TRUE;
 
-        std::wstring logFilePath = L"/home/" + agentName + L"_log.txt";
+        std::wstring logFilePath = L"\\home\\" + agentName + L"_log.txt";
 
         HANDLE hOutput = CreateFile(
             logFilePath.c_str(),
@@ -111,9 +114,12 @@ private:
 
         std::wstring versionDir = GetEnvironmentVariableAsString(L"DD_AAS_EXTENSION_VERSION");
         std::replace(versionDir.begin(), versionDir.end(), L'.', L'_');
-        versionDir.erase(std::remove(versionDir.begin(), versionDir.end(), L'\0'), versionDir.end());
 
-        std::wstring cmd = L"/home/SiteExtensions/DevelopmentVerification.DdWindows.Apm/process_manager /home/SiteExtensions/DevelopmentVerification.DdWindows.Apm/" + versionDir + L"/Agent/" + agentName + (agentName == L"dogstatsd" ? L" start" : L"");
+        std::wstring args = (agentName == L"dogstatsd") ? 
+            L" start -c \\home\\SiteExtensions\\DevelopmentVerification.DdWindows.Apm\\" + versionDir + L"\\Agent\\dogstatsd.yaml" :
+            L" -config \\home\\SiteExtensions\\DevelopmentVerification.DdWindows.Apm\\" + versionDir + L"\\Agent\\datadog.yaml";
+
+        std::wstring cmd = L"\\home\\SiteExtensions\\DevelopmentVerification.DdWindows.Apm\\process_manager \\home\\SiteExtensions\\DevelopmentVerification.DdWindows.Apm\\" + versionDir + L"\\Agent\\" + agentName + args;
 
         if (!CreateProcess(NULL, const_cast<LPWSTR>(cmd.c_str()), NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi))
         {
@@ -145,6 +151,8 @@ private:
         std::wstring buffer;
         buffer.resize(bufferLength);
         ::GetEnvironmentVariableW(name.c_str(), &buffer[0], bufferLength);
+
+        buffer.erase(std::remove(buffer.begin(), buffer.end(), L'\0'), buffer.end());
 
         return buffer;
     }
@@ -187,10 +195,25 @@ private:
 
     void WriteLog(LPCWSTR szNotification)
     {
-        std::wofstream logFile;
-        logFile.open("/home/IIS_module_log.txt", std::ios_base::app);
-        logFile << szNotification << std::endl;
+        std::wofstream logFile("\\home\\Datadog.AzureAppServices.Install.txt", std::ios_base::app);
+
+        logFile << GetCurrentTimestamp() << " [" << GetEnvironmentVariableAsString(L"DD_AAS_EXTENSION_VERSION") << "] " << szNotification<< std::endl;
+
         logFile.close();
+    }
+
+    std::wstring GetCurrentTimestamp()
+    {
+        std::time_t now = std::time(nullptr);
+        std::tm localTime;
+        localtime_s(&localTime, &now);
+
+        std::wostringstream oss;
+        oss << std::put_time(&localTime, L"%a %m/%d/%Y %H:%M:%S") << L'.' <<
+            std::setw(2) << std::setfill(L'0') << std::chrono::duration_cast<std::chrono::milliseconds>(
+                std::chrono::system_clock::now().time_since_epoch()).count() % 1000;
+
+        return oss.str();
     }
 };
 
