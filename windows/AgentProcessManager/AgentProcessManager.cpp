@@ -36,19 +36,6 @@ public:
         return GL_NOTIFICATION_CONTINUE;
     }
 
-    GLOBAL_NOTIFICATION_STATUS OnGlobalPreBeginRequest(IN IPreBeginRequestProvider *pProvider)
-    {
-        UNREFERENCED_PARAMETER(pProvider);
-        if (!ProcessExists("trace-agent"))
-        {
-            StartAgent(L"trace-agent");
-        }
-        if (!ProcessExists("dogstatsd")) {
-            StartAgent(L"dogstatsd");
-        }
-        return GL_NOTIFICATION_CONTINUE;
-    }
-
     VOID Terminate()
     {
         delete this;
@@ -58,10 +45,12 @@ public:
     {
         if (!GetEnvironmentVariableAsString(L"WEBSITE_STACK").empty())
         {
+            // Java
             return 0;
         }
         else if (!GetEnvironmentVariableAsString(L"WEBSITE_NODE_DEFAULT_VERSION").empty())
         {
+            // Node
             return 1;
         }
 
@@ -69,22 +58,8 @@ public:
     }
 
 private:
-    std::mutex mtx;
-
     int StartAgent(const std::wstring &agentName)
     {
-        /*
-        This prevents a race condition where multiple threads from a .NET app are
-        triggered from multiple user requests at the same time. Being the first
-        request, they'll both bypass the previous check. The lock will ensure
-        that only the first request spawns an agent.
-        */
-        std::lock_guard<std::mutex> lock(mtx);
-        if (this->GetRuntime() == 2 && ProcessExists(ConvertWStringToString(agentName)))
-        {
-            return 0;
-        }
-
         STARTUPINFO si;
         PROCESS_INFORMATION pi;
         SECURITY_ATTRIBUTES sa;
@@ -115,11 +90,7 @@ private:
         std::wstring versionDir = GetEnvironmentVariableAsString(L"DD_AAS_EXTENSION_VERSION");
         std::replace(versionDir.begin(), versionDir.end(), L'.', L'_');
 
-        std::wstring args = (agentName == L"dogstatsd") ? 
-            L" start -c \\home\\SiteExtensions\\DevelopmentVerification.DdWindows.Apm\\" + versionDir + L"\\Agent\\dogstatsd.yaml" :
-            L" -config \\home\\SiteExtensions\\DevelopmentVerification.DdWindows.Apm\\" + versionDir + L"\\Agent\\datadog.yaml";
-
-        std::wstring cmd = L"\\home\\SiteExtensions\\DevelopmentVerification.DdWindows.Apm\\process_manager \\home\\SiteExtensions\\DevelopmentVerification.DdWindows.Apm\\" + versionDir + L"\\Agent\\" + agentName + args;
+        std::wstring cmd = L"\\home\\SiteExtensions\\DevelopmentVerification.DdWindows.Apm\\process_manager \\home\\SiteExtensions\\DevelopmentVerification.DdWindows.Apm\\" + versionDir + L"\\Agent\\" + agentName + (agentName == L"dogstatsd" ? L" start" : L"");
 
         if (!CreateProcess(NULL, const_cast<LPWSTR>(cmd.c_str()), NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi))
         {
@@ -155,29 +126,6 @@ private:
         buffer.erase(std::remove(buffer.begin(), buffer.end(), L'\0'), buffer.end());
 
         return buffer;
-    }
-
-    bool ProcessExists(const std::string &processName)
-    {
-        PROCESSENTRY32 entry;
-        entry.dwSize = sizeof(PROCESSENTRY32);
-
-        HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
-
-        if (Process32First(snapshot, &entry))
-        {
-            while (Process32Next(snapshot, &entry))
-            {
-                if (_stricmp(ConvertWCharToStdString(entry.szExeFile).c_str(), (processName + ".exe").c_str()) == 0)
-                {
-                    CloseHandle(snapshot);
-                    return TRUE;
-                }
-            }
-        }
-
-        CloseHandle(snapshot);
-        return FALSE;
     }
 
     std::string ConvertWCharToStdString(const WCHAR *wstr)
@@ -244,5 +192,6 @@ __stdcall RegisterModule(
         return pModuleInfo->SetGlobalNotifications(pGlobalModule, GL_APPLICATION_RESOLVE_MODULES);
     }
 
-    return pModuleInfo->SetGlobalNotifications(pGlobalModule, GL_PRE_BEGIN_REQUEST);
+    // Runtime not supported (.NET)
+    return HRESULT_FROM_WIN32(ERROR_NOT_ENOUGH_MEMORY);
 }
