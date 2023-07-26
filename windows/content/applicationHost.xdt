@@ -28,8 +28,9 @@
         <add name="DD_AAS_EXTENSION_VERSION" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_AAS_EXTENSION_VERSION" value="vUNKNOWN" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- For troubleshooting and tagging traces -->
 
+        <!-- TODO: change this to WARN -->
         <add name="DD_LOG_LEVEL" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="DD_LOG_LEVEL" value="WARN" xdt:Locator="Match(name)" xdt:Transform="InsertIfMissing"/>
+        <add name="DD_LOG_LEVEL" value="DEBUG" xdt:Locator="Match(name)" xdt:Transform="InsertIfMissing"/>
 
         <add name="DD_AGENT_HOST" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
 
@@ -37,6 +38,8 @@
         <add name="DD_APM_REMOTE_TAGGER" value="false" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- To skip remote tagger retries on startup -->
 
         <!-- Start of Pipe related Variables -->
+
+        <!-- TODO: remove this?? -->
         <add name="DD_TRACE_TRANSPORT" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_TRACE_TRANSPORT" value="DATADOG-NAMED-PIPES" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 		

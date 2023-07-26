@@ -105,7 +105,7 @@ private:
         std::wstring versionDir = GetEnvironmentVariableAsString(L"DD_AAS_EXTENSION_VERSION");
         std::replace(versionDir.begin(), versionDir.end(), L'.', L'_');
 
-        std::wstring args = (agentName == L"dogstatsd") ? L" start -c /home/SiteExtensions/DevelopmentVerification.DdWindows.Apm/" + versionDir + L"/Agent/dogstatsd.yaml" : L" -config /home/SiteExtensions/DevelopmentVerification.DdWindows.Apm/" + versionDir + L"/Agent/datadog.yaml";
+        std::wstring args = (agentName == L"dogstatsd") ? L" start" : L"";
 
         std::wstring cmd = L"/home/SiteExtensions/DevelopmentVerification.DdWindows.Apm/process_manager /home/SiteExtensions/DevelopmentVerification.DdWindows.Apm/" + versionDir + L"/Agent/" + agentName + args;
 
