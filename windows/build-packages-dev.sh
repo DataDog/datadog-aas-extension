@@ -1,4 +1,4 @@
-DEVELOPMENT_VERSION="0.1.23-prerelease"
+DEVELOPMENT_VERSION="0.1.24-prerelease"
 AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.46.0-1-x86_64.zip"
 RUNTIME_NAME=windows
 
@@ -25,6 +25,7 @@ sed -i "" "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" $RUNTIME_NAME/conten
 sed -i "" "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" $RUNTIME_NAME/content/install.cmd
 sed -i "" "s/vUNKNOWN/v${DEVELOPMENT_VERSION}/g" $RUNTIME_NAME/content/applicationHost.xdt
 sed -i "" "s/vUNKNOWN/v${DEVELOPMENT_VERSION}/g" $RUNTIME_NAME/content/install.cmd
+sed -i "" "s/vUNKNOWN/v${DEVELOPMENT_VERSION}/g" $RUNTIME_NAME/content/install.ps1
 
 echo "Moving content to development versioned folder"
 mkdir $DEVELOPMENT_DIR

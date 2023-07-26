@@ -19,10 +19,15 @@ IF DEFINED WEBSITE_NODE_DEFAULT_VERSION (
     echo %log_prefix% Downloading Java tracer >> %log_file%
     curl -L -o %tracer_path%\dd-java-agent.jar https://github.com/DataDog/dd-trace-java/releases/latest/download/dd-java-agent.jar
   ) ELSE (
-      echo %log_prefix% Runtime not supported >> %log_file%
-      exit /B 0
+      echo %log_prefix% Downloading .NET tracer >> %log_file%
+      curl -L -o %tracer_path%\tracer.zip https://github.com/DataDog/dd-trace-dotnet/releases/download/v2.32.0/windows-tracer-home.zip
+      echo %log_prefix% Unzipping .NET tracer >> %log_file%
+      unzip %tracer_path%\tracer.zip -d %tracer_path%
+      rm %tracer_path%\tracer.zip
   )
 )
+
+POWERSHELL .\install.ps1 >> %log_file%
 
 echo %log_prefix% Successfully installed. >> %log_file%
 exit /B 0
