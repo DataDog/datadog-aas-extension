@@ -3,14 +3,12 @@
   <system.webServer>
     <runtime xdt:Transform="InsertIfMissing">
       <environmentVariables xdt:Transform="InsertIfMissing">
-        <!-- Disable tag setting and agent launching done in the tracers -->
         <add name="DD_AZURE_APP_SERVICES" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="DD_AZURE_APP_SERVICES" value="0" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_AZURE_APP_SERVICES" value="0" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Disable tag setting and agent launching done in the tracers -->
 
-        <!-- Sets the host tag to none for billing -->
         <!-- TODO: remove once default is none for AAS -->
         <add name="DD_HOSTNAME" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="DD_HOSTNAME" value="none" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_HOSTNAME" value="none" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Sets the host tag to none for billing -->
 
         <add name="DD_AAS_EXTENSION_VERSION" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_AAS_EXTENSION_VERSION" value="vUNKNOWN" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- For troubleshooting and tagging traces -->
@@ -20,6 +18,12 @@
 
         <add name="DD_APM_REMOTE_TAGGER" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_APM_REMOTE_TAGGER" value="false" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Remote tagger is in the core agent, which is not included, so disable to improve startup time -->
+
+        <add name="DD_TRACE_AGENT_ARGS" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_TRACE_AGENT_ARGS" value="--config \home\SiteExtensions\DevelopmentVerification.DdWindows.Apm\vFOLDERUNKNOWN\Agent\datadog.yaml" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+
+        <add name="DD_DOGSTATSD_ARGS" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_DOGSTATSD_ARGS" value="-c \home\SiteExtensions\DevelopmentVerification.DdWindows.Apm\vFOLDERUNKNOWN\Agent" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <!-- Start of Pipe related Variables -->				
         <add name="DD_TRACE_AGENT_URL" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>

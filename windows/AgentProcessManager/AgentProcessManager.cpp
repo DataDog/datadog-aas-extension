@@ -77,28 +77,9 @@ private:
     {
         STARTUPINFO si;
         PROCESS_INFORMATION pi;
-        SECURITY_ATTRIBUTES sa;
-
-        sa.nLength = sizeof(sa);
-        sa.lpSecurityDescriptor = NULL;
-        sa.bInheritHandle = TRUE;
-
-        std::wstring logFilePath = L"/home/" + agentName + L"_log.txt";
-
-        HANDLE hOutput = CreateFile(
-            logFilePath.c_str(),
-            FILE_APPEND_DATA,
-            FILE_SHARE_WRITE | FILE_SHARE_READ,
-            &sa,
-            OPEN_ALWAYS,
-            FILE_ATTRIBUTE_NORMAL,
-            NULL);
 
         ZeroMemory(&si, sizeof(si));
         si.cb = sizeof(si);
-        si.dwFlags |= STARTF_USESTDHANDLES;
-        si.hStdOutput = hOutput;
-        si.hStdError = hOutput;
 
         ZeroMemory(&pi, sizeof(pi));
 
@@ -183,7 +164,7 @@ private:
 
     void WriteLog(LPCWSTR szNotification)
     {
-        std::wofstream logFile("/home/Datadog.AzureAppServices.Install.txt", std::ios_base::app);
+        std::wofstream logFile("/home/LogFiles/datadog/Datadog.AzureAppServices.Windows-Install.txt", std::ios_base::app);
 
         logFile << GetCurrentTimestamp() << " [" << GetEnvironmentVariableAsString(L"DD_AAS_EXTENSION_VERSION") << "] " << szNotification << std::endl;
 

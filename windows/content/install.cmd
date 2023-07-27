@@ -5,7 +5,9 @@ REM Entrypoint: https://github.com/projectkudu/kudu/blob/13824205c60a4bdb53896b9
 set version=vUNKNOWN
 set tracer_path=\home\SiteExtensions\DevelopmentVerification.DdWindows.Apm\vFOLDERUNKNOWN\Tracer
 set log_prefix=%date% %time% ^[%version%^]
-set log_file=..\..\Datadog.AzureAppServices.Install.txt
+
+mkdir ..\..\LogFiles\datadog
+set log_file=..\..\LogFiles\datadog\Datadog.AzureAppServices.Windows-Install.txt
 
 echo %log_prefix% Starting install. >> %log_file%
 
@@ -15,7 +17,7 @@ mkdir %tracer_path%
 
 IF DEFINED WEBSITE_NODE_DEFAULT_VERSION (
   echo %log_prefix% Downloading Node tracer >> %log_file%
-  npm install --prefix %tracer_path% dd-trace >> %log_file%
+  npm install --prefix %tracer_path% dd-trace
 ) ELSE (
   IF "%WEBSITE_STACK%" == "JAVA" (
     echo %log_prefix% Downloading Java tracer >> %log_file%
