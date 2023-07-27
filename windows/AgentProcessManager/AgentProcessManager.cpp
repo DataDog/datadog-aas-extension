@@ -41,11 +41,19 @@ public:
         UNREFERENCED_PARAMETER(pProvider);
         if (!ProcessExists("trace-agent"))
         {
-            StartAgent(L"trace-agent");
+            HANDLE hMutexA = CreateMutex(NULL, TRUE, L"trace-agent");
+            if (hMutexA != NULL && GetLastError() != ERROR_ALREADY_EXISTS) {
+                StartAgent(L"trace-agent");
+                CloseHandle(hMutexA);
+            }
         }
         if (!ProcessExists("dogstatsd"))
         {
-            StartAgent(L"dogstatsd");
+            HANDLE hMutexB = CreateMutex(NULL, TRUE, L"dogstatsd");
+            if (hMutexB != NULL && GetLastError() != ERROR_ALREADY_EXISTS) {
+                StartAgent(L"dogstatsd");
+                CloseHandle(hMutexB);
+            }
         }
         return GL_NOTIFICATION_CONTINUE;
     }

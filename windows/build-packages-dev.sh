@@ -1,4 +1,4 @@
-DEVELOPMENT_VERSION="0.1.32-prerelease"
+DEVELOPMENT_VERSION="0.1.33-prerelease"
 AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.46.0-1-x86_64.zip"
 RUNTIME_NAME=windows
 
