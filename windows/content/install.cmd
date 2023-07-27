@@ -17,7 +17,7 @@ mkdir %tracer_path%
 
 IF DEFINED WEBSITE_NODE_DEFAULT_VERSION (
   echo %log_prefix% Downloading Node tracer >> %log_file%
-  npm install --prefix %tracer_path% dd-trace
+  npm install --prefix %tracer_path% dd-trace >> %log_file%
 ) ELSE (
   IF "%WEBSITE_STACK%" == "JAVA" (
     echo %log_prefix% Downloading Java tracer >> %log_file%
