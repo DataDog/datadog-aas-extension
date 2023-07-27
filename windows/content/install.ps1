@@ -8,8 +8,6 @@ function Log ([string] $text)
 	Write-Output "${LogDate} [${Version}] $text" 
 }
 
-Log("Beginning install")
-
 function SetPipe ([string] $file, [string] $pipePattern, [string] $pipeGuid)
 { 
 	if (Select-String -Path $file -Pattern $pipePattern -SimpleMatch -Quiet)
@@ -29,5 +27,3 @@ $statsPipeId=([guid]::NewGuid().ToString().ToUpper())
 
 SetPipe ".\applicationHost.xdt" "uniqueStatsPipeId" "${statsPipeId}"
 SetPipe ".\applicationHost.xdt" "uniqueTracePipeId" "${tracePipeId}"
-
-Log("Install complete")
