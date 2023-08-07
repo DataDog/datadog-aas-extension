@@ -23,36 +23,27 @@ public:
     GLOBAL_NOTIFICATION_STATUS OnGlobalApplicationResolveModules(IN IHttpApplicationResolveModulesProvider *pProvider)
     {
         UNREFERENCED_PARAMETER(pProvider);
-        StartAgent(L"trace-agent");
-        StartAgent(L"dogstatsd");
+        StartAgents();
         return GL_NOTIFICATION_CONTINUE;
     }
 
     GLOBAL_NOTIFICATION_STATUS OnGlobalApplicationStart(IN IHttpApplicationStartProvider *pProvider)
     {
         UNREFERENCED_PARAMETER(pProvider);
-        StartAgent(L"trace-agent");
-        StartAgent(L"dogstatsd");
+        StartAgents();
         return GL_NOTIFICATION_CONTINUE;
     }
 
     GLOBAL_NOTIFICATION_STATUS OnGlobalPreBeginRequest(IN IPreBeginRequestProvider *pProvider)
     {
         UNREFERENCED_PARAMETER(pProvider);
-        if (!ProcessExists("trace-agent"))
+        if (!ProcessExists("process_manager"))
         {
-            HANDLE hMutexA = CreateMutex(NULL, TRUE, L"trace-agent");
-            if (hMutexA != NULL && GetLastError() != ERROR_ALREADY_EXISTS) {
-                StartAgent(L"trace-agent");
-                CloseHandle(hMutexA);
-            }
-        }
-        if (!ProcessExists("dogstatsd"))
-        {
-            HANDLE hMutexB = CreateMutex(NULL, TRUE, L"dogstatsd");
-            if (hMutexB != NULL && GetLastError() != ERROR_ALREADY_EXISTS) {
-                StartAgent(L"dogstatsd");
-                CloseHandle(hMutexB);
+            HANDLE hMutex = CreateMutex(NULL, TRUE, L"process_manager");
+            if (hMutex != NULL && GetLastError() != ERROR_ALREADY_EXISTS)
+            {
+                StartAgents();
+                CloseHandle(hMutex);
             }
         }
         return GL_NOTIFICATION_CONTINUE;
@@ -81,7 +72,7 @@ public:
     }
 
 private:
-    int StartAgent(const std::wstring &agentName)
+    int StartAgents()
     {
         STARTUPINFO si;
         PROCESS_INFORMATION pi;
@@ -91,26 +82,22 @@ private:
 
         ZeroMemory(&pi, sizeof(pi));
 
-        std::wstring versionDir = GetEnvironmentVariableAsString(L"DD_AAS_EXTENSION_VERSION");
-        std::replace(versionDir.begin(), versionDir.end(), L'.', L'_');
-
-        std::wstring cmd = L"/home/SiteExtensions/DevelopmentVerification.DdWindows.Apm/process_manager /home/SiteExtensions/DevelopmentVerification.DdWindows.Apm/" + versionDir + L"/Agent/" + agentName;
+        std::wstring cmd = L"/home/SiteExtensions/DevelopmentVerification.DdWindows.Apm/process_manager";
 
         if (!CreateProcess(NULL, const_cast<LPWSTR>(cmd.c_str()), NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi))
         {
-            std::wstring errorMessage = L"Start " + agentName + L" failed (" + std::to_wstring(GetLastError()) + L").\n";
+            std::wstring errorMessage = L"Start DD Agents failed (" + std::to_wstring(GetLastError()) + L").\n";
             WriteLog(errorMessage.c_str());
             return 1;
         }
         else
         {
-            std::wstring successMessage = L"Start " + agentName + L" succeeded";
+            std::wstring successMessage = L"Start DD Agents succeeded";
             WriteLog(successMessage.c_str());
         }
 
         CloseHandle(pi.hProcess);
         CloseHandle(pi.hThread);
-        CloseHandle(hOutput);
 
         return 0;
     }
@@ -160,12 +147,6 @@ private:
         std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
         std::wstring wide(wstr);
         return converter.to_bytes(wide);
-    }
-
-    std::string ConvertWStringToString(const std::wstring &wideStr)
-    {
-        std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-        return converter.to_bytes(wideStr);
     }
 
     void WriteLog(LPCWSTR szNotification)

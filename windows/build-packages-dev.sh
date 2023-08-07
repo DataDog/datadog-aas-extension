@@ -1,4 +1,4 @@
-DEVELOPMENT_VERSION="0.1.33-prerelease"
+DEVELOPMENT_VERSION="0.1.35-prerelease"
 AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.46.0-1-x86_64.zip"
 RUNTIME_NAME=windows
 
@@ -17,6 +17,14 @@ echo "Moving agent executables"
 mkdir -p $RUNTIME_NAME/content/Agent
 mv agent-extract/bin/agent/dogstatsd.exe $RUNTIME_NAME/content/Agent
 mv agent-extract/bin/agent/trace-agent.exe $RUNTIME_NAME/content/Agent
+
+echo "Building process_manager"
+cd windows/process_manager
+cargo build --release --target=x86_64-pc-windows-gnu
+
+echo "Moving process_manager"
+cd ../..
+mv windows/process_manager/target/x86_64-pc-windows-gnu/release/process_manager.exe $RUNTIME_NAME/content/process_manager.exe
 
 echo "Versioning development files"
 sed -i "" "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" $RUNTIME_NAME/content/Agent/datadog.yaml

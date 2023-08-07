@@ -9,3 +9,4 @@ obj/
 .idea
 .DS_STORE
 **/*-agent-extract
+**/process_manager/target
