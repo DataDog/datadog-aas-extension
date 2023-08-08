@@ -16,21 +16,23 @@
         <add name="DD_LOG_LEVEL" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_LOG_LEVEL" value="WARN" xdt:Locator="Match(name)" xdt:Transform="InsertIfMissing"/>
 
+        <add name="DD_RUNTIME" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_RUNTIME" value="RUNTIME_PLACEHOLDER" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+
         <add name="DD_APM_REMOTE_TAGGER" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_APM_REMOTE_TAGGER" value="false" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Remote tagger is in the core agent, which is not included, so disable to improve startup time -->
 
-        <!-- FIXME: Need a less hardcoded paths, %XDT_EXTENSIONPATH% isn't read properly by process_manager -->
         <add name="DD_TRACE_AGENT_ARGS" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="DD_TRACE_AGENT_ARGS" value="--config \home\SiteExtensions\DevelopmentVerification.DdWindows.Apm\vFOLDERUNKNOWN\Agent\datadog.yaml" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_TRACE_AGENT_ARGS" value="--config \home\SiteExtensions\Datadog.AzureAppServices.RUNTIME_PLACEHOLDER\vFOLDERUNKNOWN\Agent\datadog.yaml" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <add name="DD_TRACE_AGENT_PATH" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="DD_TRACE_AGENT_PATH" value="\home\SiteExtensions\DevelopmentVerification.DdWindows.Apm\vFOLDERUNKNOWN\Agent\trace-agent.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_TRACE_AGENT_PATH" value="\home\SiteExtensions\Datadog.AzureAppServices.RUNTIME_PLACEHOLDER\vFOLDERUNKNOWN\Agent\trace-agent.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <add name="DD_DOGSTATSD_ARGS" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="DD_DOGSTATSD_ARGS" value="start -c \home\SiteExtensions\DevelopmentVerification.DdWindows.Apm\vFOLDERUNKNOWN\Agent" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_DOGSTATSD_ARGS" value="start -c \home\SiteExtensions\Datadog.AzureAppServices.RUNTIME_PLACEHOLDER\vFOLDERUNKNOWN\Agent" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <add name="DD_DOGSTATSD_PATH" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="DD_DOGSTATSD_PATH" value="\home\SiteExtensions\DevelopmentVerification.DdWindows.Apm\vFOLDERUNKNOWN\Agent\dogstatsd.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_DOGSTATSD_PATH" value="\home\SiteExtensions\Datadog.AzureAppServices.RUNTIME_PLACEHOLDER\vFOLDERUNKNOWN\Agent\dogstatsd.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <!-- Start of Pipe related Variables -->				
         <add name="DD_TRACE_AGENT_URL" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>

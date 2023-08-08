@@ -82,17 +82,18 @@ private:
 
         ZeroMemory(&pi, sizeof(pi));
 
-        std::wstring cmd = L"/home/SiteExtensions/DevelopmentVerification.DdWindows.Apm/process_manager";
+        std::wstring runtime = GetEnvironmentVariableAsString(L"DD_RUNTIME").c_str();
+        std::wstring cmd = L"/home/SiteExtensions/Datadog.AzureAppServices." + runtime + L"/process_manager";
 
         if (!CreateProcess(NULL, const_cast<LPWSTR>(cmd.c_str()), NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi))
         {
-            std::wstring errorMessage = L"Start DD Agents failed (" + std::to_wstring(GetLastError()) + L").\n";
+            std::wstring errorMessage = L"Start process_manager failed (" + std::to_wstring(GetLastError()) + L").\n";
             WriteLog(errorMessage.c_str());
             return 1;
         }
         else
         {
-            std::wstring successMessage = L"Start DD Agents succeeded";
+            std::wstring successMessage = L"Start process_manager succeeded";
             WriteLog(successMessage.c_str());
         }
 
@@ -151,7 +152,8 @@ private:
 
     void WriteLog(LPCWSTR szNotification)
     {
-        std::wofstream logFile("/home/LogFiles/datadog/Datadog.AzureAppServices.Windows-Install.txt", std::ios_base::app);
+        std::wstring file_name = GetEnvironmentVariableAsString(L"DD_RUNTIME").c_str();
+        std::wofstream logFile(L"/home/LogFiles/datadog/Datadog.AzureAppServices." + file_name + L"-Install.txt", std::ios_base::app);
 
         logFile << GetCurrentTimestamp() << " [" << GetEnvironmentVariableAsString(L"DD_AAS_EXTENSION_VERSION") << "] " << szNotification << std::endl;
 

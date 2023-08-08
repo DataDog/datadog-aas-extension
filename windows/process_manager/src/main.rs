@@ -3,11 +3,9 @@ use std::env;
 use std::fs::OpenOptions;
 use std::io::Write;
 use std::net::TcpListener;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::thread;
-
-const LOG_FILE_PATH: &str = "/home/LogFiles/datadog/Datadog.AzureAppServices.Windows-Install.txt";
 
 fn main() {
     // If we're in Node, dynamically set the DOGSTATSD port
@@ -19,7 +17,7 @@ fn main() {
         if let Some(free_port) = find_free_port(start_port, end_port) {
             env::set_var("DD_DOGSTATSD_PORT", free_port.to_string());
         } else {
-            _ = write_log_to_file(&format!("Cannot start dogstatsd, no free ports in range {}-{}", start_port, end_port), LOG_FILE_PATH);
+            _ = write_log_to_file(&format!("Cannot start dogstatsd, no free ports in range {}-{}", start_port, end_port));
             return;
         }
     }
@@ -49,8 +47,10 @@ fn main() {
 }
 
 /// Writes the `log_message` to the file at `file_path`.
-fn write_log_to_file(log_message: &str, file_path: &str) -> std::io::Result<()> {
-    let log_path = Path::new(file_path);
+fn write_log_to_file(log_message: &str) -> std::io::Result<()> {
+    let log_file_path = format!("/home/LogFiles/datadog/Datadog.AzureAppServices.{}-Install.txt", env::var("DD_RUNTIME").unwrap());
+    let log_path = PathBuf::from(log_file_path);
+
     let mut file = OpenOptions::new()
         .create(true)
         .write(true)
@@ -82,14 +82,14 @@ fn find_free_port(start_port: u16, end_port: u16) -> Option<u16> {
 /// `path_var` and `args_var`.
 fn spawn_helper(path_var: &str, args_var: &str, process_name: &str) {
     if env::var("DD_API_KEY").is_err() {
-        _ = write_log_to_file(&format!("Cannot start {}, DD_API_KEY not provided", process_name), LOG_FILE_PATH);
+        _ = write_log_to_file(&format!("Cannot start {}, DD_API_KEY not provided", process_name));
         return;
     }
 
     if let Ok(process_path) = env::var(path_var) {
         let path = Path::new(&process_path);
         if !path.exists() {
-            _ = write_log_to_file(&format!("Cannot start {}, invalid path '{}' provided", process_name, process_path), LOG_FILE_PATH);
+            _ = write_log_to_file(&format!("Cannot start {}, invalid path '{}' provided", process_name, process_path));
             return;
         }
 
@@ -99,10 +99,10 @@ fn spawn_helper(path_var: &str, args_var: &str, process_name: &str) {
             dd_command.args(process_args.split(" "));
             spawn(dd_command, process_name);
         } else {
-            _ = write_log_to_file(&format!("Cannot start {}, {} not provided", process_name, args_var), LOG_FILE_PATH);
+            _ = write_log_to_file(&format!("Cannot start {}, {} not provided", process_name, args_var));
         }
     } else {
-        _ = write_log_to_file(&format!("Cannot start {}, {} not provided", process_name, path_var), LOG_FILE_PATH);
+        _ = write_log_to_file(&format!("Cannot start {}, {} not provided", process_name, path_var));
     }
 }
 
@@ -110,11 +110,11 @@ fn spawn_helper(path_var: &str, args_var: &str, process_name: &str) {
 fn spawn(mut command: Command, process_name: &str) {
     if let Ok(mut dd_process) = command.spawn() {
         let status = dd_process.wait().expect("dd_process wasn't running");
-        _ = write_log_to_file(&format!("{} has finished with status: {}", process_name, status), LOG_FILE_PATH);
+        _ = write_log_to_file(&format!("{} has finished with status: {}", process_name, status));
         if !status.success() {
             spawn(command, process_name);
         }
     } else {
-        _ = write_log_to_file(&format!("{} did not start successfully", process_name), LOG_FILE_PATH);
+        _ = write_log_to_file(&format!("{} did not start successfully", process_name));
     }
 }
