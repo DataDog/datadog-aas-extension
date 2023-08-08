@@ -1,40 +1,73 @@
+use chrono::prelude::*;
 use std::env;
+use std::fs::OpenOptions;
+use std::io::Write;
 use std::net::TcpListener;
+use std::path::Path;
 use std::process::Command;
 use std::thread;
 
+const LOG_FILE_PATH: &str = "/home/LogFiles/datadog/Datadog.AzureAppServices.Windows-Install.txt";
+
 fn main() {
-    // If we're in Node, dynamically set the DOGSTATSD socket
-    if env::var("WEBSITE_NODE_DEFAULT_VERSION").is_some() {
-        // TODO: fetch these from env var?
+    // If we're in Node, dynamically set the DOGSTATSD port
+    if env::var("WEBSITE_NODE_DEFAULT_VERSION").is_ok() {
+        // TODO: find a better range
         let start_port = 8100;
         let end_port = 8200;
 
         if let Some(free_port) = find_free_port(start_port, end_port) {
-            env::set_var("DD_DOGSTATSD_HOSTNAME", "localhost");
             env::set_var("DD_DOGSTATSD_PORT", free_port.to_string());
-            env::remove_var("DD_AGENT_PIPE_NAME");
-            env::remove_var("DD_DOGSTATSD_PIPE_NAME");
-            env::remove_var("DD_DOGSTATSD_WINDOWS_PIPE_NAME");
         } else {
-            println!("Cannot spawn dogstatsd, no free ports in range {}-{}", start_port, end_port);
+            _ = write_log_to_file(&format!("Cannot start dogstatsd, no free ports in range {}-{}", start_port, end_port), LOG_FILE_PATH);
             return;
         }
     }
 
-    let trace_agent_thread = thread::spawn(|| {
-        spawn_helper("DD_TRACE_AGENT_PATH", "DD_TRACE_AGENT_ARGS", "trace-agent");
-    });
+    let mut threads = vec![];
 
-    let dogstatsd_thread = thread::spawn(|| {
-        spawn_helper("DD_DOGSTATSD_PATH", "DD_DOGSTATSD_ARGS", "dogstatsd");
-    });
+    let tracing_enabled = env::var("DD_TRACE_ENABLED").unwrap_or("true".to_string()) == "true";
+    let profiling_enabled = env::var("DD_PROFILING_ENABLED").unwrap_or("true".to_string()) == "true";
+    
+    if tracing_enabled || profiling_enabled {
+        let trace_agent_thread = thread::spawn(|| {
+            spawn_helper("DD_TRACE_AGENT_PATH", "DD_TRACE_AGENT_ARGS", "trace-agent");
+        });
+        threads.push(("trace-agent", trace_agent_thread));
+    }
 
-    // Wait for both threads to complete
-    trace_agent_thread.join().expect("trace-agent thread panicked");
-    dogstatsd_thread.join().expect("dogstatsd thread panicked");
+    if tracing_enabled {
+        let dogstatsd_thread = thread::spawn(|| {
+            spawn_helper("DD_DOGSTATSD_PATH", "DD_DOGSTATSD_ARGS", "dogstatsd");
+        });
+        threads.push(("dogstatsd", dogstatsd_thread))
+    }
+
+    for (process_name, thread) in threads {
+        thread.join().expect(&format!("{} thread panicked", process_name));
+    }
 }
 
+/// Writes the `log_message` to the file at `file_path`.
+fn write_log_to_file(log_message: &str, file_path: &str) -> std::io::Result<()> {
+    let log_path = Path::new(file_path);
+    let mut file = OpenOptions::new()
+        .create(true)
+        .write(true)
+        .append(true)
+        .open(log_path)?;
+
+    let timestamp = Local::now();
+    let formatted_timestamp = timestamp.format("%a %m/%d/%Y %H:%M:%S%.3f");
+    let extension_version = env::var("DD_AAS_EXTENSION_VERSION").unwrap();
+
+    let formatted_log = format!("{} [{}] {}\n", formatted_timestamp, extension_version, log_message);
+
+    file.write_all(formatted_log.as_bytes())?;
+    Ok(())
+}
+
+/// Yields a free port between `start_port` and `end_port` if any exist.
 fn find_free_port(start_port: u16, end_port: u16) -> Option<u16> {
     for port in start_port..=end_port {
         if TcpListener::bind(("127.0.0.1", port)).is_ok() {
@@ -44,29 +77,44 @@ fn find_free_port(start_port: u16, end_port: u16) -> Option<u16> {
     None
 }
 
+/// Creates a `Command` that will execute the DD process. The path to the
+/// process and it's arguments are the values of the environment variables
+/// `path_var` and `args_var`.
 fn spawn_helper(path_var: &str, args_var: &str, process_name: &str) {
-    if let Ok(agent_path) = env::var(path_var) {
-        let mut dd_command = Command::new(agent_path);
+    if env::var("DD_API_KEY").is_err() {
+        _ = write_log_to_file(&format!("Cannot start {}, DD_API_KEY not provided", process_name), LOG_FILE_PATH);
+        return;
+    }
 
-        if let Ok(agent_args) = env::var(args_var) {
-            dd_command.args(agent_args.split(" "));
-            spawn(dd_command)
+    if let Ok(process_path) = env::var(path_var) {
+        let path = Path::new(&process_path);
+        if !path.exists() {
+            _ = write_log_to_file(&format!("Cannot start {}, invalid path '{}' provided", process_name, process_path), LOG_FILE_PATH);
+            return;
+        }
+
+        let mut dd_command = Command::new(process_path);
+
+        if let Ok(process_args) = env::var(args_var) {
+            dd_command.args(process_args.split(" "));
+            spawn(dd_command, process_name);
         } else {
-            println!("Cannot spawn {}, {} not provided", process_name, path_var)
+            _ = write_log_to_file(&format!("Cannot start {}, {} not provided", process_name, args_var), LOG_FILE_PATH);
         }
     } else {
-        println!("Cannot spawn {}, {} not provided", process_name, path_var)
+        _ = write_log_to_file(&format!("Cannot start {}, {} not provided", process_name, path_var), LOG_FILE_PATH);
     }
 }
 
-fn spawn(mut command: Command) {
+/// Executes `command` and re-launches it if it has a non-zero exit.
+fn spawn(mut command: Command, process_name: &str) {
     if let Ok(mut dd_process) = command.spawn() {
         let status = dd_process.wait().expect("dd_process wasn't running");
-        println!("DataDog process {} has finished", status);
+        _ = write_log_to_file(&format!("{} has finished with status: {}", process_name, status), LOG_FILE_PATH);
         if !status.success() {
-            spawn(command);
+            spawn(command, process_name);
         }
     } else {
-        println!("Datadog process did not start successfully");
+        _ = write_log_to_file(&format!("{} did not start successfully", process_name), LOG_FILE_PATH);
     }
 }
