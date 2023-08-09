@@ -48,7 +48,7 @@ fn main() {
 
 /// Writes the `log_message` to the file at `file_path`.
 fn write_log_to_file(log_message: &str) -> std::io::Result<()> {
-    let log_file_path = format!("/home/LogFiles/datadog/Datadog.AzureAppServices.{}-Install.txt", env::var("DD_RUNTIME").unwrap());
+    let log_file_path = format!("/home/LogFiles/datadog/Datadog.AzureAppServices.{}.Apm.txt", env::var("DD_RUNTIME").unwrap());
     let log_path = PathBuf::from(log_file_path);
 
     let mut file = OpenOptions::new()
@@ -58,7 +58,7 @@ fn write_log_to_file(log_message: &str) -> std::io::Result<()> {
         .open(log_path)?;
 
     let timestamp = Local::now();
-    let formatted_timestamp = timestamp.format("%a %m/%d/%Y %H:%M:%S%.3f");
+    let formatted_timestamp = timestamp.format("%a %m/%d/%Y %H:%M:%S%.2f");
     let extension_version = env::var("DD_AAS_EXTENSION_VERSION").unwrap();
 
     let formatted_log = format!("{} [{}] {}\n", formatted_timestamp, extension_version, log_message);

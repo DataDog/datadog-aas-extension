@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>Datadog.AzureAppServices.Node.Apm</id>
+    <title>Node Datadog APM</title>
+    <authors>Datadog</authors>
+    <version>0.0.0</version> <!-- placeholder that is overridden -->
+    <icon>icon.png</icon>
+    <projectUrl>https://github.com/DataDog/datadog-aas-extension</projectUrl>
+    <license type="expression">Apache-2.0</license>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>
+      Application monitoring for Node by Datadog.
+    </description>
+    <tags>AzureSiteExtension Datadog Node APM Tracing Tracer Monitoring</tags>
+    <packageTypes>
+      <packageType name="AzureSiteExtension" />
+    </packageTypes>  
+  </metadata>
+  <files>
+    <file src="content\**\*.*" target="content" />
+    <file src="image\icon.png" target="" />
+  </files>
+</package>

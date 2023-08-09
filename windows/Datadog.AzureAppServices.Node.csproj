@@ -1,7 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <NuspecProperties>version=$(Version)</NuspecProperties>
-    <NuspecFile>Datadog.AzureAppServices.Node.nuspec</NuspecFile>
-  </PropertyGroup>
-</Project>

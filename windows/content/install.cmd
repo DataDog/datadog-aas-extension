@@ -6,7 +6,7 @@ set version=vUNKNOWN
 set log_prefix=%date% %time% ^[%version%^]
 
 mkdir ..\..\LogFiles\datadog
-set log_file=..\..\LogFiles\datadog\Datadog.AzureAppServices.RUNTIME_PLACEHOLDER-Install.txt
+set log_file=..\..\LogFiles\datadog\Datadog.AzureAppServices.RUNTIME_PLACEHOLDER.Apm.txt
 
 echo %log_prefix% Starting install >> %log_file%
 

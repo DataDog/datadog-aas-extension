@@ -54,23 +54,6 @@ public:
         delete this;
     }
 
-    int GetRuntime()
-    {
-        if (!GetEnvironmentVariableAsString(L"WEBSITE_STACK").empty())
-        {
-            // Java
-            return 0;
-        }
-        else if (!GetEnvironmentVariableAsString(L"WEBSITE_NODE_DEFAULT_VERSION").empty())
-        {
-            // Node
-            return 1;
-        }
-
-        // .NET
-        return 2;
-    }
-
 private:
     int StartAgents()
     {
@@ -83,7 +66,7 @@ private:
         ZeroMemory(&pi, sizeof(pi));
 
         std::wstring runtime = GetEnvironmentVariableAsString(L"DD_RUNTIME").c_str();
-        std::wstring cmd = L"/home/SiteExtensions/Datadog.AzureAppServices." + runtime + L"/process_manager";
+        std::wstring cmd = L"/home/SiteExtensions/Datadog.AzureAppServices." + runtime + L".Apm/process_manager";
 
         if (!CreateProcess(NULL, const_cast<LPWSTR>(cmd.c_str()), NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi))
         {
@@ -152,8 +135,8 @@ private:
 
     void WriteLog(LPCWSTR szNotification)
     {
-        std::wstring file_name = GetEnvironmentVariableAsString(L"DD_RUNTIME").c_str();
-        std::wofstream logFile(L"/home/LogFiles/datadog/Datadog.AzureAppServices." + file_name + L"-Install.txt", std::ios_base::app);
+        std::wstring runtime = GetEnvironmentVariableAsString(L"DD_RUNTIME").c_str();
+        std::wofstream logFile(L"/home/LogFiles/datadog/Datadog.AzureAppServices." + runtime + L".Apm.txt", std::ios_base::app);
 
         logFile << GetCurrentTimestamp() << " [" << GetEnvironmentVariableAsString(L"DD_AAS_EXTENSION_VERSION") << "] " << szNotification << std::endl;
 
@@ -167,9 +150,9 @@ private:
         localtime_s(&localTime, &now);
 
         std::wostringstream oss;
-        oss << std::put_time(&localTime, L"%a %m/%d/%Y %H:%M:%S") << L'.' <<
-            std::setw(2) << std::setfill(L'0') << std::chrono::duration_cast<std::chrono::milliseconds>(
-                std::chrono::system_clock::now().time_since_epoch()).count() % 1000;
+        oss << std::put_time(&localTime, L"%a %m/%d/%Y %H:%M:%S") <<
+            L'.' << std::setw(2) << std::setfill(L'0') <<
+            std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() % 1000;
 
         return oss.str();
     }
@@ -190,17 +173,6 @@ __stdcall RegisterModule(
     {
         return HRESULT_FROM_WIN32(ERROR_NOT_ENOUGH_MEMORY);
     }
-
-    int runtime = pGlobalModule->GetRuntime();
-
-    if (runtime == 0)
-    {
-        return pModuleInfo->SetGlobalNotifications(pGlobalModule, GL_APPLICATION_START);
-    }
-    else if (runtime == 1)
-    {
-        return pModuleInfo->SetGlobalNotifications(pGlobalModule, GL_APPLICATION_RESOLVE_MODULES);
-    }
-
+    
     return pModuleInfo->SetGlobalNotifications(pGlobalModule, GL_PRE_BEGIN_REQUEST);
 }

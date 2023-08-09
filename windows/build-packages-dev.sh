@@ -5,7 +5,14 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-DEVELOPMENT_VERSION="0.0.4"
+DEBUG_MODE=false
+
+if [ $# -eq 2 ] && [ "$2" = "--debug" ]; then
+    DEBUG_MODE=true
+    echo "Debug mode enabled."
+fi
+
+DEVELOPMENT_VERSION="0.1.38-prerelease"
 AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.46.0-1-x86_64.zip"
 RUNTIME="$1"
 OS_NAME=windows
@@ -82,7 +89,12 @@ find $OS_NAME -name '.DS_Store' -type f -delete
 
 echo "Creating development nuget package"
 echo "Packing nuspec file via arcane roundabout csproj process"
-dotnet pack $OS_NAME/Datadog.AzureAppServices.$RUNTIME.csproj -p:Version=${DEVELOPMENT_VERSION} -p:NoBuild=true -p:NoDefaultExcludes=true -o package
+
+if $DEBUG_MODE; then
+    dotnet pack $OS_NAME/DevelopmentVerification.DdWindows.Apm.csproj -p:Version=${DEVELOPMENT_VERSION} -p:NoBuild=true -p:NoDefaultExcludes=true -o package
+else
+    dotnet pack $OS_NAME/Datadog.AzureAppServices.$RUNTIME.Apm.csproj -p:Version=${DEVELOPMENT_VERSION} -p:NoBuild=true -p:NoDefaultExcludes=true -o package
+fi
 
 echo "Cleanup"
 rm -rfv agent-extract agent.zip **/content/v*
