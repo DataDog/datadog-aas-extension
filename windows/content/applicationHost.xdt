@@ -21,6 +21,9 @@
 
         <add name="DD_APM_REMOTE_TAGGER" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_APM_REMOTE_TAGGER" value="false" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Remote tagger is in the core agent, which is not included, so disable to improve startup time -->
+        
+        <add name="DD_REMOTE_CONFIGURATION_ENABLED" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_REMOTE_CONFIGURATION_ENABLED" value="false" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <add name="DD_TRACE_AGENT_ARGS" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_TRACE_AGENT_ARGS" value="--config \home\SiteExtensions\Datadog.AzureAppServices.RUNTIME_PLACEHOLDER.Apm\vFOLDERUNKNOWN\Agent\datadog.yaml" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
@@ -59,7 +62,7 @@
         <add name="DD_DOGSTATSD_WINDOWS_PIPE_NAME" value="dogstatsd-uniqueStatsPipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Dogstatsd server variable -->    
         <!-- End of Pipe related Variables -->
 
-		    <!-- Start of Node Variables -->
+        <!-- Start of Node Variables -->
         <add name="DD_TRACE_AGENT_URL" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_TRACE_AGENT_URL" value="unix:\\.\pipe\datadogtrace-uniqueTracePipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/>	
 
@@ -78,7 +81,7 @@
         <add name="DD_TRACE_TELEMETRY" value="false" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <add name="JAVA_OPTS" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="JAVA_OPTS" value="-javaagent:%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Tracer\dd-java-agent.jar -Ddatadog.slf4j.simpleLogger.logFile=%HOME%\LogFiles\datadog\java\dd-java-agent.log" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="JAVA_OPTS" value="-javaagent:%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Tracer\dd-java-agent.jar -Ddatadog.slf4j.simpleLogger.logFile=%HOME%\LogFiles\datadog\java\vFOLDERUNKNOWN\dd-java-agent.log" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
         <!-- End of Java Variables -->
 
 		    <!-- Start of .NET Variables -->
