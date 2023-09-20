@@ -52,6 +52,9 @@
         <add name="DD_PROFILING_DDPROF_ENABLED" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_PROFILING_DDPROF_ENABLED" value="0" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Disable profiling -->
 
+        <add name="DD_REMOTE_CONFIGURATION_ENABLED" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_REMOTE_CONFIGURATION_ENABLED" value="0" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Disable remote config -->
+
         <add name="DD_TELEMETRY_ENABLED" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_TELEMETRY_ENABLED" value="0" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Disable telemetry -->
 
