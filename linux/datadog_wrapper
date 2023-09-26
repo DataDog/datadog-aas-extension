@@ -203,6 +203,10 @@ setUpPyEnv() {
 }
 
 main
+
+# Allow the profiler to add this to its tag
+export WEBSITE_OS="linux"
+
 echo "Executing start command: \"$DD_START_APP\""
 cd "$CURRENT_DIR"
 eval "$DD_START_APP"
