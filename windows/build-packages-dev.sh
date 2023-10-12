@@ -12,7 +12,9 @@ if [ $# -eq 2 ] && [ "$2" = "--debug" ]; then
     echo "Debug mode enabled."
 fi
 
-DEVELOPMENT_VERSION="0.1.38-prerelease"
+# DEVELOPMENT_VERSION="0.1.39-prerelease"
+DEVELOPMENT_VERSION="0.0.2"
+
 AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.46.0-1-x86_64.zip"
 RUNTIME="$1"
 OS_NAME=windows
@@ -97,4 +99,4 @@ else
 fi
 
 echo "Cleanup"
-rm -rfv agent-extract agent.zip **/content/v*
+rm -rfv agent-extract agent.zip **/content/v* 1> /dev/null
