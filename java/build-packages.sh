@@ -68,4 +68,4 @@ echo "Packing nuspec file via arcane roundabout csproj process"
 dotnet pack dev-java/DevelopmentVerification.DdJava.Apm.csproj -p:Version=${DEVELOPMENT_VERSION} -p:NoBuild=true -p:NoDefaultExcludes=true -o package
 
 echo "Cleanup"
-rm -rfv agent-extract agent.zip **/content/v* 1> /dev/null
+rm -rfv java-agent-extract agent-extract agent.zip dev-java java/content/v* 1> /dev/null
