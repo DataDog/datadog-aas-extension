@@ -66,3 +66,6 @@ mv -v dev-java/content/Agent $DEVELOPMENT_DIR/Agent
 echo "Creating development nuget package"
 echo "Packing nuspec file via arcane roundabout csproj process"
 dotnet pack dev-java/DevelopmentVerification.DdJava.Apm.csproj -p:Version=${DEVELOPMENT_VERSION} -p:NoBuild=true -p:NoDefaultExcludes=true -o package
+
+echo "Cleanup"
+rm -rfv agent-extract agent.zip **/content/v* 1> /dev/null
