@@ -1,25 +1,103 @@
-image: mcr.microsoft.com/dotnet/core/sdk:3.1
+# dotnet-package:
+#   tags: [ "runner:main" ]
+#   image: mcr.microsoft.com/dotnet/core/sdk:3.1
+#   script:
+#     - echo "Installing dependencies"
+#     - apt-get update
+#     - apt-get install unzip
+#     - bash ./dotnet/build-packages.sh
+#   artifacts:
+#     expire_in: 1 weeks
+#     paths:
+#       - package
+#
+# java-package:
+#   tags: [ "runner:main" ]
+#   image: mcr.microsoft.com/dotnet/core/sdk:3.1
+#   script:
+#     - echo "Installing dependencies"
+#     - apt-get update
+#     - apt-get install unzip
+#     - bash ./java/build-packages.sh
+#   artifacts:
+#     expire_in: 1 weeks
+#     paths:
+#       - package
 
-dotnet-package:
-  tags: [ "runner:main" ]
-  script: 
-    - echo "Installing dependencies"
-    - apt-get update
-    - apt-get install unzip
-    - bash ./dotnet/build-packages.sh
-  artifacts:
-    expire_in: 1 weeks
-    paths:
-      - package
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: always
+    - when: never
 
-java-package:
-  tags: [ "runner:main" ]
-  script: 
-    - echo "Installing dependencies"
-    - apt-get update
-    - apt-get install unzip
-    - bash ./java/build-packages.sh
+variables:
+  RUNTIME:
+    description: "Runtime of the extension to deploy"
+    value: "node"
+    options:
+      - "node"
+  ENVIRONMENT:
+    description: "Select the deployment target. Deploy experimental extension with dev or production extension with prod"
+    value: "dev"
+    options:
+      - "dev"
+      - "prod"
+  RELEASE_VERSION:
+    description: "Version of the extension to deploy. Ex. 1.0.0"
+
+build-agent-process-manager-module:
+  tags: ["runner:windows-docker", "windowsversion:2022"]
+  rules:
+    - if: $RUNTIME == "node"
+  script:
+    - ls
+    - >
+      docker run
+      --rm
+      -v "$(Get-Location):c:\mnt"
+      registry.ddbuild.io/images/mirror/dotnet/framework:sdk-4.8-windowsservercore-ltsc2022
+      powershell -Command "ls;
+      Invoke-WebRequest -Uri 'https://aka.ms/vs/17/release/vs_buildtools.exe' -OutFile 'c:\mnt\vs_buildtools.exe' -UseBasicParsing;
+      Start-Process -Wait -NoNewWindow -FilePath 'c:\mnt\vs_buildtools.exe' -ArgumentList '--quiet', '--wait', '--norestart', '--nocache', '--installPath', 'c:\mnt\BuildTools', '--add', 'Microsoft.VisualStudio.Workload.VCTools', '--includeRecommended';
+      Copy-Item -Path 'c:\mnt\BuildTools' -Destination 'C:\Program Files (x86)\Microsoft Visual Studio\2022' -Recurse -Force;
+      msbuild mnt\node\AgentProcessManager\AgentProcessManager.sln /p:Configuration=Release /p:Platform=x64;
+      msbuild mnt\node\AgentProcessManager\AgentProcessManager.sln /p:Configuration=Release /p:Platform=x86;"
   artifacts:
-    expire_in: 1 weeks
     paths:
-      - package
+      - node\AgentProcessManager\x64\Release\AgentProcessManager.dll
+      - node\AgentProcessManager\Release\AgentProcessManager.dll
+
+build-process-manager:
+  tags: ["arch:amd64"]
+  image: registry.ddbuild.io/images/mirror/rust:1.73
+  rules:
+    - if: $RUNTIME == "node"
+  script:
+    - apt update
+    - apt install -y mingw-w64
+    - rustup target add x86_64-pc-windows-gnu
+    - cargo build --manifest-path=node/process_manager/Cargo.toml --release --target=x86_64-pc-windows-gnu
+  artifacts:
+    paths:
+      - node/process_manager/target/x86_64-pc-windows-gnu/release/process_manager.exe
+
+pack-node-nuget-package:
+  tags: ["arch:amd64"]
+  image: registry.ddbuild.io/images/mirror/dotnet:sdk-8.0.100-1
+  rules:
+    - if: $RUNTIME == "node"
+  needs:
+    - build-agent-process-manager-module
+    - build-process-manager
+  script:
+    - echo "Installing dependencies"
+    - apt update
+    - apt install -y unzip rsync
+    - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+    - export NVM_DIR="$HOME/.nvm"
+    - '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"'
+    - nvm install 20.11.0
+    - cp node/AgentProcessManager/x64/Release/AgentProcessManager.dll node/src/AgentProcessManager_x64.dll
+    - cp node/AgentProcessManager/Release/AgentProcessManager.dll node/src/AgentProcessManager_x86.dll
+    - cp node/process_manager/target/x86_64-pc-windows-gnu/release/process_manager.exe node/src
+    - bash ./node/build-packages.sh -e $ENVIRONMENT -v $RELEASE_VERSION

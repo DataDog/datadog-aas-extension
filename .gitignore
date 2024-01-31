@@ -10,3 +10,9 @@ obj/
 /package/*
 .idea
 trace-agent*
+
+.DS_Store
+node/downloads
+node/content
+node/process_manager/target
+AgentProcessManager_*.dll
