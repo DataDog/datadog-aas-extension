@@ -10,3 +10,5 @@ obj/
 /package/*
 .idea
 trace-agent*
+
+.DS_Store
