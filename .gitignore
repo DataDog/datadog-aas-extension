@@ -17,3 +17,4 @@ node-agent-extract
 dogstatsd.exe
 trace-agent.exe
 node/content
+node/process_manager/target
