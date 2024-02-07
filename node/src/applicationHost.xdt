@@ -38,6 +38,9 @@
         <add name="DD_DOGSTATSD_WINDOWS_PIPE_NAME" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_DOGSTATSD_WINDOWS_PIPE_NAME" value="dogstatsd-uniqueStatsPipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Dogstatsd server variable -->
 
+        <add name="DD_EXTENSION_PATH" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_EXTENSION_PATH" value="%XDT_EXTENSIONPATH%" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+
         <add name="DD_INTEGRATIONS" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_INTEGRATIONS" value="%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Tracer\integrations.json" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 

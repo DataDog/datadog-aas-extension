@@ -1,4 +1,6 @@
 # TODO: build dll on windows machine then investigate how to do so in a pipeline
+# TODO: build dlls for 32 bit and 64 bit
+# TODO: add code for agent process manager to repo
 
 ENV="dev"
 AGENT_VERSION="7.50.3"
