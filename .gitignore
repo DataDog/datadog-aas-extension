@@ -12,9 +12,6 @@ obj/
 trace-agent*
 
 .DS_Store
-agent.zip
-node-agent-extract
-dogstatsd.exe
-trace-agent.exe
+node/downloads
 node/content
 node/process_manager/target

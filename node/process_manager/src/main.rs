@@ -29,9 +29,9 @@ fn main() {
     
     if tracing_enabled || profiling_enabled {
         let trace_agent_thread = thread::spawn(|| {
-            spawn_helper("DD_TRACE_AGENT_PATH", "DD_TRACE_AGENT_ARGS", "trace-agent");
+            spawn_helper("DD_TRACE_AGENT_PATH", "DD_TRACE_AGENT_ARGS", "datadog-trace-agent");
         });
-        threads.push(("trace-agent", trace_agent_thread));
+        threads.push(("datadog-trace-agent", trace_agent_thread));
     }
 
     if tracing_enabled {
@@ -59,7 +59,7 @@ fn write_log_to_file(log_message: &str) -> std::io::Result<()> {
 
     let timestamp = Local::now();
     let formatted_timestamp = timestamp.format("%a %m/%d/%Y %H:%M:%S%.2f");
-    let extension_version = env::var("DD_AAS_EXTENSION_VERSION").unwrap();
+    let extension_version = env::var("DD_AAS_NODE_EXTENSION_VERSION").unwrap();
 
     let formatted_log = format!("{} [{}] {}\n", formatted_timestamp, extension_version, log_message);
 
