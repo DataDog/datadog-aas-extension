@@ -23,6 +23,26 @@ function SetPipe ([string] $file, [string] $pipePattern, [string] $pipeGuid)
 	}
 }
 
+# Determine the architecture (32-bit or 64-bit)
+$architecture = [System.Environment]::Is64BitProcess
+
+# Set the DLL filename based on the architecture
+$dllFileName = if ($architecture) {
+    "AgentProcessManager_x64.dll"
+} else {
+    "AgentProcessManager_x86.dll"
+}
+
+# Update the applicationHost.xdt file with the new DLL path
+$configPath = ".\applicationHost.xdt"
+$configContent = Get-Content -Path $configPath -Raw
+
+# Replace the existing image attribute value with the new DLL path
+$newConfigContent = $configContent -replace "AGENTPROCESSMANAGER.dll", "$dllFileName"
+
+# Save the modified content back to the file
+$newConfigContent | Set-Content -Path $configPath
+
 # Set the unique pipe names in the applicationHost.xdt file for traces and metrics
 $tracePipeId=([guid]::NewGuid().ToString().ToUpper())
 $statsPipeId=([guid]::NewGuid().ToString().ToUpper())
