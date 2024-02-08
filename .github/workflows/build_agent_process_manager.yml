@@ -24,5 +24,5 @@ jobs:
       with:
         name: dlls
         path: |
-          node/AgentProcessManager/x64/Release/AgentProcessManager_x64.dll
-          node/AgentProcessManager/Release/AgentProcessManager_x86.dll
+          x64/Release/AgentProcessManager_x64.dll
+          Release/AgentProcessManager_x86.dll
