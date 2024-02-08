@@ -28,7 +28,7 @@ build-agent-process-manager-module:
   tags: ["windowsversion:2022"]
   image: mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2022
   variables:
-    MSBUILD_PATH: 'C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin'
+    MSBUILD_PATH: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin'
   script:
     - set PATH="%MSBUILD_PATH%;%PATH%"
     - msbuild node/AgentProcessManager/AgentProcessManager.sln /p:Configuration=Release /p:Platform=x64
@@ -42,6 +42,8 @@ build-process-manager:
   tags: ["arch:amd64"]
   image: registry.ddbuild.io/images/mirror/rust:1.73
   script:
+    - apt update
+    - apt install -y mingw-w64
     - rustup target add x86_64-pc-windows-gnu
     - cargo build --manifest-path=node/process_manager/Cargo.toml --release --target=x86_64-pc-windows-gnu
   artifacts:
@@ -57,7 +59,7 @@ run_bash_script:
   script:
     - echo "Installing dependencies"
     - apt update
-    - apt install unzip rsync -y
+    - apt install -y unzip rsync
     - export NVM_DIR="$HOME/.nvm"
     - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
     - '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"'
