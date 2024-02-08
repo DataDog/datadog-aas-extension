@@ -12,6 +12,12 @@ jobs:
 
     - name: Install Visual Studio Build Tools
       uses: microsoft/setup-msbuild@v2
+    
+    - name: Add 64 bit to path
+      run: echo "C:\msys64\mingw64\bin" >> $GITHUB_PATH
+
+    - name: Add 32 bit to path
+      run: echo "C:\msys64\mingw32\bin" >> $GITHUB_PATH
 
     - name: Build 32-bit DLL
       run: cl /LD /EHsc /Fo:node/AgentProcessManager/AgentProcessManager.obj /arch:IA32 node/AgentProcessManager/AgentProcessManager.cpp /link /DLL /OUT:AgentProcessManager_x86.dll
