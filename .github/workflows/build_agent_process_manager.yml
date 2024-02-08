@@ -8,27 +8,19 @@ jobs:
 
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
-    - name: Install Visual Studio Build Tools
-      uses: microsoft/setup-msbuild@v2
-    
-    - name: Add 64 bit to path
-      run: echo "C:\msys64\mingw64\bin" >> $GITHUB_PATH
-
-    - name: Add 32 bit to path
-      run: echo "C:\msys64\mingw32\bin" >> $GITHUB_PATH
-
-    - name: Build 32-bit DLL
-      run: cl /LD /EHsc /Fo:node/AgentProcessManager/AgentProcessManager.obj /arch:IA32 node/AgentProcessManager/AgentProcessManager.cpp /link /DLL /OUT:AgentProcessManager_x86.dll
+    - name: Install Developer Command Prompt for Microsoft Visual C++
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+          arch: x64
 
     - name: Build 64-bit DLL
       run: cl /LD /EHsc /Fo:node/AgentProcessManager/AgentProcessManager.obj /arch:AVX2 node/AgentProcessManager/AgentProcessManager.cpp /link /DLL /OUT:AgentProcessManager_x64.dll
 
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: dlls
         path: |
-          AgentProcessManager_x86.dll
           AgentProcessManager_x64.dll
