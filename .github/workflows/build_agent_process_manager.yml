@@ -10,17 +10,19 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: Install Developer Command Prompt for Microsoft Visual C++
-      uses: ilammy/msvc-dev-cmd@v1
-      with:
-          arch: x64
+    - name: Set up MSVC environment
+      uses: microsoft/setup-msbuild@v2
 
-    - name: Build 64-bit DLL
-      run: cl /LD /EHsc /Fo:node/AgentProcessManager/AgentProcessManager.obj node/AgentProcessManager/AgentProcessManager.cpp /link /DLL /OUT:AgentProcessManager_x64.dll
+    - name: Build 64 bit solution
+      run: msbuild node/AgentProcessManager/AgentProcessManager.sln /p:Configuration=Release /p:Platform=x64
+
+    - name: Build 32 bit solution
+      run: msbuild node/AgentProcessManager/AgentProcessManager.sln /p:Configuration=Release /p:Platform=x86
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: dlls
         path: |
-          AgentProcessManager_x64.dll
+          node/AgentProcessManager/x64/Release/AgentProcessManager_x64.dll
+          node/AgentProcessManager/Release/AgentProcessManager_x86.dll
