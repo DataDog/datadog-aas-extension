@@ -30,7 +30,7 @@ build-agent-process-manager-module:
   variables:
     MSBUILD_PATH: 'C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin'
   script:
-    - set PATH="%MSBUILD_PATH%;%PATH%"
+    - $env:Path="$MSBUILD_PATH;$env:Path"
     - msbuild node/AgentProcessManager/AgentProcessManager.sln /p:Configuration=Release /p:Platform=x64
     - msbuild node/AgentProcessManager/AgentProcessManager.sln /p:Configuration=Release /p:Platform=x86
   artifacts:
