@@ -1,7 +1,6 @@
 name: Build Agent Process Manager
 
-on:
-  workflow_dispatch:
+on: push
 
 jobs:
   build:
