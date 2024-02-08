@@ -1,5 +1,5 @@
 ENV="dev" # append "-e prod" when running script to override env
-RELEASE_VERSION="1.0.0"
+RELEASE_VERSION="1.0.4"
 AGENT_VERSION="7.50.3"
 TRACER_VERSION="5.2.0"
 
@@ -8,9 +8,9 @@ while getopts e: opt; do
     # env sets nuget package name and adds "prerelease" to version
     e)
         if [[ $OPTARG == "dev" || $OPTARG == "prod" ]]; then
-            ENV=${OPTARG}
+            ENV=$OPTARG
         else
-            echo "Invalid argument for -e option: '$OPTARG'. Allowed values are 'dev' or 'prod'" >&2
+            echo "Invalid argument for -e option: '${OPTARG}'. Allowed values are 'dev' or 'prod'" >&2
             exit 1
         fi
         ;;
@@ -20,6 +20,8 @@ done
 if [ "$ENV" = "dev" ]; then
     RELEASE_VERSION+="-prerelease"
 fi
+
+echo "Building for environment: ${ENV}"
 
 AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-${AGENT_VERSION}-1-x86_64.zip"
 
@@ -60,17 +62,15 @@ sed -i "s/vUNKNOWN/v${RELEASE_VERSION}/g" $NUGET_DIR/applicationHost.xdt
 sed -i "s/vUNKNOWN/v${RELEASE_VERSION}/g" $NUGET_DIR/install.cmd
 sed -i "s/vUNKNOWN/v${RELEASE_VERSION}/g" $NUGET_DIR/install.ps1
 
-echo "Building process_manager"
-cd node/process_manager # TODO: fix so cd is not necessary
-cargo build --release --target=x86_64-pc-windows-gnu
-cd ../..
+echo "Building process manager"
+cargo build --manifest-path=node/process_manager/Cargo.toml --release --target=x86_64-pc-windows-gnu
 
-echo "Moving process_manager"
-cp node/process_manager/target/x86_64-pc-windows-gnu/release/process_manager.exe $NUGET_DIR/
+echo "Moving process manager executable"
+cp node/process_manager/target/x86_64-pc-windows-gnu/release/process_manager.exe $NUGET_DIR
 
 echo "Creating nuget package"
 if [ "$ENV" = "dev" ]; then
     dotnet pack node/DevelopmentVerification.DdNode.Apm.csproj -p:Version=${RELEASE_VERSION} -p:NoBuild=true -p:NoDefaultExcludes=true -o package
 else
-    dotnet pack node/Datadog.AzureAppServices.Node.Apm.csproj -p:Version=${RELEASE_VERSION} -p:NoBuild=true -p:NoDefaultExcludes=true -o package
+    dotnet pack node/Datadog.AzureAppServices.Node.csproj -p:Version=${RELEASE_VERSION} -p:NoBuild=true -p:NoDefaultExcludes=true -o package
 fi
