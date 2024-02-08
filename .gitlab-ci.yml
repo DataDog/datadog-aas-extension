@@ -26,8 +26,11 @@
 
 build-agent-process-manager-module:
   tags: ["windowsversion:2022"]
-  image: mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2019
+  image: mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2022
+  variables:
+    MSBUILD_PATH: 'C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin'
   script:
+    - set PATH="%MSBUILD_PATH%;%PATH%"
     - msbuild node/AgentProcessManager/AgentProcessManager.sln /p:Configuration=Release /p:Platform=x64
     - msbuild node/AgentProcessManager/AgentProcessManager.sln /p:Configuration=Release /p:Platform=x86
   artifacts:
@@ -38,7 +41,9 @@ build-agent-process-manager-module:
 build-process-manager:
   tags: ["arch:amd64"]
   image: registry.ddbuild.io/images/mirror/rust:1.73
-  script: cargo build --manifest-path=node/process_manager/Cargo.toml --release --target=x86_64-pc-windows-gnu
+  script:
+    - rustup target add x86_64-pc-windows-gnu
+    - cargo build --manifest-path=node/process_manager/Cargo.toml --release --target=x86_64-pc-windows-gnu
   artifacts:
     paths:
       - node/process_manager/target/x86_64-pc-windows-gnu/release/process_manager.exe
