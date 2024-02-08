@@ -27,16 +27,22 @@
 build-agent-process-manager-module:
   tags: ["windowsversion:2022"]
   image: mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2022
-  variables:
-    MSBUILD_PATH: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin'
   script:
-    - set PATH="%MSBUILD_PATH%;%PATH%"
+    - $env:PATH = "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin;$env:PATH"
     - msbuild node/AgentProcessManager/AgentProcessManager.sln /p:Configuration=Release /p:Platform=x64
     - msbuild node/AgentProcessManager/AgentProcessManager.sln /p:Configuration=Release /p:Platform=x86
   artifacts:
     paths:
       - node/AgentProcessManager/x64/Release/AgentProcessManager.dll
       - node/AgentProcessManager/Release/AgentProcessManager.dll
+
+build-agent-process-manager-module2:
+  tags: ["windowsversion:2022"]
+  image: mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2022
+  script:
+    - $env:PATH = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin;$env:PATH"
+    - msbuild node/AgentProcessManager/AgentProcessManager.sln /p:Configuration=Release /p:Platform=x64
+    - msbuild node/AgentProcessManager/AgentProcessManager.sln /p:Configuration=Release /p:Platform=x86
 
 build-process-manager:
   tags: ["arch:amd64"]
