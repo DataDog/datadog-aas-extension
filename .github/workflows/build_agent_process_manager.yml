@@ -1,0 +1,29 @@
+name: Build Agent Process Manager
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Install Visual Studio Build Tools
+      uses: microsoft/setup-msbuild@v1
+
+    - name: Build 32-bit DLL
+      run: cl /LD /EHsc /Fo:node/AgentProcessManager/AgentProcessManager.obj /arch:IA32 node/AgentProcessManager/AgentProcessManager.cpp /link /DLL /OUT:AgentProcessManager_x86.dll
+
+    - name: Build 64-bit DLL
+      run: cl /LD /EHsc /Fo:node/AgentProcessManager/AgentProcessManager.obj /arch:AVX2 node/AgentProcessManager/AgentProcessManager.cpp /link /DLL /OUT:AgentProcessManager_x64.dll
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: dlls
+        path: |
+          AgentProcessManager_x86.dll
+          AgentProcessManager_x64.dll

@@ -1,0 +1,4 @@
+LIBRARY AgentProcessManager
+
+EXPORTS  
+    RegisterModule
