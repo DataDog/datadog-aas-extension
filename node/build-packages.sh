@@ -38,7 +38,7 @@ echo "Installing tracer"
 npm install --prefix $VERSION_DIR/Tracer dd-trace@${TRACER_VERSION}
 
 echo "Downloading agent from ${AGENT_DOWNLOAD_URL}"
-wget -O $DOWNLOADS_DIR/agent.zip $AGENT_DOWNLOAD_URL
+curl -o $DOWNLOADS_DIR/agent.zip --create-dirs $AGENT_DOWNLOAD_URL
 if [ $? -ne 0 ]; then
     exit 1
 fi
@@ -62,8 +62,8 @@ sed -i "s/vUNKNOWN/v${RELEASE_VERSION}/g" $NUGET_DIR/applicationHost.xdt
 sed -i "s/vUNKNOWN/v${RELEASE_VERSION}/g" $NUGET_DIR/install.cmd
 sed -i "s/vUNKNOWN/v${RELEASE_VERSION}/g" $NUGET_DIR/install.ps1
 
-echo "Building process manager"
-cargo build --manifest-path=node/process_manager/Cargo.toml --release --target=x86_64-pc-windows-gnu
+# echo "Building process manager"
+# cargo build --manifest-path=node/process_manager/Cargo.toml --release --target=x86_64-pc-windows-gnu
 
 echo "Moving process manager executable"
 cp node/process_manager/target/x86_64-pc-windows-gnu/release/process_manager.exe $NUGET_DIR
