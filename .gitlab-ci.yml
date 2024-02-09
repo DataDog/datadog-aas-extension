@@ -26,11 +26,9 @@
 
 build-agent-process-manager-module:
   tags: ["arch:amd64"]
-  image: mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2022
+  image: registry.ddbuild.io/images/mirror/mcr.microsoft.com/dotnet/framework:sdk-4.8-windowsservercore-ltsc2022
   script:
     - $env:path
-#     - $env:path="C:\ProgramFiles(x86)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\;$env:path"
-#     - $env:path
     - msbuild node/AgentProcessManager/AgentProcessManager.sln /p:Configuration=Release /p:Platform=x64
     - msbuild node/AgentProcessManager/AgentProcessManager.sln /p:Configuration=Release /p:Platform=x86
   artifacts:
@@ -52,7 +50,7 @@ build-process-manager:
 
 run_bash_script:
   tags: ["arch:amd64"]
-  image: registry.ddbuild.io/images/mirror/mcr.microsoft.com/dotnet/sdk:8.0.0-alpine3.18
+  image: registry.ddbuild.io/images/mirror/mcr.microsoft.com/dotnet:sdk-8.0.100-1
   needs:
     - build-agent-process-manager-module
     - build-process-manager
@@ -60,8 +58,8 @@ run_bash_script:
     - echo "Installing dependencies"
     - apt update
     - apt install -y unzip rsync
-    - export NVM_DIR="$HOME/.nvm"
     - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+    - export NVM_DIR="$HOME/.nvm"
     - '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"'
     - nvm install 20.11.0
     - cp node/AgentProcessManager/x64/Release/AgentProcessManager.dll node/AgentProcessManager/Release/AgentProcessManager.dll node/process_manager/target/x86_64-pc-windows-gnu/release/process_manager.exe node/src
