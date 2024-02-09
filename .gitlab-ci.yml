@@ -48,11 +48,11 @@ build-process-manager:
     paths:
       - node/process_manager/target/x86_64-pc-windows-gnu/release/process_manager.exe
 
-run_bash_script:
+pack-nuget-package:
   tags: ["arch:amd64"]
   image: registry.ddbuild.io/images/mirror/dotnet:sdk-8.0.100-1
   needs:
-    - build-agent-process-manager-module
+    # - build-agent-process-manager-module
     - build-process-manager
   script:
     - echo "Installing dependencies"
