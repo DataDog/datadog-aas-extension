@@ -52,7 +52,7 @@ run_bash_script:
   tags: ["arch:amd64"]
   image: registry.ddbuild.io/images/mirror/mcr.microsoft.com/dotnet:sdk-8.0.100-1
   needs:
-    - build-agent-process-manager-module
+    # - build-agent-process-manager-module
     - build-process-manager
   script:
     - echo "Installing dependencies"
