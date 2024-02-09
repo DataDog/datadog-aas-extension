@@ -24,49 +24,12 @@
 #     paths:
 #       - package
 
-# build-agent-process-manager-module:
-#   tags: ["arch:amd64"]
-#   image: registry.ddbuild.io/images/mirror/dotnet/framework:sdk-4.8-windowsservercore-ltsc2022
-#   script:
-#     - $env:path
-#     - msbuild node/AgentProcessManager/AgentProcessManager.sln /p:Configuration=Release /p:Platform=x64
-#     - msbuild node/AgentProcessManager/AgentProcessManager.sln /p:Configuration=Release /p:Platform=x86
-#   artifacts:
-#     paths:
-#       - node/AgentProcessManager/x64/Release/AgentProcessManager.dll
-#       - node/AgentProcessManager/Release/AgentProcessManager.dll
-
 build-agent-process-manager-module:
   tags: ["runner:windows-docker", "windowsversion:2022"]
-  # image: registry.ddbuild.io/images/mirror/dotnet/framework:sdk-4.8-windowsservercore-ltsc2022
   script:
-    - $env:Path
-    - |
-      `
-      # Install VS Build Tools
-      && curl -fSLo vs_BuildTools.exe https://aka.ms/vs/17/release/vs_BuildTools.exe `
-      && start /w vs_BuildTools ^ `
-          --installPath "%ProgramFiles(x86)%\Microsoft Visual Studio\2022\BuildTools" ^ `
-          --add Microsoft.Component.ClickOnce.MSBuild ^ `
-          --add Microsoft.Net.Component.4.8.SDK ^ `
-          --add Microsoft.NetCore.Component.Runtime.6.0 ^ `
-          --add Microsoft.NetCore.Component.Runtime.7.0 ^ `
-          --add Microsoft.NetCore.Component.Runtime.8.0 ^ `
-          --add Microsoft.NetCore.Component.SDK ^ `
-          --add Microsoft.VisualStudio.Component.NuGet.BuildTools ^ `
-          --add Microsoft.VisualStudio.Component.WebDeploy ^ `
-          --add Microsoft.VisualStudio.Web.BuildTools.ComponentGroup ^ `
-          --add Microsoft.VisualStudio.Workload.MSBuildTools ^ `
-          --quiet --norestart --nocache --wait `
-      && powershell -Command "if ($err = dir $Env:TEMP -Filter dd_setup_*_errors.log | where Length -gt 0 | Get-Content) { throw $err }" `
-      && del vs_BuildTools.exe `
-    - $env:Path
-    - |
-      powershell setx /M PATH $(${Env:PATH} `
-      + \";${Env:ProgramFiles(x86)}\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\amd64\" `
-    - $env:Path
-    - msbuild node/AgentProcessManager/AgentProcessManager.sln /p:Configuration=Release /p:Platform=x64
-    - msbuild node/AgentProcessManager/AgentProcessManager.sln /p:Configuration=Release /p:Platform=x86
+    - docker run -rm registry.ddbuild.io/images/mirror/dotnet/framework:sdk-4.8-windowsservercore-ltsc2022 powershell -Command "$env:Path; msbuild node/AgentProcessManager/AgentProcessManager.sln /p:Configuration=Release /p:Platform=x64; msbuild node/AgentProcessManager/AgentProcessManager.sln /p:Configuration=Release /p:Platform=x86;"
+#     - msbuild node/AgentProcessManager/AgentProcessManager.sln /p:Configuration=Release /p:Platform=x64
+#     - msbuild node/AgentProcessManager/AgentProcessManager.sln /p:Configuration=Release /p:Platform=x86
   artifacts:
     paths:
       - node/AgentProcessManager/x64/Release/AgentProcessManager.dll
