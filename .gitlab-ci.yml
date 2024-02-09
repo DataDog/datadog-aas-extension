@@ -27,11 +27,12 @@
 build-agent-process-manager-module:
   tags: ["runner:windows-docker", "windowsversion:2022"]
   script:
-    - docker run --rm -v $(pwd)/node:/node registry.ddbuild.io/images/mirror/dotnet/framework:sdk-4.8-windowsservercore-ltsc2022 powershell -Command "msbuild node/AgentProcessManager/AgentProcessManager.sln /p:Configuration=Release /p:Platform=x64; msbuild node/AgentProcessManager/AgentProcessManager.sln /p:Configuration=Release /p:Platform=x86;"
+    - ls
+    - docker run --rm v "$(Get-Location):c:\mnt" registry.ddbuild.io/images/mirror/dotnet/framework:sdk-4.8-windowsservercore-ltsc2022 powershell -Command "msbuild node\AgentProcessManager\AgentProcessManager.sln /p:Configuration=Release /p:Platform=x64; msbuild node\AgentProcessManager\AgentProcessManager.sln /p:Configuration=Release /p:Platform=x86;"
   artifacts:
     paths:
-      - node/AgentProcessManager/x64/Release/AgentProcessManager.dll
-      - node/AgentProcessManager/Release/AgentProcessManager.dll
+      - c:\mnt\node\AgentProcessManager\x64\Release\AgentProcessManager.dll
+      - c:\mnt\node\AgentProcessManager\Release\AgentProcessManager.dll
 
 build-process-manager:
   tags: ["arch:amd64"]
