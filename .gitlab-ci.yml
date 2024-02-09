@@ -25,7 +25,7 @@
 #       - package
 
 build-agent-process-manager-module:
-  tags: ["runner:windows-docker"]
+  tags: ["runner:main"]
   image: registry.ddbuild.io/images/mirror/dotnet/framework:sdk-4.8-windowsservercore-ltsc2022
   script:
     - $env:path
