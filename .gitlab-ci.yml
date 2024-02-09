@@ -29,15 +29,31 @@ build-agent-process-manager-module:
   image: mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2022
   script:
     - $env:path
-    - $env:path="C:\ProgramFiles(x86)}\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\amd64\;$env:path"
+    - $env:path="C:\ProgramFiles(x86)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\;$env:path"
     - $env:path
-    - Get-ChildItem "C:\ProgramFiles(x86)}\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\amd64\" -Filter "MSBuild.exe" -Recurse
     - msbuild node/AgentProcessManager/AgentProcessManager.sln /p:Configuration=Release /p:Platform=x64
     - msbuild node/AgentProcessManager/AgentProcessManager.sln /p:Configuration=Release /p:Platform=x86
   artifacts:
     paths:
       - node/AgentProcessManager/x64/Release/AgentProcessManager.dll
       - node/AgentProcessManager/Release/AgentProcessManager.dll
+
+build-agent-process-manager-module-2:
+  tags: ["windowsversion:2022"]
+  image: mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2022
+  script:
+    - $env:path
+    - $env:path="C:\ProgramFiles(x86)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\amd64;$env:path"
+    - $env:path
+    - msbuild node/AgentProcessManager/AgentProcessManager.sln /p:Configuration=Release /p:Platform=x64
+    - msbuild node/AgentProcessManager/AgentProcessManager.sln /p:Configuration=Release /p:Platform=x86
+
+build-agent-process-manager-module-3:
+  tags: ["windowsversion:2022"]
+  image: mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2022
+  script:
+    - $env:path
+    - nuget help
 
 build-process-manager:
   tags: ["arch:amd64"]
@@ -64,7 +80,6 @@ run_bash_script:
     - export NVM_DIR="$HOME/.nvm"
     - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
     - '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"'
-    - '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"'
     - nvm install 20.11.0
     - cp node/AgentProcessManager/x64/Release/AgentProcessManager.dll node/AgentProcessManager/Release/AgentProcessManager.dll node/process_manager/target/x86_64-pc-windows-gnu/release/process_manager.exe node/src
     - bash ./node/build-packages.sh
