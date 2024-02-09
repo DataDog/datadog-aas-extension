@@ -29,9 +29,9 @@ build-agent-process-manager-module:
   image: mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2022
   script:
     - $env:path
-    - $env:path="C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin;$env:path"
+    - $env:path="C:\ProgramFiles(x86)}\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\amd64\;$env:path"
     - $env:path
-    - Get-ChildItem "C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin" -Filter "MSBuild.exe" -Recurse
+    - Get-ChildItem "C:\ProgramFiles(x86)}\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\amd64\" -Filter "MSBuild.exe" -Recurse
     - msbuild node/AgentProcessManager/AgentProcessManager.sln /p:Configuration=Release /p:Platform=x64
     - msbuild node/AgentProcessManager/AgentProcessManager.sln /p:Configuration=Release /p:Platform=x86
   artifacts:
