@@ -26,7 +26,7 @@
 
 build-agent-process-manager-module:
   tags: ["arch:amd64"]
-  image: registry.ddbuild.io/images/mirror/dotnet/framework:sdk-4.8-windowsservercore-ltsc2022
+  image: 464622532012.dkr.ecr.us-east-1.amazonaws.com/images/mirror/dotnet/framework:sdk-4.8-windowsservercore-ltsc2022
   script:
     - $env:path
     - msbuild node/AgentProcessManager/AgentProcessManager.sln /p:Configuration=Release /p:Platform=x64
