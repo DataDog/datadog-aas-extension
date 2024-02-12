@@ -41,8 +41,8 @@ build-agent-process-manager-module:
       msbuild mnt\node\AgentProcessManager\AgentProcessManager.sln /p:Configuration=Release /p:Platform=x86;"
   artifacts:
     paths:
-      - mnt\node\AgentProcessManager\x64\Release\AgentProcessManager.dll
-      - mnt\node\AgentProcessManager\Release\AgentProcessManager.dll
+      - node\AgentProcessManager\x64\Release\AgentProcessManager.dll
+      - node\AgentProcessManager\Release\AgentProcessManager.dll
 
 build-process-manager:
   tags: ["arch:amd64"]
