@@ -44,6 +44,23 @@ build-agent-process-manager-module:
       - node\AgentProcessManager\x64\Release\AgentProcessManager.dll
       - node\AgentProcessManager\Release\AgentProcessManager.dll
 
+build-agent-process-manager-module-2:
+  tags: ["runner:windows-docker", "windowsversion:1809"]
+  script:
+    - ls
+    - >
+      docker run
+      --rm
+      -v "$(Get-Location):c:\mnt"
+      datadog/agent-buildimages-windows_x64:1809
+      powershell -Command "ls;
+      msbuild mnt\node\AgentProcessManager\AgentProcessManager.sln /p:Configuration=Release /p:Platform=x64;
+      msbuild mnt\node\AgentProcessManager\AgentProcessManager.sln /p:Configuration=Release /p:Platform=x86;"
+  artifacts:
+    paths:
+      - node\AgentProcessManager\x64\Release\AgentProcessManager.dll
+      - node\AgentProcessManager\Release\AgentProcessManager.dll
+
 build-process-manager:
   tags: ["arch:amd64"]
   image: registry.ddbuild.io/images/mirror/rust:1.73
