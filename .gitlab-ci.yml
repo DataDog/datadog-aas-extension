@@ -29,10 +29,10 @@ build-agent-process-manager-module:
   script:
     - ls
     - >
-      docker run \
-      --rm \
-      -v "$(Get-Location):c:\mnt" \
-      registry.ddbuild.io/images/mirror/dotnet/framework:sdk-4.8-windowsservercore-ltsc2022 \
+      docker run
+      --rm
+      -v "$(Get-Location):c:\mnt"
+      registry.ddbuild.io/images/mirror/dotnet/framework:sdk-4.8-windowsservercore-ltsc2022
       powershell -Command "ls; \
       Invoke-WebRequest -Uri 'https://aka.ms/vs/17/release/vs_buildtools.exe' -OutFile 'c:\mnt\vs_buildtools.exe' -UseBasicParsing; \
       Start-Process -Wait -NoNewWindow -FilePath 'c:\mnt\vs_buildtools.exe' -ArgumentList '--quiet', '--wait', '--norestart', '--nocache', '--installPath', 'c:\mnt\BuildTools', '--add', 'Microsoft.VisualStudio.Workload.VCTools' '--includeRecommended'; \
