@@ -71,6 +71,6 @@ pack-nuget-package:
     - '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"'
     - nvm install 20.11.0
     - cp node/AgentProcessManager/x64/Release/AgentProcessManager.dll node/src/AgentProcessManager_x64.dll
-    - cp node/AgentProcessManager/Release/AgentProcessManager.dll node/src node/src/AgentProcessManager_x86.dll
+    - cp node/AgentProcessManager/Release/AgentProcessManager.dll node/src/AgentProcessManager_x86.dll
     - cp node/process_manager/target/x86_64-pc-windows-gnu/release/process_manager.exe node/src
     - bash ./node/build-packages.sh
