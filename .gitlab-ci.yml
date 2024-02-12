@@ -28,7 +28,16 @@ build-agent-process-manager-module:
   tags: ["runner:windows-docker", "windowsversion:2022"]
   script:
     - ls
-    - docker run --rm -v "$(Get-Location):c:\mnt" registry.ddbuild.io/images/mirror/dotnet/framework:sdk-4.8-windowsservercore-ltsc2022 powershell -Command "ls; msbuild mnt\node\AgentProcessManager\AgentProcessManager.sln /p:Configuration=Release /p:Platform=x64; msbuild mnt\node\AgentProcessManager\AgentProcessManager.sln /p:Configuration=Release /p:Platform=x86;"
+    - docker run \
+      --rm \
+      -v "$(Get-Location):c:\mnt" \
+      registry.ddbuild.io/images/mirror/dotnet/framework:sdk-4.8-windowsservercore-ltsc2022 \
+      powershell -Command "ls; \
+      Invoke-WebRequest -Uri 'https://aka.ms/vs/17/release/vs_buildtools.exe' -OutFile 'c:\mnt\vs_buildtools.exe' -UseBasicParsing; \
+      Start-Process -Wait -NoNewWindow -FilePath 'c:\mnt\vs_buildtools.exe' -ArgumentList '--quiet', '--wait', '--norestart', '--nocache', '--installPath', 'c:\mnt\BuildTools', '--add', 'Microsoft.VisualStudio.Workload.VCTools' '--includeRecommended'; \
+      Copy-Item -Path 'c:\mnt\BuildTools' -Destination 'C:\Program Files (x86)\Microsoft Visual Studio\2022' -Recurse -Force; \
+      msbuild mnt\node\AgentProcessManager\AgentProcessManager.sln /p:Configuration=Release /p:Platform=x64; \
+      msbuild mnt\node\AgentProcessManager\AgentProcessManager.sln /p:Configuration=Release /p:Platform=x86;"
   artifacts:
     paths:
       - c:\mnt\node\AgentProcessManager\x64\Release\AgentProcessManager.dll
