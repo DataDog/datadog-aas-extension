@@ -28,7 +28,8 @@ build-agent-process-manager-module:
   tags: ["runner:windows-docker", "windowsversion:2022"]
   script:
     - ls
-    - docker run \
+    - >
+      docker run \
       --rm \
       -v "$(Get-Location):c:\mnt" \
       registry.ddbuild.io/images/mirror/dotnet/framework:sdk-4.8-windowsservercore-ltsc2022 \
