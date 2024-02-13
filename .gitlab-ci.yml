@@ -1,7 +1,6 @@
-# image: mcr.microsoft.com/dotnet/core/sdk:3.1
-#
 # dotnet-package:
 #   tags: [ "runner:main" ]
+#   image: mcr.microsoft.com/dotnet/core/sdk:3.1
 #   script:
 #     - echo "Installing dependencies"
 #     - apt-get update
@@ -14,6 +13,7 @@
 #
 # java-package:
 #   tags: [ "runner:main" ]
+#   image: mcr.microsoft.com/dotnet/core/sdk:3.1
 #   script:
 #     - echo "Installing dependencies"
 #     - apt-get update
@@ -24,16 +24,36 @@
 #     paths:
 #       - package
 
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: always
+    - when: never
+
 variables:
+  RUNTIME:
+    description: "Runtime of the extension to deploy"
+    value: "node"
+    options:
+      - "node"
+  ENVIRONMENT:
+    description: "Select the deployment target. Deploy experimental extension with dev or production extension with prod"
+    value: "dev"
+    options:
+      - "dev"
+      - "prod"
+  RELEASE_VERSION:
+    description: "Version of the extension to deploy. Ex. 1.0.0"
   DATADOG_AGENT_WINBUILDIMAGES_SUFFIX: ""
   #DATADOG_AGENT_WINBUILDIMAGES: v27950662-17e84032
   DATADOG_AGENT_BUILDERS: v22276738-b36b132
   ARCH: "x64"
   FULL_DOCKER_IMAGE_NAME: 486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-buildimages/windows_1809_${ARCH}${Env:DATADOG_AGENT_WINBUILDIMAGES_SUFFIX}:${Env:DATADOG_AGENT_WINBUILDIMAGES}
 
-
 build-agent-process-manager-module:
   tags: ["runner:windows-docker", "windowsversion:1809"]
+  rules:
+    - if: $RUNTIME == "node"
   script:
     - ls
     - >
@@ -52,6 +72,8 @@ build-agent-process-manager-module:
 build-process-manager:
   tags: ["arch:amd64"]
   image: registry.ddbuild.io/images/mirror/rust:1.73
+  rules:
+    - if: $RUNTIME == "node"
   script:
     - apt update
     - apt install -y mingw-w64
@@ -61,9 +83,11 @@ build-process-manager:
     paths:
       - node/process_manager/target/x86_64-pc-windows-gnu/release/process_manager.exe
 
-pack-nuget-package:
+pack-node-nuget-package:
   tags: ["arch:amd64"]
   image: registry.ddbuild.io/images/mirror/dotnet:sdk-8.0.100-1
+  rules:
+    - if: $RUNTIME == "node"
   needs:
     - build-agent-process-manager-module
     - build-process-manager
@@ -78,4 +102,4 @@ pack-nuget-package:
     - cp node/AgentProcessManager/x64/Release/AgentProcessManager.dll node/src/AgentProcessManager_x64.dll
     - cp node/AgentProcessManager/Release/AgentProcessManager.dll node/src/AgentProcessManager_x86.dll
     - cp node/process_manager/target/x86_64-pc-windows-gnu/release/process_manager.exe node/src
-    - bash ./node/build-packages.sh
+    - bash ./node/build-packages.sh -e $ENVIRONMENT -v $RELEASE_VERSION

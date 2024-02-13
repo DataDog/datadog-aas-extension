@@ -1,9 +1,7 @@
-ENV="dev" # append "-e prod" when running script to override env
-RELEASE_VERSION="1.0.4"
 AGENT_VERSION="7.50.3"
 TRACER_VERSION="5.2.0"
 
-while getopts e: opt; do
+while getopts e:v: opt; do
     case $opt in
     # env sets nuget package name and adds "prerelease" to version
     e)
@@ -14,14 +12,17 @@ while getopts e: opt; do
             exit 1
         fi
         ;;
+    v)
+        RELEASE_VERSION=$OPTARG
     esac
 done
 
-if [ "$ENV" = "dev" ]; then
+# Append prerelease for dev environment if not already added
+if [ "$ENV" = "dev" ] && [[ "$RELEASE_VERSION" != *-prerelease ]]; then
     RELEASE_VERSION+="-prerelease"
 fi
 
-echo "Building for environment: ${ENV}"
+echo "Building version ${RELEASE_VERSION} for ${ENV} environment"
 
 AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-${AGENT_VERSION}-1-x86_64.zip"
 
@@ -61,9 +62,6 @@ sed -i "s/vFOLDERUNKNOWN/v${VERSION_FILE}/g" $NUGET_DIR/applicationHost.xdt
 sed -i "s/vUNKNOWN/v${RELEASE_VERSION}/g" $NUGET_DIR/applicationHost.xdt
 sed -i "s/vUNKNOWN/v${RELEASE_VERSION}/g" $NUGET_DIR/install.cmd
 sed -i "s/vUNKNOWN/v${RELEASE_VERSION}/g" $NUGET_DIR/install.ps1
-
-# echo "Building process manager"
-# cargo build --manifest-path=node/process_manager/Cargo.toml --release --target=x86_64-pc-windows-gnu
 
 echo "Moving process manager executable"
 cp node/process_manager/target/x86_64-pc-windows-gnu/release/process_manager.exe $NUGET_DIR
