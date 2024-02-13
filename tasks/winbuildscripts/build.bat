@@ -5,11 +5,11 @@ cd c:\build
 xcopy /y/e/s c:\mnt\*.* .
 
 REM find the visual studio tools
-%VSTUDIO_ROOT%\Common7\tools\vsdevcmd.bat
+call %VSTUDIO_ROOT%\Common7\tools\vsdevcmd.bat
 
 REM do the builds
-msbuild mnt\node\AgentProcessManager\AgentProcessManager.sln /p:Configuration=Release /p:Platform=x64
-msbuild mnt\node\AgentProcessManager\AgentProcessManager.sln /p:Configuration=Release /p:Platform=x86
+msbuild node\AgentProcessManager\AgentProcessManager.sln /p:Configuration=Release /p:Platform=x64
+msbuild node\AgentProcessManager\AgentProcessManager.sln /p:Configuration=Release /p:Platform=x86
 
 REM copy the results back out so they're in the artifacts
 
