@@ -3,8 +3,8 @@
   <system.webServer>
     <runtime xdt:Transform="InsertIfMissing">
       <environmentVariables xdt:Transform="InsertIfMissing">
-        <add name="DD_AAS_NODE_EXTENSION_VERSION" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="DD_AAS_NODE_EXTENSION_VERSION" value="vUNKNOWN" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- For troubleshooting and tagging traces -->
+        <add name="DD_AAS_EXTENSION_VERSION" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_AAS_EXTENSION_VERSION" value="vUNKNOWN" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- For troubleshooting and tagging traces -->
 
         <add name="DD_AGENT_HOST" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
 

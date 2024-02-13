@@ -1,61 +1,50 @@
-# dotnet-package:
-#   tags: [ "runner:main" ]
-#   image: mcr.microsoft.com/dotnet/core/sdk:3.1
-#   script:
-#     - echo "Installing dependencies"
-#     - apt-get update
-#     - apt-get install unzip
-#     - bash ./dotnet/build-packages.sh
-#   artifacts:
-#     expire_in: 1 weeks
-#     paths:
-#       - package
-#
-# java-package:
-#   tags: [ "runner:main" ]
-#   image: mcr.microsoft.com/dotnet/core/sdk:3.1
-#   script:
-#     - echo "Installing dependencies"
-#     - apt-get update
-#     - apt-get install unzip
-#     - bash ./java/build-packages.sh
-#   artifacts:
-#     expire_in: 1 weeks
-#     paths:
-#       - package
-
-workflow:
+dotnet-package:
+  tags: ["runner:main"]
+  image: mcr.microsoft.com/dotnet/core/sdk:3.1
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "web"'
-      when: always
-    - when: never
+    - if: $RUNTIME != "node"
+  stage: build
+  script:
+    - echo "Installing dependencies"
+    - apt-get update
+    - apt-get install unzip
+    - bash ./dotnet/build-packages.sh
+  artifacts:
+    expire_in: 1 weeks
+    paths:
+      - package
+
+java-package:
+  tags: ["runner:main"]
+  image: mcr.microsoft.com/dotnet/core/sdk:3.1
+  rules:
+    - if: $RUNTIME != "node"
+  stage: build
+  script:
+    - echo "Installing dependencies"
+    - apt-get update
+    - apt-get install unzip
+    - bash ./java/build-packages.sh
+  artifacts:
+    expire_in: 1 weeks
+    paths:
+      - package
 
 variables:
   RUNTIME:
     description: "Runtime of the extension to deploy"
-    value: "node"
-    options:
-      - "node"
-  ENVIRONMENT:
-    description: "Select the deployment target. Deploy experimental extension with dev or production extension with prod"
-    value: "dev"
-    options:
-      - "dev"
-      - "prod"
-  RELEASE_VERSION:
+  VERSION:
     description: "Version of the extension to deploy. Ex. 1.0.0"
-  DATADOG_AGENT_WINBUILDIMAGES_SUFFIX: ""
-  #DATADOG_AGENT_WINBUILDIMAGES: v27950662-17e84032
-  DATADOG_AGENT_BUILDERS: v22276738-b36b132
-  ARCH: "x64"
-  FULL_DOCKER_IMAGE_NAME: 486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-buildimages/windows_1809_${ARCH}${Env:DATADOG_AGENT_WINBUILDIMAGES_SUFFIX}:${Env:DATADOG_AGENT_WINBUILDIMAGES}
 
 build-agent-process-manager-module:
   tags: ["runner:windows-docker", "windowsversion:1809"]
   rules:
     - if: $RUNTIME == "node"
+  stage: build
+  variables:
+    DATADOG_AGENT_WINBUILDIMAGES_SUFFIX: ""
+    ARCH: "x64"
   script:
-    - ls
     - >
       $coreimg = (((iwr -UseBasicParsing -DisableKeepAlive https://raw.githubusercontent.com/DataDog/datadog-agent/main/.gitlab-ci.yml).content  -split "`n"| select-string "DATADOG_AGENT_BUILDIMAGES:") -split ":")[1].Trim();
       $Env:DATADOG_AGENT_WINBUILDIMAGES = $coreimg;
@@ -63,8 +52,9 @@ build-agent-process-manager-module:
       --rm
       -v "$(Get-Location):c:\mnt"
       486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-buildimages/windows_1809_${Env:ARCH}${Env:DATADOG_AGENT_WINBUILDIMAGES_SUFFIX}:${Env:DATADOG_AGENT_WINBUILDIMAGES}
-      powershell -Command c:\mnt\tasks\winbuildscripts\build.bat
+      powershell -Command c:\mnt\node\scripts\build.bat
   artifacts:
+    expire_in: 1 weeks
     paths:
       - node\AgentProcessManager\x64\Release\AgentProcessManager.dll
       - node\AgentProcessManager\Release\AgentProcessManager.dll
@@ -74,27 +64,29 @@ build-process-manager:
   image: registry.ddbuild.io/images/mirror/rust:1.73
   rules:
     - if: $RUNTIME == "node"
+  stage: build
   script:
-    - apt update
-    - apt install -y mingw-w64
+    - apt-get update
+    - apt-get install -y mingw-w64
     - rustup target add x86_64-pc-windows-gnu
     - cargo build --manifest-path=node/process_manager/Cargo.toml --release --target=x86_64-pc-windows-gnu
   artifacts:
+    expire_in: 1 weeks
     paths:
       - node/process_manager/target/x86_64-pc-windows-gnu/release/process_manager.exe
 
-pack-node-nuget-package:
+build-nuget-packages-node:
   tags: ["arch:amd64"]
   image: registry.ddbuild.io/images/mirror/dotnet:sdk-8.0.100-1
   rules:
     - if: $RUNTIME == "node"
+  stage: build
   needs:
     - build-agent-process-manager-module
     - build-process-manager
   script:
-    - echo "Installing dependencies"
-    - apt update
-    - apt install -y unzip rsync
+    - apt-get update
+    - apt-get install -y jq rsync unzip
     - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
     - export NVM_DIR="$HOME/.nvm"
     - '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"'
@@ -102,4 +94,128 @@ pack-node-nuget-package:
     - cp node/AgentProcessManager/x64/Release/AgentProcessManager.dll node/src/AgentProcessManager_x64.dll
     - cp node/AgentProcessManager/Release/AgentProcessManager.dll node/src/AgentProcessManager_x86.dll
     - cp node/process_manager/target/x86_64-pc-windows-gnu/release/process_manager.exe node/src
-    - bash ./node/build-packages.sh -e $ENVIRONMENT -v $RELEASE_VERSION
+    - . ./node/scripts/set-versions.sh # run in current shell so exported environment variables can be used
+    - |
+      cat <<EOF > versions.env
+      RELEASE_VERSION=${RELEASE_VERSION}
+      DEVELOPMENT_VERSION=${DEVELOPMENT_VERSION}
+      EOF
+    - bash ./node/scripts/build-packages.sh
+  artifacts:
+    expire_in: 1 weeks
+    paths:
+      - package
+    reports:
+      dotenv: versions.env
+
+push-nuget-package-node-dev:
+  tags: ["arch:amd64"]
+  image: registry.ddbuild.io/images/mirror/dotnet:sdk-8.0.100-1
+  rules:
+    - if: $RUNTIME == "node"
+  stage: test
+  needs:
+    - build-nuget-packages-node
+  script:
+    - apt-get update
+    - apt-get install -y awscli
+    - export AZ_PAT=$(aws ssm get-parameter --region us-east-1 --name ci.datadog-aas-extension.azure-personal-access-token --with-decryption --query "Parameter.Value" --out text)
+    - dotnet nuget add source https://pkgs.dev.azure.com/datadoghq/dd-trace-js/_packaging/Public_Feed_Node/nuget/v3/index.json --name Public_Feed_Node --username any_string --password $AZ_PAT --store-password-in-clear-text
+    - dotnet nuget push package/DevelopmentVerification.DdNode.Apm.${DEVELOPMENT_VERSION}.nupkg --source Public_Feed_Node --api-key any_string
+
+update-self-monitoring-node-dev:
+  tags: ["arch:amd64"]
+  image: registry.ddbuild.io/images/mirror/azure-cli:2.57.0
+  rules:
+    - if: $RUNTIME == "node"
+  stage: test
+  needs:
+    - push-nuget-package-node-dev
+  script:
+    - apk update
+    - apk add aws-cli jq
+    - export AZ_SERVICE_PRINCIPAL=$(aws ssm get-parameter --region us-east-1 --name ci.datadog-aas-extension.azure-service-principal --with-decryption --query "Parameter.Value" --out text)
+    - export AZ_APP_ID=$(echo "$AZ_SERVICE_PRINCIPAL" | jq -r '.appId')
+    - export AZ_PASSWORD=$(echo "$AZ_SERVICE_PRINCIPAL" | jq -r '.password')
+    - export AZ_TENANT=$(echo "$AZ_SERVICE_PRINCIPAL" | jq -r '.tenant')
+    - az login --service-principal -u $AZ_APP_ID -p $AZ_PASSWORD --tenant $AZ_TENANT
+    - az webapp stop --resource-group "serverless-aas-win" --name "serverless-windows32-node18-express-self-monitoring-dev"
+    - az webapp stop --resource-group "serverless-aas-win" --name "serverless-windows64-node18-express-self-monitoring-dev"
+    - sleep 30
+    - az resource create --resource-group serverless-aas-win --resource-type "Microsoft.Web/sites/siteextensions" --name "serverless-windows32-node18-express-self-monitoring-dev/siteextensions/DevelopmentVerification.DdNode.Apm" --properties "{}"
+    - az resource create --resource-group serverless-aas-win --resource-type "Microsoft.Web/sites/siteextensions" --name "serverless-windows64-node18-express-self-monitoring-dev/siteextensions/DevelopmentVerification.DdNode.Apm" --properties "{}"
+    - az webapp start --resource-group "serverless-aas-win" --name "serverless-windows32-node18-express-self-monitoring-dev"
+    - az webapp start --resource-group "serverless-aas-win" --name "serverless-windows64-node18-express-self-monitoring-dev"
+
+create-github-release:
+  tags: ["arch:amd64"]
+  image: registry.ddbuild.io/images/mirror/golang:1.22.0
+  rules:
+    - if: $RUNTIME == "node" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  stage: deploy
+  needs:
+    - build-nuget-packages-node
+    - update-self-monitoring-node-dev
+  when: manual
+  script:
+    - git clone https://github.com/cli/cli.git gh-cli
+    - cd gh-cli
+    - make install
+    - cd ..
+    - apt-get update
+    - apt-get install -y awscli
+    - export GH_TOKEN=$(aws ssm get-parameter --region us-east-1 --name ci.datadog-aas-extension.github-token --with-decryption --query "Parameter.Value" --out text)
+    - export LATEST_TAG=$(gh release list --repo DataDog/datadog-aas-extension --exclude-drafts --exclude-pre-releases --json tagName --jq '.[] | select(.tagName | contains("node")) | .tagName' --limit 1)
+    - export TRACER_VERSION=$(grep -o 'TRACER_VERSION="[0-9.]*"' node/scripts/build-packages.sh | awk -F '=' '{print $2}' | tr -d '"')
+    - export AGENT_VERSION=$(grep -o 'AGENT_VERSION="[0-9.]*"' node/scripts/build-packages.sh | awk -F '=' '{print $2}' | tr -d '"')
+    - |
+      cat <<EOF > release-notes.md
+      ## Versions included
+      [Node.js Tracer v${TRACER_VERSION}](https://github.com/DataDog/dd-trace-js/releases/tag/v${TRACER_VERSION})
+      [Datadog Agent v${AGENT_VERSION}](https://github.com/DataDog/datadog-agent/releases/tag/${AGENT_VERSION})
+      Hosted on [Nuget](https://www.nuget.org/packages/Datadog.AzureAppServices.Node.Apm/${RELEASE_VERSION})
+      [Site Extension Documentation](https://docs.datadoghq.com/serverless/azure_app_services/)
+      EOF
+    - |
+      if [ -z "$LATEST_TAG" ]; then
+        gh release create node-v${RELEASE_VERSION} --draft --repo DataDog/datadog-aas-extension --title node-v${RELEASE_VERSION} --notes-file release-notes.md
+      else
+        gh release create node-v${RELEASE_VERSION} --draft --repo DataDog/datadog-aas-extension --generate-notes --notes-start-tag $LATEST_TAG --notes-file release-notes.md
+      fi
+
+push-nuget-package-node-prod:
+  tags: ["arch:amd64"]
+  image: registry.ddbuild.io/images/mirror/dotnet:sdk-8.0.100-1
+  rules:
+    - if: $RUNTIME == "node" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  stage: deploy
+  needs:
+    - build-nuget-packages-node
+    - create-github-release
+  script:
+    - apt-get update
+    - apt-get install -y awscli
+    - export NUGET_API_KEY=$(aws ssm get-parameter --region us-east-1 --name ci.datadog-aas-extension.nuget-api-key --with-decryption --query "Parameter.Value" --out text)
+    - dotnet nuget push package/Datadog.AzureAppServices.Node.${RELEASE_VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key $NUGET_API_KEY
+
+update-self-monitoring-node-prod:
+  tags: ["arch:amd64"]
+  image: registry.ddbuild.io/images/mirror/azure-cli:2.57.0
+  rules:
+    - if: $RUNTIME == "node" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  stage: deploy
+  needs:
+    - push-nuget-package-node-prod
+  when: manual # Need to wait about 15 minutes for nuget package to be indexed before updating self monitoring apps
+  script:
+    - apk update
+    - apk add aws-cli jq
+    - export AZ_SERVICE_PRINCIPAL=$(aws ssm get-parameter --region us-east-1 --name ci.datadog-aas-extension.azure-service-principal --with-decryption --query "Parameter.Value" --out text)
+    - az login --service-principal -u $(echo "$AZ_SERVICE_PRINCIPAL" | jq -r '.appId') -p $(echo "$AZ_SERVICE_PRINCIPAL" | jq -r '.password') --tenant $(echo "$AZ_SERVICE_PRINCIPAL" | jq -r '.tenant')
+    - az webapp stop --resource-group "serverless-aas-win" --name "serverless-windows32-node18-express-self-monitoring"
+    - az webapp stop --resource-group "serverless-aas-win" --name "serverless-windows64-node18-express-self-monitoring"
+    - sleep 30
+    - az resource create --resource-group serverless-aas-win --resource-type "Microsoft.Web/sites/siteextensions" --name "serverless-windows32-node18-express-self-monitoring/siteextensions/Datadog.AzureAppServices.Node.APM" -p "{}"
+    - az resource create --resource-group serverless-aas-win --resource-type "Microsoft.Web/sites/siteextensions" --name "serverless-windows64-node18-express-self-monitoring/siteextensions/Datadog.AzureAppServices.Node.APM" -p "{}"
+    - az webapp start --resource-group "serverless-aas-win" --name "serverless-windows32-node18-express-self-monitoring"
+    - az webapp start --resource-group "serverless-aas-win" --name "serverless-windows64-node18-express-self-monitoring"

@@ -152,7 +152,7 @@ private:
     void WriteLog(LPCWSTR szNotification)
     {
         std::wstring runtime = GetEnvironmentVariableAsString(L"DD_RUNTIME").c_str();
-        std::wofstream logFile(L"/home/LogFiles/datadog/Datadog.AzureAppServices." + runtime + L".Apm.txt", std::ios_base::app);
+        std::wofstream logFile(L"/home/LogFiles/datadog/Datadog.AzureAppServices." + runtime + L".Apm.txt", std::ios_base::app);  // TODO: fix path
 
         logFile << GetCurrentTimestamp() << " [" << GetEnvironmentVariableAsString(L"DD_AAS_EXTENSION_VERSION") << "] " << szNotification << std::endl;
 
