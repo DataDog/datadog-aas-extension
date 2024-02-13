@@ -15,5 +15,7 @@ REM copy the results back out so they're in the artifacts
 
 echo CD is %CD%
 dir node\AgentProcessManager\x64\Release
-copy c:\build\node\AgentProcessManager\x64\Release\AgentProcessManager.dll c:\mnt\node\AgentProcessManager\x64\Release\AgentProcessManager.dll
-copy c:\build\node\AgentProcessManager\Release\AgentProcessManager.dll c:\mnt\node\AgentProcessManager\Release\AgentProcessManager.dll
+mkdir c:\mnt\node\AgentProcessManager\x64\Release
+mkdir c:\mnt\node\AgentProcessManager\Release
+copy node\AgentProcessManager\x64\Release\AgentProcessManager.dll c:\mnt\node\AgentProcessManager\x64\Release\AgentProcessManager.dll
+copy node\AgentProcessManager\Release\AgentProcessManager.dll c:\mnt\node\AgentProcessManager\Release\AgentProcessManager.dll
