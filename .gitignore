@@ -16,3 +16,7 @@ node/downloads
 node/content
 node/process_manager/target
 AgentProcessManager_*.dll
+
+## visual studio files
+.vs/
+*.vcxproj.user
