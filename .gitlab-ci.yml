@@ -25,10 +25,8 @@
 #       - package
 
 variables:
-  DATADOG_AGENT_BUILDIMAGES_SUFFIX: ""                                                                                  
-  DATADOG_AGENT_BUILDIMAGES: v27950662-17e84032
   DATADOG_AGENT_WINBUILDIMAGES_SUFFIX: ""
-  DATADOG_AGENT_WINBUILDIMAGES: v27950662-17e84032
+  #DATADOG_AGENT_WINBUILDIMAGES: v27950662-17e84032
   DATADOG_AGENT_BUILDERS: v22276738-b36b132
   ARCH: "x64"
   FULL_DOCKER_IMAGE_NAME: 486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-buildimages/windows_1809_${ARCH}${Env:DATADOG_AGENT_WINBUILDIMAGES_SUFFIX}:${Env:DATADOG_AGENT_WINBUILDIMAGES}
@@ -39,6 +37,8 @@ build-agent-process-manager-module:
   script:
     - ls
     - >
+      $coreimg = (((iwr -UseBasicParsing -DisableKeepAlive https://raw.githubusercontent.com/DataDog/datadog-agent/main/.gitlab-ci.yml).content  -split "`n"| select-string "DATADOG_AGENT_BUILDIMAGES:") -split ":")[1].Trim();
+      $Env:DATADOG_AGENT_WINBUILDIMAGES = $coreimg;
       docker run
       --rm
       -v "$(Get-Location):c:\mnt"
