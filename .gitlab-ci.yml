@@ -24,6 +24,13 @@
 #     paths:
 #       - package
 
+variables:
+  DATADOG_AGENT_BUILDIMAGES: v14002862-b2bcfc9
+  DATADOG_AGENT_WINBUILDIMAGES_SUFFIX: ""
+  DATADOG_AGENT_WINBUILDIMAGES: v18868373-918b265
+  DATADOG_AGENT_BUILDERS: v9930706-ef9d493
+  FULL_DOCKER_IMAGE_NAME: 486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-buildimages/windows_1809_${ARCH}${Env:DATADOG_AGENT_WINBUILDIMAGES_SUFFIX}:${Env:DATADOG_AGENT_WINBUILDIMAGES}
+
 build-agent-process-manager-module:
   tags: ["runner:windows-docker", "windowsversion:2022"]
   script:
@@ -52,10 +59,8 @@ build-agent-process-manager-module-2:
       docker run
       --rm
       -v "$(Get-Location):c:\mnt"
-      datadog/agent-buildimages-windows_x64:1809
-      powershell -Command "ls;
-      msbuild mnt\node\AgentProcessManager\AgentProcessManager.sln /p:Configuration=Release /p:Platform=x64;
-      msbuild mnt\node\AgentProcessManager\AgentProcessManager.sln /p:Configuration=Release /p:Platform=x86;"
+      ${FULL_DOCKER_IMAGE_NAME}
+      powershell -Command c:\mnt\tasks\winbuildscripts\build.bat
   artifacts:
     paths:
       - node\AgentProcessManager\x64\Release\AgentProcessManager.dll
