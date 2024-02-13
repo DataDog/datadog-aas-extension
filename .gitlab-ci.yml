@@ -24,6 +24,12 @@
 #     paths:
 #       - package
 
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: always
+    - when: never
+
 variables:
   RUNTIME:
     description: "Runtime of the extension to deploy"
