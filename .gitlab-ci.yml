@@ -29,29 +29,11 @@ variables:
   DATADOG_AGENT_WINBUILDIMAGES_SUFFIX: ""
   DATADOG_AGENT_WINBUILDIMAGES: v18868373-918b265
   DATADOG_AGENT_BUILDERS: v9930706-ef9d493
+  ARCH: "x64"
   FULL_DOCKER_IMAGE_NAME: 486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-buildimages/windows_1809_${ARCH}${Env:DATADOG_AGENT_WINBUILDIMAGES_SUFFIX}:${Env:DATADOG_AGENT_WINBUILDIMAGES}
 
-build-agent-process-manager-module:
-  tags: ["runner:windows-docker", "windowsversion:2022"]
-  script:
-    - ls
-    - >
-      docker run
-      --rm
-      -v "$(Get-Location):c:\mnt"
-      registry.ddbuild.io/images/mirror/dotnet/framework:sdk-4.8-windowsservercore-ltsc2022
-      powershell -Command "ls;
-      Invoke-WebRequest -Uri 'https://aka.ms/vs/17/release/vs_buildtools.exe' -OutFile 'c:\mnt\vs_buildtools.exe' -UseBasicParsing;
-      Start-Process -Wait -NoNewWindow -FilePath 'c:\mnt\vs_buildtools.exe' -ArgumentList '--quiet', '--wait', '--norestart', '--nocache', '--installPath', 'c:\mnt\BuildTools', '--add', 'Microsoft.VisualStudio.Workload.VCTools', '--includeRecommended';
-      Copy-Item -Path 'c:\mnt\BuildTools' -Destination 'C:\Program Files (x86)\Microsoft Visual Studio\2022' -Recurse -Force;
-      msbuild mnt\node\AgentProcessManager\AgentProcessManager.sln /p:Configuration=Release /p:Platform=x64;
-      msbuild mnt\node\AgentProcessManager\AgentProcessManager.sln /p:Configuration=Release /p:Platform=x86;"
-  artifacts:
-    paths:
-      - node\AgentProcessManager\x64\Release\AgentProcessManager.dll
-      - node\AgentProcessManager\Release\AgentProcessManager.dll
 
-build-agent-process-manager-module-2:
+build-agent-process-manager-module:
   tags: ["runner:windows-docker", "windowsversion:1809"]
   script:
     - ls
@@ -59,7 +41,7 @@ build-agent-process-manager-module-2:
       docker run
       --rm
       -v "$(Get-Location):c:\mnt"
-      ${FULL_DOCKER_IMAGE_NAME}
+      486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-buildimages/windows_1809_${Env:ARCH}${Env:DATADOG_AGENT_WINBUILDIMAGES_SUFFIX}:${Env:DATADOG_AGENT_WINBUILDIMAGES}
       powershell -Command c:\mnt\tasks\winbuildscripts\build.bat
   artifacts:
     paths:
