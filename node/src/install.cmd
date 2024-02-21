@@ -5,15 +5,13 @@ REM Entrypoint: https://github.com/projectkudu/kudu/blob/13824205c60a4bdb53896b9
 
 set version=vUNKNOWN
 set log_prefix=%date% %time% ^[%version%^]
-set log_file=..\..\LogFiles\datadog\Datadog.AzureAppServices.Node.Apm.txt
 
-echo %log_prefix% Starting install. >> %log_file%
+mkdir ..\..\LogFiles\datadog
+set log_file=..\..\LogFiles\datadog\Datadog.AzureAppServices.Node.Apm-Install.txt
 
-IF EXIST .\applicationHost.xdt (
-  echo %log_prefix% Upgrade will not apply until full application stop. >> %log_file%
-)
+echo %log_prefix% Starting install >> %log_file%
 
-POWERSHELL .\install.ps1 -ExtensionVersion %version%
+POWERSHELL .\install.ps1 >> %log_file%
 
-echo %log_prefix% Successfully installed. >> %log_file%
+echo %log_prefix% Successfully installed >> %log_file%
 exit /B 0

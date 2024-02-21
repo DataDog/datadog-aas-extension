@@ -49,7 +49,5 @@ $statsPipeId=([guid]::NewGuid().ToString().ToUpper())
 
 SetPipe ".\applicationHost.xdt" "uniqueStatsPipeId" "${statsPipeId}"
 SetPipe ".\applicationHost.xdt" "uniqueTracePipeId" "${tracePipeId}"
-SetPipe ".\scmApplicationHost.xdt" "uniqueStatsPipeId" "${statsPipeId}"
-SetPipe ".\scmApplicationHost.xdt" "uniqueTracePipeId" "${tracePipeId}"
 
 Log("Install complete")
