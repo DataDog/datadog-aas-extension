@@ -15,6 +15,7 @@ jobs:
     env:
       GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
+
     steps:
       - name: "Set Variables"
         id: "set_variables"
@@ -28,9 +29,19 @@ jobs:
             exit 1
           fi
 
+          version_txt_url="https://apmdotnetci.blob.core.windows.net/apm-dotnet-ci-artifacts-master/version.txt"
+          apm_version=$(curl -sSLf ${version_txt_url})
+          if [[ $?  == 0 ]]
+          then
+            echo "::set-output name=apm_version::${apm_version}"
+          else
+            echo "Error. Failed to get APM .NET master version. Failed to download ${version_txt_url}."
+            exit 1
+          fi
+
       - name: Checkout
         uses: actions/checkout@v2
-
+      
       - name: "Modify build-packages-dev"
         id: "versions"
         run: |
@@ -62,6 +73,22 @@ jobs:
           sed -i -e "s/INSTALL_SHA/$sha/g" dotnet/build-packages-dev.sh
           echo Replaced install sha in file.
 
+      - name: Login to Docker
+        run: docker login -u publisher -p ${{ secrets.GITHUB_TOKEN }} ghcr.io
+
+      - name: Build and push Junkyard WebApp Docker image
+        id: build-image-amd64
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: 'ghcr.io/datadog/dd-trace-dotnet/junkyard-release-app:${{ steps.set_variables.outputs.sha }}'
+          context: ./dotnet/docker
+          file: ./dotnet/docker/dotnet_release_app.dockerfile
+          build-args: |
+            APM_VERSION=${{ steps.set_variables.outputs.apm_version }}
+            APM_COMMIT_SHA=${{ steps.set_variables.outputs.sha }}
+            PERSONAL_ACCESS_TOKEN=${{ secrets.GLEOCADIE_PAT }}
+    
       - uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '6.0.100'
@@ -96,6 +123,17 @@ jobs:
             az resource create --resource-group $resourceGroupName --resource-type "Microsoft.Web/sites/siteextensions" --name "$aasProfilerOnlyName/siteextensions/DevelopmentVerification.DdDotNet.Apm" -p "{}"
             az resource create --resource-group $resourceGroupName --resource-type "Microsoft.Web/sites/siteextensions" --name "$aasProfilerBackendName/siteextensions/DevelopmentVerification.DdDotNet.Apm" -p "{}"
 
+            aasLinuxDotnetLatestName="dd-dotnet-linux-latest-build"
+            aasLinuxStatsName="dd-dotnet-linux-latest-build-stats"
+            aasLinuxProfilerDefaultName="dd-dotnet-linux-latest-build-profiler-default"
+            aasLinuxProfilerAllName="dd-dotnet-linux-latest-build-profiler-all"
+
+            echo "Update Linux Image Version"
+            az webapp config container set --name $aasLinuxDotnetLatestName --resource-group $resourceGroupName --docker-custom-image-name ghcr.io/datadog/dd-trace-dotnet/junkyard-release-app:${{ steps.set_variables.outputs.sha }} --docker-registry-server-url https://docker.io
+            az webapp config container set --name $aasLinuxStatsName --resource-group $resourceGroupName --docker-custom-image-name ghcr.io/datadog/dd-trace-dotnet/junkyard-release-app:${{ steps.set_variables.outputs.sha }} --docker-registry-server-url https://docker.io
+            az webapp config container set --name $aasLinuxProfilerDefaultName --resource-group $resourceGroupName --docker-custom-image-name ghcr.io/datadog/dd-trace-dotnet/junkyard-release-app:${{ steps.set_variables.outputs.sha }} --docker-registry-server-url https://docker.io
+            az webapp config container set --name $aasLinuxProfilerAllName --resource-group $resourceGroupName --docker-custom-image-name ghcr.io/datadog/dd-trace-dotnet/junkyard-release-app:${{ steps.set_variables.outputs.sha }} --docker-registry-server-url https://docker.io
+
             echo "Waiting 10 seconds for extension to be actually installed"
             sleep 10
 
@@ -104,3 +142,9 @@ jobs:
             az webapp restart --resource-group $resourceGroupName --name $aasStatsName
             az webapp restart --resource-group $resourceGroupName --name $aasProfilerOnlyName
             az webapp restart --resource-group $resourceGroupName --name $aasProfilerBackendName
+
+            # Linux apps
+            az webapp restart --resource-group $resourceGroupName --name $aasLinuxDotnetLatestName
+            az webapp restart --resource-group $resourceGroupName --name $aasLinuxStatsName
+            az webapp restart --resource-group $resourceGroupName --name $aasLinuxProfilerDefaultName
+            az webapp restart --resource-group $resourceGroupName --name $aasLinuxProfilerAllName
