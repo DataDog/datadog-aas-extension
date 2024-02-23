@@ -145,11 +145,11 @@ private:
     std::wstring GetCurrentTimestamp()
     {
         std::time_t now = std::time(nullptr);
-        std::tm localTime;
-        localtime_s(&localTime, &now);
+        std::tm timeinfo;
+        gmtime_s(&timeinfo, &now);
 
         std::wostringstream oss;
-        oss << std::put_time(&localTime, L"%a %m/%d/%Y %H:%M:%S") << L'.' << std::setw(2) << std::setfill(L'0') << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() % 1000;
+        oss << std::put_time(&timeinfo, L"%Y-%m-%dT%H:%M:%S");
 
         return oss.str();
     }

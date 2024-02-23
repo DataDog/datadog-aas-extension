@@ -60,14 +60,12 @@ sed -i "s/vFOLDERUNKNOWN/v${RELEASE_VERSION_FILE}/g" $RELEASE_VERSION_DIR/Agent/
 sed -i "s/vFOLDERUNKNOWN/v${RELEASE_VERSION_FILE}/g" $RELEASE_VERSION_DIR/Agent/dogstatsd.yaml
 sed -i "s/vFOLDERUNKNOWN/v${RELEASE_VERSION_FILE}/g" $RELEASE_DIR/applicationHost.xdt
 sed -i "s/vUNKNOWN/v${RELEASE_VERSION}/g" $RELEASE_DIR/applicationHost.xdt
-sed -i "s/vUNKNOWN/v${RELEASE_VERSION}/g" $RELEASE_DIR/install.cmd
 sed -i "s/vUNKNOWN/v${RELEASE_VERSION}/g" $RELEASE_DIR/install.ps1
 
 sed -i "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" $DEVELOPMENT_VERSION_DIR/Agent/datadog.yaml
 sed -i "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" $DEVELOPMENT_VERSION_DIR/Agent/dogstatsd.yaml
 sed -i "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" $DEVELOPMENT_DIR/applicationHost.xdt
 sed -i "s/vUNKNOWN/v${DEVELOPMENT_VERSION}/g" $DEVELOPMENT_DIR/applicationHost.xdt
-sed -i "s/vUNKNOWN/v${DEVELOPMENT_VERSION}/g" $DEVELOPMENT_DIR/install.cmd
 sed -i "s/vUNKNOWN/v${DEVELOPMENT_VERSION}/g" $DEVELOPMENT_DIR/install.ps1
 
 echo "Moving process manager executable"

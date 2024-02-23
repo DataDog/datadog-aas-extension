@@ -4,8 +4,8 @@ $Version="vUNKNOWN"
 
 function Log ([string] $text)
 {
-    $LogDate=Get-Date -Format "yyyy-MM-dd HH:mm K"
-    Write-Output "[(${Version}) ${LogDate}] $text"
+    $LogDate=Get-Date -Format "yyyy-MM-ddTHH:mm:ss"
+    Write-Output "${LogDate} [${Version}] $text"
 }
 
 Log("Beginning install")

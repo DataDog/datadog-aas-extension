@@ -68,8 +68,7 @@ fn write_log_to_file(log_message: &str) -> std::io::Result<()> {
         .append(true)
         .open(log_path)?;
 
-    let timestamp = Local::now();
-    let formatted_timestamp = timestamp.format("%a %m/%d/%Y %H:%M:%S%.2f");
+    let formatted_timestamp = Utc::now().format("%Y-%m-%dT%H:%M:%S").to_string();
     let extension_version = env::var("DD_AAS_EXTENSION_VERSION").unwrap();
 
     let formatted_log = format!(
@@ -85,6 +84,7 @@ fn write_log_to_file(log_message: &str) -> std::io::Result<()> {
 fn find_free_port(start_port: u16, end_port: u16) -> Option<u16> {
     for port in start_port..=end_port {
         if TcpListener::bind(("127.0.0.1", port)).is_ok() {
+            _ = write_log_to_file(&format!("Using port {} for dogstatsd", port));
             return Some(port);
         }
     }

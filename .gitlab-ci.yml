@@ -52,7 +52,7 @@ build-agent-process-manager-module:
       --rm
       -v "$(Get-Location):c:\mnt"
       486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-buildimages/windows_1809_${Env:ARCH}${Env:DATADOG_AGENT_WINBUILDIMAGES_SUFFIX}:${Env:DATADOG_AGENT_WINBUILDIMAGES}
-      powershell -Command c:\mnt\node\scripts\build.bat
+      powershell -Command c:\mnt\node\scripts\buildAgentProcessManagerModule.bat
   artifacts:
     expire_in: 1 weeks
     paths:
