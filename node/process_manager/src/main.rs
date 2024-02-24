@@ -1,28 +1,24 @@
-use chrono::prelude::*;
+use chrono::prelude::Utc;
 use std::env;
 use std::fs::OpenOptions;
 use std::io::Write;
-use std::net::TcpListener;
+use std::net::UdpSocket;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::thread;
 
 fn main() {
-    // If we're in Node, dynamically set the DOGSTATSD port
-    if env::var("WEBSITE_NODE_DEFAULT_VERSION").is_ok() {
-        // TODO: find a better range
-        let start_port = 8100;
-        let end_port = 8200;
+    let start_port = 8100;
+    let end_port = 8200;
 
-        if let Some(free_port) = find_free_port(start_port, end_port) {
-            env::set_var("DD_DOGSTATSD_PORT", free_port.to_string());
-        } else {
-            _ = write_log_to_file(&format!(
-                "Cannot start dogstatsd, no free ports in range {}-{}",
-                start_port, end_port
-            ));
-            return;
-        }
+    if let Some(available_port) = (start_port..end_port).find(|port| port_is_available(*port)) {
+        _ = write_log_to_file(&format!("Setting DD_DOGSTATSD_PORT to {}", available_port));
+        env::set_var("DD_DOGSTATSD_PORT", &available_port.to_string());
+    } else {
+        _ = write_log_to_file(&format!(
+            "No available ports in the range {} to {}. Setting DD_DOGSTATSD_PORT the default value of 8125",
+            start_port, end_port
+        ));
     }
 
     let mut threads = vec![];
@@ -80,15 +76,11 @@ fn write_log_to_file(log_message: &str) -> std::io::Result<()> {
     Ok(())
 }
 
-/// Yields a free port between `start_port` and `end_port` if any exist.
-fn find_free_port(start_port: u16, end_port: u16) -> Option<u16> {
-    for port in start_port..=end_port {
-        if TcpListener::bind(("127.0.0.1", port)).is_ok() {
-            _ = write_log_to_file(&format!("Using port {} for dogstatsd", port));
-            return Some(port);
-        }
+fn port_is_available(port: u16) -> bool {
+    match UdpSocket::bind(("127.0.0.1", port)) {
+        Ok(_) => true,
+        Err(_) => false,
     }
-    None
 }
 
 /// Creates a `Command` that will execute the DD process. The path to the

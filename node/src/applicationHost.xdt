@@ -41,9 +41,6 @@
         <add name="DD_EXTENSION_PATH" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_EXTENSION_PATH" value="%XDT_EXTENSIONPATH%" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
-        <add name="DD_LOG_LEVEL" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="DD_LOG_LEVEL" value="WARN" xdt:Locator="Match(name)" xdt:Transform="InsertIfMissing"/>
-
         <add name="DD_REMOTE_CONFIGURATION_ENABLED" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_REMOTE_CONFIGURATION_ENABLED" value="false" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
