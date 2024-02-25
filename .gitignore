@@ -16,7 +16,7 @@ node/downloads
 node/content
 node/dev
 node/process_manager/target
-AgentProcessManager_*.dll
+node/src/win-*
 
 ## visual studio files
 .vs/

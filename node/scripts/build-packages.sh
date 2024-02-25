@@ -47,12 +47,12 @@ cp $DOWNLOADS_DIR/node-agent-extract/bin/agent/dogstatsd.exe $DEVELOPMENT_VERSIO
 cp $DOWNLOADS_DIR/node-agent-extract/bin/agent/trace-agent.exe $DEVELOPMENT_VERSION_DIR/Agent/datadog-trace-agent.exe
 
 echo "Copying configuration files"
-rsync --exclude=AgentProcessManager_*.dll --exclude=Agent node/src/* $RELEASE_DIR
-cp node/src/AgentProcessManager_*.dll $RELEASE_VERSION_DIR
+rsync --exclude=win-* --exclude=Agent node/src/* $RELEASE_DIR
+cp -r node/src/win-* $RELEASE_VERSION_DIR
 cp node/src/Agent/* $RELEASE_VERSION_DIR/Agent
 
-rsync --exclude=AgentProcessManager_*.dll --exclude=Agent node/src/* $DEVELOPMENT_DIR
-cp node/src/AgentProcessManager_*.dll $DEVELOPMENT_VERSION_DIR
+rsync --exclude=win-* --exclude=Agent node/src/* $DEVELOPMENT_DIR
+cp -r node/src/win-* $DEVELOPMENT_VERSION_DIR
 cp node/src/Agent/* $DEVELOPMENT_VERSION_DIR/Agent
 
 echo "Versioning configuration files"

@@ -91,9 +91,9 @@ build-nuget-packages-node:
     - export NVM_DIR="$HOME/.nvm"
     - '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"'
     - nvm install 20.11.0
-    - cp node/AgentProcessManager/x64/Release/AgentProcessManager.dll node/src/AgentProcessManager_x64.dll
-    - cp node/AgentProcessManager/Release/AgentProcessManager.dll node/src/AgentProcessManager_x86.dll
-    - cp node/process_manager/target/x86_64-pc-windows-gnu/release/process_manager.exe node/src
+    - mkdir node/src/win-x64 node/src/win-x86
+    - cp node/AgentProcessManager/x64/Release/AgentProcessManager.dll node/src/win-x64/AgentProcessManager.dll
+    - cp node/AgentProcessManager/Release/AgentProcessManager.dll node/src/win-x86/AgentProcessManager.dll
     - . ./node/scripts/set-versions.sh # run in current shell so exported environment variables can be used
     - |
       cat <<EOF > versions.env

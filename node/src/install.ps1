@@ -24,13 +24,10 @@ function SetPipe ([string] $file, [string] $pipePattern, [string] $pipeGuid)
 }
 
 # Determine the architecture (32-bit or 64-bit)
-$architecture = [System.Environment]::Is64BitProcess
-
-# Set the DLL filename based on the architecture
-$dllFileName = if ($architecture) {
-    "AgentProcessManager_x64.dll"
+$architecture = if ([System.Environment]::Is64BitProcess) {
+    "x64"
 } else {
-    "AgentProcessManager_x86.dll"
+    "x86"
 }
 
 # Update the applicationHost.xdt file with the new DLL path
@@ -38,7 +35,7 @@ $configPath = ".\applicationHost.xdt"
 $configContent = Get-Content -Path $configPath -Raw
 
 # Replace the existing image attribute value with the new DLL path
-$newConfigContent = $configContent -replace "AGENTPROCESSMANAGER.dll", "$dllFileName"
+$newConfigContent = $configContent -replace "ARCHITECTURE", "$architecture"
 
 # Save the modified content back to the file
 $newConfigContent | Set-Content -Path $configPath
