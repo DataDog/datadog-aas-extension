@@ -14,23 +14,23 @@ RUN set -x \
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0-bookworm-slim AS setup_apm
 
-ARG APM_VERSION
 ARG APM_COMMIT_SHA
 
-ARG APM_VERSION=${APM_VERSION}
-ARG ARTIFACT="datadog-dotnet-apm-${APM_VERSION}.tar.gz"
-ARG ARTIFACT_URL="https://apmdotnetci.blob.core.windows.net/apm-dotnet-ci-artifacts-master/${APM_COMMIT_SHA}/${ARTIFACT}"
+ARG ARTIFACT_NAME="datadog-dotnet-apm.tar.gz"
+
+RUN set -x \
+    && apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends  xq
 
 # Retrieve and install .NET APM
 RUN set -x \
+    && curl -sS https://apmdotnetci.blob.core.windows.net/apm-dotnet-ci-artifacts-master/\?comp\=list\&prefix\=${APM_COMMIT_SHA} |  xq -x EnumerationResults/Blobs/Blob/Url | grep -E 'datadog-dotnet-apm-[0-9]+\.[0-9]+\.[0-9]+\.tar\.gz' | xargs curl -sSL -o ${ARTIFACT_NAME} \
     && mkdir -p /opt/datadog \
-    && curl -sSOL ${ARTIFACT_URL} \
-    && tar zxvf ${ARTIFACT} -C /opt/datadog
+    && tar zxvf ${ARTIFACT_NAME} -C /opt/datadog
 
 # final stage/image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-bookworm-slim
 
-ARG APM_VERSION
 ARG APM_COMMIT_SHA
 
 # setup SSH for debugging/investigation (in Azure portal)
@@ -62,7 +62,7 @@ ENV CORECLR_PROFILER={846F5F1C-F9AE-4B07-969E-05C26BC060D8}
 ENV CORECLR_PROFILER_PATH=/opt/datadog/Datadog.Trace.ClrProfiler.Native.so
 ENV DD_DOTNET_TRACER_HOME=/opt/datadog
 ENV LD_PRELOAD=/opt/datadog/linux-x64/Datadog.Linux.ApiWrapper.x64.so
-ENV DD_VERSION="master-${APM_VERSION}-${APM_COMMIT_SHA}"
+ENV DD_VERSION="master-${APM_COMMIT_SHA}"
 
 ENV PORT 8080
 # expose 2222 for SSH
