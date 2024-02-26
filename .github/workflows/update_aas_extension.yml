@@ -76,7 +76,6 @@ jobs:
           file: ./dotnet/docker/dotnet_release_app.dockerfile
           build-args: |
             APM_COMMIT_SHA=${{ steps.set_variables.outputs.sha }}
-            PERSONAL_ACCESS_TOKEN=${{ secrets.GLEOCADIE_PAT }}
     
       - uses: actions/setup-dotnet@v1
         with:

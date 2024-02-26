@@ -1,15 +1,15 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0-bookworm-slim AS build_app
 
-ARG PERSONAL_ACCESS_TOKEN
-
 RUN set -x \
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends  openssh-client
 
 RUN set -x \
-    && mkdir /app \
-    && git clone https://${PERSONAL_ACCESS_TOKEN}@github.com/DataDog/aas-dotnet-samples.git \
-    && cd aas-dotnet-samples/Junkyard/Junkyard.Web \
+    && git clone https://github.com/DataDog/dotnet-aas-samples.git \
+    # to remove, only for testing purpose
+    && cd dotnet-aas-samples \
+    && git checkout gleocadie/add-junkyard-webapp \
+    && cd Junkyard.Web \
     && dotnet publish -c Release --framework net8.0 -o /app
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0-bookworm-slim AS setup_apm
