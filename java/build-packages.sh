@@ -1,7 +1,7 @@
 
 RELEASE_VERSION="1.1.0"
 DEVELOPMENT_VERSION="1.1.0-prerelease"
-AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.49.0-1-x86_64.zip"
+AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.51.0-1-x86_64.zip"
 TRACER_DOWNLOAD_URL="https://github.com/DataDog/dd-trace-java/releases/download/v1.30.1/dd-java-agent-1.30.1.jar"
 
 echo "Downloading tracer from ${TRACER_DOWNLOAD_URL}"
