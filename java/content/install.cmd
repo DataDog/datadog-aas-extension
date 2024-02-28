@@ -5,7 +5,7 @@ REM Entrypoint: https://github.com/projectkudu/kudu/blob/13824205c60a4bdb53896b9
 
 set version=vUNKNOWN
 set log_prefix=%date% %time% ^[%version%^]
-set log_file=..\..\Datadog.AzureAppServices.Java-Install.txt
+set log_file=..\..\Datadog.AzureAppServices.Java.Apm-Install.txt
 
 echo %log_prefix% Starting install. >> %log_file%
 
