@@ -42,7 +42,7 @@ mv -v java/content/Agent $RELEASE_DIR/Agent
 
 echo "Creating release nuget package"
 echo "Packing nuspec file via arcane roundabout csproj process"
-dotnet pack java/Datadog.AzureAppServices.Java.csproj -p:Version=${RELEASE_VERSION} -p:NoBuild=true -p:NoDefaultExcludes=true -o package
+dotnet pack java/Datadog.AzureAppServices.Java.Apm.csproj -p:Version=${RELEASE_VERSION} -p:NoBuild=true -p:NoDefaultExcludes=true -o package
 
 echo "Versioning development files"
 sed -i "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" dev-java/content/Agent/datadog.yaml
