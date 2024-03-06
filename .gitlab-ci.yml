@@ -142,8 +142,8 @@ update-self-monitoring-node-dev:
     - az webapp stop --resource-group "serverless-aas-win" --name "serverless-windows32-node18-express-self-monitoring-dev"
     - az webapp stop --resource-group "serverless-aas-win" --name "serverless-windows64-node18-express-self-monitoring-dev"
     - sleep 30
-    - az resource create --resource-group serverless-aas-win --resource-type "Microsoft.Web/sites/siteextensions" --name "serverless-windows32-node18-express-self-monitoring-dev/siteextensions/DevelopmentVerification.DdNode.Apm" --properties "{}"
-    - az resource create --resource-group serverless-aas-win --resource-type "Microsoft.Web/sites/siteextensions" --name "serverless-windows64-node18-express-self-monitoring-dev/siteextensions/DevelopmentVerification.DdNode.Apm" --properties "{}"
+    - az resource create --resource-group serverless-aas-win --resource-type "Microsoft.Web/sites/siteextensions" --name "serverless-windows32-node18-express-self-monitoring-dev/siteextensions/DevelopmentVerification.DdNode.Apm" --properties "{}" --debug
+    - az resource create --resource-group serverless-aas-win --resource-type "Microsoft.Web/sites/siteextensions" --name "serverless-windows64-node18-express-self-monitoring-dev/siteextensions/DevelopmentVerification.DdNode.Apm" --properties "{}" --debug
     - az webapp start --resource-group "serverless-aas-win" --name "serverless-windows32-node18-express-self-monitoring-dev"
     - az webapp start --resource-group "serverless-aas-win" --name "serverless-windows64-node18-express-self-monitoring-dev"
 
@@ -215,7 +215,7 @@ update-self-monitoring-node-prod:
     - az webapp stop --resource-group "serverless-aas-win" --name "serverless-windows32-node18-express-self-monitoring"
     - az webapp stop --resource-group "serverless-aas-win" --name "serverless-windows64-node18-express-self-monitoring"
     - sleep 30
-    - az resource create --resource-group serverless-aas-win --resource-type "Microsoft.Web/sites/siteextensions" --name "serverless-windows32-node18-express-self-monitoring/siteextensions/Datadog.AzureAppServices.Node.APM" -p "{}"
-    - az resource create --resource-group serverless-aas-win --resource-type "Microsoft.Web/sites/siteextensions" --name "serverless-windows64-node18-express-self-monitoring/siteextensions/Datadog.AzureAppServices.Node.APM" -p "{}"
+    - az resource create --resource-group serverless-aas-win --resource-type "Microsoft.Web/sites/siteextensions" --name "serverless-windows32-node18-express-self-monitoring/siteextensions/Datadog.AzureAppServices.Node.APM" --properties "{}" --debug
+    - az resource create --resource-group serverless-aas-win --resource-type "Microsoft.Web/sites/siteextensions" --name "serverless-windows64-node18-express-self-monitoring/siteextensions/Datadog.AzureAppServices.Node.APM" --properties "{}" --debug
     - az webapp start --resource-group "serverless-aas-win" --name "serverless-windows32-node18-express-self-monitoring"
     - az webapp start --resource-group "serverless-aas-win" --name "serverless-windows64-node18-express-self-monitoring"
