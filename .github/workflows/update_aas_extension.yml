@@ -20,9 +20,9 @@ jobs:
         id: "set_variables"
         run: |
           if [[ ! -z "${{ github.event.inputs.sha }}" ]]; then
-            echo "::set-output name=sha::${{ github.event.inputs.sha }}"
+            echo "sha=${{ github.event.inputs.sha }}" >> "$GITHUB_OUTPUT"
           elif [[ ! -z "${{ github.event.client_payload.sha }}" ]]; then
-            echo "::set-output name=sha::${{ github.event.client_payload.sha }}"
+            echo "sha=${{ github.event.client_payload.sha }}" >> "$GITHUB_OUTPUT"
           else
             echo "Error. Hash commit wasn't provided in input."
             exit 1
@@ -52,7 +52,7 @@ jobs:
 
           DEV_VERSION=$major.$minor.$(echo $build | bc)
           echo New dev version is $DEV_VERSION
-          echo "::set-output name=dev_version::$DEV_VERSION"
+          echo "dev_version=$DEV_VERSION" >> "$GITHUB_OUTPUT"
 
           sed -i -e "s/DEVELOPMENT_VERSION=\"$CURRENT_DEV_VERSION/DEVELOPMENT_VERSION=\"$DEV_VERSION/g" dotnet/build-packages-dev.sh
           echo Replaced dev version in file.
