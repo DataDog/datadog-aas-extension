@@ -20,24 +20,10 @@
 class AgentProcessManager : public CGlobalModule
 {
 public:
-    GLOBAL_NOTIFICATION_STATUS OnGlobalApplicationResolveModules(IN IHttpApplicationResolveModulesProvider *pProvider)
-    {
-        UNREFERENCED_PARAMETER(pProvider);
-        StartAgents();
-        return GL_NOTIFICATION_CONTINUE;
-    }
-
-    GLOBAL_NOTIFICATION_STATUS OnGlobalApplicationStart(IN IHttpApplicationStartProvider *pProvider)
-    {
-        UNREFERENCED_PARAMETER(pProvider);
-        StartAgents();
-        return GL_NOTIFICATION_CONTINUE;
-    }
-
     GLOBAL_NOTIFICATION_STATUS OnGlobalPreBeginRequest(IN IPreBeginRequestProvider *pProvider)
     {
         UNREFERENCED_PARAMETER(pProvider);
-        if (!ProcessExists("process_manager"))
+        if (!ProcessExists(L"process_manager.exe"))
         {
             HANDLE hMutex = CreateMutex(NULL, TRUE, L"process_manager");
             if (hMutex != NULL && GetLastError() != ERROR_ALREADY_EXISTS)
@@ -55,35 +41,30 @@ public:
     }
 
 private:
-    int StartAgents()
+    void StartAgents()
     {
         STARTUPINFO si;
         PROCESS_INFORMATION pi;
 
         ZeroMemory(&si, sizeof(si));
         si.cb = sizeof(si);
-
         ZeroMemory(&pi, sizeof(pi));
 
-        std::wstring extensionPath = GetEnvironmentVariableAsString(L"DD_EXTENSION_PATH").c_str();
+        std::wstring extensionPath = GetEnvironmentVariableAsString(L"DD_EXTENSION_PATH");
         std::wstring cmd = extensionPath + L"\\process_manager";
 
         if (!CreateProcess(NULL, const_cast<LPWSTR>(cmd.c_str()), NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi))
         {
-            std::wstring errorMessage = L"Start process_manager failed (" + std::to_wstring(GetLastError()) + L").\n";
+            std::wstring errorMessage = L"Start process_manager failed (" + std::to_wstring(GetLastError()) + L")";
             WriteLog(errorMessage.c_str());
-            return 1;
         }
         else
         {
-            std::wstring successMessage = L"Start process_manager succeeded";
-            WriteLog(successMessage.c_str());
+            WriteLog(L"Start process_manager succeeded");
         }
 
         CloseHandle(pi.hProcess);
         CloseHandle(pi.hThread);
-
-        return 0;
     }
 
     std::wstring GetEnvironmentVariableAsString(const std::wstring &name)
@@ -103,34 +84,36 @@ private:
         return buffer;
     }
 
-    bool ProcessExists(const std::string &processName)
+    bool ProcessExists(const std::wstring &processName)
     {
-        PROCESSENTRY32 entry;
-        entry.dwSize = sizeof(PROCESSENTRY32);
-
-        HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
-
-        if (Process32First(snapshot, &entry))
+        HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+        if (hSnap == INVALID_HANDLE_VALUE)
         {
-            while (Process32Next(snapshot, &entry))
-            {
-                if (_stricmp(ConvertWCharToStdString(entry.szExeFile).c_str(), (processName + ".exe").c_str()) == 0)
-                {
-                    CloseHandle(snapshot);
-                    return TRUE;
-                }
-            }
+            WriteLog(L"Failed to create snapshot while checking for process_manager.exe");
+            return false;
         }
 
-        CloseHandle(snapshot);
-        return FALSE;
-    }
+        PROCESSENTRY32 entry;
+        entry.dwSize = sizeof(entry);
 
-    std::string ConvertWCharToStdString(const WCHAR *wstr)
-    {
-        std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-        std::wstring wide(wstr);
-        return converter.to_bytes(wide);
+        if (!Process32First(hSnap, &entry))
+        {
+            CloseHandle(hSnap);
+            WriteLog(L"Failed to get first process while checking for process_manager.exe");
+            return false;
+        }
+
+        do
+        {
+            if (processName == std::wstring(entry.szExeFile))
+            {
+                CloseHandle(hSnap);
+                return true;
+            }
+        } while (Process32Next(hSnap, &entry));
+
+        CloseHandle(hSnap);
+        return false;
     }
 
     void WriteLog(LPCWSTR szNotification)
