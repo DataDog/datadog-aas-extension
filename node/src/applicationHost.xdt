@@ -53,9 +53,9 @@
         <add name="DD_TRACE_PIPE_NAME" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_TRACE_PIPE_NAME" value="datadogtrace-uniqueTracePipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
-        <add name="NODE_OPTIONS" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="NODE_OPTIONS" value=" --require=%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Tracer\node_modules\dd-trace\init" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="NODE_OPTIONS" value="--require=dd-trace\init %NODE_OPTIONS%" xdt:Locator="Match(name)" xdt:Transform="InsertIfMissing"/>
 
+        <add name="NODE_PATH" value="%NODE_PATH%;.;%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Tracer\node_modules" xdt:Locator="Match(name)" xdt:Transform="InsertIfMissing"/>
       </environmentVariables>
     </runtime>
     <globalModules>
