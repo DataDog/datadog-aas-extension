@@ -111,12 +111,15 @@ jobs:
             az resource create --resource-group $resourceGroupName --resource-type "Microsoft.Web/sites/siteextensions" --name "$aasProfilerOnlyName/siteextensions/DevelopmentVerification.DdDotNet.Apm" -p "{}"
             az resource create --resource-group $resourceGroupName --resource-type "Microsoft.Web/sites/siteextensions" --name "$aasProfilerBackendName/siteextensions/DevelopmentVerification.DdDotNet.Apm" -p "{}"
 
+            aasLinuxBaseLine="dd-dotnet-linux-baseline"
             aasLinuxDotnetLatestName="dd-dotnet-linux-latest-build"
             aasLinuxStatsName="dd-dotnet-linux-latest-build-stats"
             aasLinuxProfilerDefaultName="dd-dotnet-linux-latest-build-profiler-default"
             aasLinuxProfilerAllName="dd-dotnet-linux-latest-build-profiler-all"
 
             echo "Update Linux Image Version"
+            # We need to update the baseline too, in case the application code changed.
+            az webapp config container set --name $aasLinuxBaseLine --resource-group $resourceGroupName --docker-custom-image-name ghcr.io/datadog/dd-trace-dotnet/junkyard-release-app:${{ steps.set_variables.outputs.sha }} --docker-registry-server-url https://docker.io
             az webapp config container set --name $aasLinuxDotnetLatestName --resource-group $resourceGroupName --docker-custom-image-name ghcr.io/datadog/dd-trace-dotnet/junkyard-release-app:${{ steps.set_variables.outputs.sha }} --docker-registry-server-url https://docker.io
             az webapp config container set --name $aasLinuxStatsName --resource-group $resourceGroupName --docker-custom-image-name ghcr.io/datadog/dd-trace-dotnet/junkyard-release-app:${{ steps.set_variables.outputs.sha }} --docker-registry-server-url https://docker.io
             az webapp config container set --name $aasLinuxProfilerDefaultName --resource-group $resourceGroupName --docker-custom-image-name ghcr.io/datadog/dd-trace-dotnet/junkyard-release-app:${{ steps.set_variables.outputs.sha }} --docker-registry-server-url https://docker.io
@@ -131,7 +134,8 @@ jobs:
             az webapp restart --resource-group $resourceGroupName --name $aasProfilerOnlyName
             az webapp restart --resource-group $resourceGroupName --name $aasProfilerBackendName
 
-            # Linux apps
+            # Linux apps 
+            az webapp restart --resource-group $resourceGroupName --name $aasLinuxBaseLine
             az webapp restart --resource-group $resourceGroupName --name $aasLinuxDotnetLatestName
             az webapp restart --resource-group $resourceGroupName --name $aasLinuxStatsName
             az webapp restart --resource-group $resourceGroupName --name $aasLinuxProfilerDefaultName
