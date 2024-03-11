@@ -6,10 +6,7 @@ RUN set -x \
 
 RUN set -x \
     && git clone https://github.com/DataDog/dotnet-aas-samples.git \
-    # to remove, only for testing purpose
-    && cd dotnet-aas-samples \
-    && git checkout gleocadie/add-junkyard-webapp \
-    && cd Junkyard.Web \
+    && cd dotnet-aas-samples/Junkyard.Web \
     && dotnet publish -c Release --framework net8.0 -o /app
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0-bookworm-slim AS setup_apm
