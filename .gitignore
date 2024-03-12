@@ -20,4 +20,4 @@ node/src/win-*
 
 ## visual studio files
 .vs/
-*.vcxproj.user
+*.user
