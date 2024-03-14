@@ -43,8 +43,11 @@ jobs:
 
           major=0
           minor=0
-          build=${{ github.run_id }}
-          build="${build:1}"
+
+          # Use the current unit time (in seconds) as the build ID, to ensure monotonically increasing numbers
+          # Previously we were using github.run_id but this value is too large. This should work until
+          # date +%s returns > 2147483647, i.e. we're ok until Tuesday, 19 January 2038 03:14:08
+          build=$(date +%s)
 
           if [[ $CURRENT_DEV_VERSION =~ $splitVersionRegex ]]; then
             major="${BASH_REMATCH[1]}"
