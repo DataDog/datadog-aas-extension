@@ -1,4 +1,4 @@
-DEVELOPMENT_VERSION="0.2.117-prerelease"
+DEVELOPMENT_VERSION="0.3.0-prerelease"
 AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.51.0-1-x86_64.zip"
 TRACER_DOWNLOAD_URL="https://apmdotnetci.blob.core.windows.net/apm-dotnet-ci-artifacts-master/INSTALL_SHA/windows-tracer-home.zip"
 
