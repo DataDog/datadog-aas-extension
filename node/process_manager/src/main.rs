@@ -8,18 +8,7 @@ use std::process::Command;
 use std::thread;
 
 fn main() {
-    let start_port = 8100;
-    let end_port = 8200;
-
-    if let Some(available_port) = (start_port..end_port).find(|port| port_is_available(*port)) {
-        write_log_to_file(&format!("Setting DD_DOGSTATSD_PORT to {}", available_port));
-        env::set_var("DD_DOGSTATSD_PORT", available_port.to_string());
-    } else {
-        write_log_to_file(&format!(
-            "No available ports in the range {} to {}. Setting DD_DOGSTATSD_PORT the default value of 8125",
-            start_port, end_port
-        ));
-    }
+    set_dogstatsd_port();
 
     let mut threads = vec![];
 
@@ -76,10 +65,6 @@ fn write_log_to_file(log_message: &str) {
     }
 }
 
-fn port_is_available(port: u16) -> bool {
-    UdpSocket::bind(("127.0.0.1", port)).is_ok()
-}
-
 /// Creates a `Command` that will execute the DD process. The path to the
 /// process and it's arguments are the values of the environment variables
 /// `path_var` and `args_var`.
@@ -134,5 +119,22 @@ fn spawn(mut command: Command, process_name: &str) {
         }
     } else {
         write_log_to_file(&format!("{} did not start successfully", process_name));
+    }
+}
+
+fn set_dogstatsd_port() {
+    let start_port = 8100;
+    let end_port = 8200;
+
+    if let Some(available_port) =
+        (start_port..end_port).find(|port| UdpSocket::bind(("127.0.0.1", *port)).is_ok())
+    {
+        write_log_to_file(&format!("Setting DD_DOGSTATSD_PORT to {}", available_port));
+        env::set_var("DD_DOGSTATSD_PORT", available_port.to_string());
+    } else {
+        write_log_to_file(&format!(
+            "No available ports in the range {} to {}. Setting DD_DOGSTATSD_PORT the default value of 8125",
+            start_port, end_port
+        ));
     }
 }
