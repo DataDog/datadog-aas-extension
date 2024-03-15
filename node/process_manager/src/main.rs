@@ -18,18 +18,24 @@ fn main() {
 
     if tracing_enabled || profiling_enabled {
         let trace_agent_thread = thread::spawn(|| {
-            spawn_helper(
+            if let Err(err) = spawn_helper(
                 "DD_TRACE_AGENT_PATH",
                 "DD_TRACE_AGENT_ARGS",
                 "datadog-trace-agent",
-            );
+            ) {
+                let log_message = format!("Error starting trace agent: {}", err);
+                write_log_to_file(&log_message);
+            }
         });
         threads.push(("datadog-trace-agent", trace_agent_thread));
     }
 
     if tracing_enabled {
         let dogstatsd_thread = thread::spawn(|| {
-            spawn_helper("DD_DOGSTATSD_PATH", "DD_DOGSTATSD_ARGS", "dogstatsd");
+            if let Err(err) = spawn_helper("DD_DOGSTATSD_PATH", "DD_DOGSTATSD_ARGS", "dogstatsd") {
+                let log_message = format!("Error starting dogstatsd agent: {}", err);
+                write_log_to_file(&log_message);
+            }
         });
         threads.push(("dogstatsd", dogstatsd_thread))
     }
@@ -68,23 +74,16 @@ fn write_log_to_file(log_message: &str) {
 /// Creates a `Command` that will execute the DD process. The path to the
 /// process and it's arguments are the values of the environment variables
 /// `path_var` and `args_var`.
-fn spawn_helper(path_var: &str, args_var: &str, process_name: &str) {
+fn spawn_helper(path_var: &str, args_var: &str, process_name: &str) -> Result<bool, String> {
     if env::var("DD_API_KEY").is_err() {
-        write_log_to_file(&format!(
-            "Cannot start {}, DD_API_KEY not provided",
-            process_name
-        ));
-        return;
+        return Err("DD_API_KEY not provided".to_string());
     }
 
     if let Ok(process_path) = env::var(path_var) {
         let path = Path::new(&process_path);
         if !path.exists() {
-            write_log_to_file(&format!(
-                "Cannot start {}, invalid path '{}' provided",
-                process_name, process_path
-            ));
-            return;
+            let message = format!("Invalid path provided '{}", process_path);
+            return Err(message);
         }
 
         let mut dd_command = Command::new(process_path);
@@ -93,17 +92,15 @@ fn spawn_helper(path_var: &str, args_var: &str, process_name: &str) {
             dd_command.args(process_args.split(' '));
             spawn(dd_command, process_name);
         } else {
-            write_log_to_file(&format!(
-                "Cannot start {}, {} not provided",
-                process_name, args_var
-            ));
+            let message = format!("{} not provided", args_var);
+            return Err(message);
         }
     } else {
-        write_log_to_file(&format!(
-            "Cannot start {}, {} not provided",
-            process_name, path_var
-        ));
+        let message = format!("{} not provided", path_var);
+        return Err(message);
     }
+
+    Ok(true)
 }
 
 /// Executes `command` and re-launches it if it has a non-zero exit.
