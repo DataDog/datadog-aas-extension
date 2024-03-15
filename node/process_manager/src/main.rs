@@ -130,7 +130,7 @@ fn set_dogstatsd_port() {
         env::set_var("DD_DOGSTATSD_PORT", available_port.to_string());
     } else {
         write_log_to_file(&format!(
-            "No available ports in the range {} to {}. Setting DD_DOGSTATSD_PORT the default value of 8125",
+            "No available ports in the range {} to {}. Using the default DD_DOGSTATSD_PORT value",
             start_port, end_port
         ));
     }
