@@ -75,9 +75,7 @@ fn write_log_to_file(log_message: &str) {
 /// process and it's arguments are the values of the environment variables
 /// `path_var` and `args_var`.
 fn spawn_helper(path_var: &str, args_var: &str, process_name: &str) -> Result<bool, String> {
-    if env::var("DD_API_KEY").is_err() {
-        return Err("DD_API_KEY not provided".to_string());
-    }
+    env::var("DD_API_KEY").map_err(|_| "DD_API_KEY not provided".to_string())?;
 
     if let Ok(process_path) = env::var(path_var) {
         let path = Path::new(&process_path);
