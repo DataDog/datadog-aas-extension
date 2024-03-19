@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>DevelopmentVerification.DdNode.Apm</id>
+    <title>Experimental Node Extension</title>
+    <authors>Datadog</authors>
+    <version>0.0.0</version> <!-- placeholder that is overridden -->
+    <icon>icon.png</icon>
+    <license type="expression">Apache-2.0</license>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>
+      Experimental Node Extension. Do not use.
+    </description>
+    <tags>AzureSiteExtension</tags>
+    <packageTypes>
+      <packageType name="AzureSiteExtension" />
+    </packageTypes>  
+  </metadata>
+  <files>
+    <file src="dev\content\**\*.*" target="content" exclude="**\.DS_Store"/>
+    <file src="image\icon.png" target="" />
+  </files>
+</package>

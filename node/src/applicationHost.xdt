@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
+  <system.webServer>
+    <runtime xdt:Transform="InsertIfMissing">
+      <environmentVariables xdt:Transform="InsertIfMissing">
+        <add name="DD_AAS_EXTENSION_VERSION" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_AAS_EXTENSION_VERSION" value="vUNKNOWN" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- For troubleshooting and tagging traces -->
+
+        <add name="DD_AGENT_HOST" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+
+        <add name="DD_AGENT_PIPE_NAME" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_AGENT_PIPE_NAME" value="dogstatsd-uniqueStatsPipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Dogstatsd client variable (LEGACY) -->
+
+        <add name="DD_APM_RECEIVER_PORT" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_APM_RECEIVER_PORT" value="0" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Needed to force no port conflicts -->
+
+        <add name="DD_APM_REMOTE_TAGGER" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_APM_REMOTE_TAGGER" value="false" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Remote tagger is in the core agent, which is not included, so disable to improve startup time -->
+
+        <add name="DD_APM_WINDOWS_PIPE_NAME" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_APM_WINDOWS_PIPE_NAME" value="datadogtrace-uniqueTracePipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+
+        <add name="DD_AZURE_APP_SERVICES" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_AZURE_APP_SERVICES" value="1" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+
+        <add name="DD_DOGSTATSD_ARGS" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_DOGSTATSD_ARGS" value="start -c %XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Agent" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+
+        <add name="DD_DOGSTATSD_PATH" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_DOGSTATSD_PATH" value="%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Agent\dogstatsd.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+
+        <add name="DD_DOGSTATSD_PIPE_NAME" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_DOGSTATSD_PIPE_NAME" value="dogstatsd-uniqueStatsPipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Dogstatsd client variable (CURRENT) -->
+
+        <add name="DD_DOGSTATSD_WINDOWS_PIPE_NAME" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_DOGSTATSD_WINDOWS_PIPE_NAME" value="dogstatsd-uniqueStatsPipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Dogstatsd server variable -->
+
+        <add name="DD_EXTENSION_PATH" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_EXTENSION_PATH" value="%XDT_EXTENSIONPATH%" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+
+        <add name="DD_REMOTE_CONFIGURATION_ENABLED" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_REMOTE_CONFIGURATION_ENABLED" value="false" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+
+        <add name="DD_TRACE_AGENT_ARGS" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_TRACE_AGENT_ARGS" value="--config %XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Agent\datadog.yaml" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+
+        <add name="DD_TRACE_AGENT_PATH" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_TRACE_AGENT_PATH" value="%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Agent\datadog-trace-agent.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+
+        <add name="DD_TRACE_AGENT_URL" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_TRACE_AGENT_URL" value="unix:\\.\pipe\datadogtrace-uniqueTracePipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+
+        <add name="DD_TRACE_PIPE_NAME" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_TRACE_PIPE_NAME" value="datadogtrace-uniqueTracePipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+
+        <add name="NODE_OPTIONS" value="--require=dd-trace\init %NODE_OPTIONS%" xdt:Locator="Match(name)" xdt:Transform="InsertIfMissing"/>
+
+        <add name="NODE_PATH" value="%NODE_PATH%;.;%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Tracer\node_modules" xdt:Locator="Match(name)" xdt:Transform="InsertIfMissing"/>
+      </environmentVariables>
+    </runtime>
+    <globalModules>
+      <add name="AgentProcessManager" image="%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\win-ARCHITECTURE\AgentProcessManager.dll" xdt:Locator="Match(name)" xdt:Transform="InsertIfMissing" />
+    </globalModules>
+  </system.webServer>
+</configuration>

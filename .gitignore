@@ -10,3 +10,14 @@ obj/
 /package/*
 .idea
 trace-agent*
+
+.DS_Store
+node/downloads
+node/content
+node/dev
+node/process_manager/target
+node/src/win-*
+
+## visual studio files
+.vs/
+*.user
