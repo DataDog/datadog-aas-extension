@@ -93,6 +93,7 @@ sign-files:
       docker run
       --rm
       -v "$(Get-Location):c:\mnt"
+      -e AWS_NETWORKING=true
       486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-buildimages/windows_1809_${Env:ARCH}${Env:DATADOG_AGENT_WINBUILDIMAGES_SUFFIX}:${Env:DATADOG_AGENT_WINBUILDIMAGES}
       powershell -Command c:\mnt\node\scripts\signFiles.bat
   artifacts:
