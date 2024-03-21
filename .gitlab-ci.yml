@@ -75,6 +75,34 @@ build-process-manager:
     paths:
       - node/process_manager/target/x86_64-pc-windows-gnu/release/process_manager.exe
 
+sign-files:
+  tags: ["runner:windows-docker", "windowsversion:1809"]
+  rules:
+    - if: $RUNTIME == "node"
+  stage: build
+  needs:
+    - build-agent-process-manager-module
+    - build-process-manager
+  variables:
+    DATADOG_AGENT_WINBUILDIMAGES_SUFFIX: ""
+    ARCH: "x64"
+  script:
+    - >
+      $coreimg = (((iwr -UseBasicParsing -DisableKeepAlive https://raw.githubusercontent.com/DataDog/datadog-agent/main/.gitlab-ci.yml).content  -split "`n"| select-string "DATADOG_AGENT_BUILDIMAGES:") -split ":")[1].Trim();
+      $Env:DATADOG_AGENT_WINBUILDIMAGES = $coreimg;
+      docker run
+      --rm
+      -v "$(Get-Location):c:\mnt"
+      -e AWS_NETWORKING=true
+      486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-buildimages/windows_1809_${Env:ARCH}${Env:DATADOG_AGENT_WINBUILDIMAGES_SUFFIX}:${Env:DATADOG_AGENT_WINBUILDIMAGES}
+      powershell -Command c:\mnt\node\scripts\signFiles.bat
+  artifacts:
+    expire_in: 1 weeks
+    paths:
+      - node\AgentProcessManager\x64\Release\AgentProcessManager.dll
+      - node\AgentProcessManager\Release\AgentProcessManager.dll
+      - node\process_manager\target\x86_64-pc-windows-gnu\release\process_manager.exe
+
 build-nuget-packages-node:
   tags: ["arch:amd64"]
   image: registry.ddbuild.io/images/mirror/dotnet:sdk-8.0.100-1
@@ -82,8 +110,7 @@ build-nuget-packages-node:
     - if: $RUNTIME == "node"
   stage: build
   needs:
-    - build-agent-process-manager-module
-    - build-process-manager
+    - sign-files
   script:
     - apt-get update
     - apt-get install -y jq rsync unzip
