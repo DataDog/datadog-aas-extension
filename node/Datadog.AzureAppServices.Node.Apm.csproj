@@ -2,6 +2,6 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <NuspecProperties>version=$(Version)</NuspecProperties>
-    <NuspecFile>Datadog.AzureAppServices.Node.nuspec</NuspecFile>
+    <NuspecFile>Datadog.AzureAppServices.Node.Apm.nuspec</NuspecFile>
   </PropertyGroup>
 </Project>
