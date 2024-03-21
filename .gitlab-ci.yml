@@ -223,7 +223,7 @@ push-nuget-package-node-prod:
     - apt-get update
     - apt-get install -y awscli
     - export NUGET_API_KEY=$(aws ssm get-parameter --region us-east-1 --name ci.datadog-aas-extension.nuget-api-key --with-decryption --query "Parameter.Value" --out text)
-    - dotnet nuget push package/Datadog.AzureAppServices.Node.${RELEASE_VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key $NUGET_API_KEY
+    - dotnet nuget push package/Datadog.AzureAppServices.Node.Apm.${RELEASE_VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key $NUGET_API_KEY
 
 update-self-monitoring-node-prod:
   tags: ["arch:amd64"]
@@ -242,7 +242,7 @@ update-self-monitoring-node-prod:
     - az webapp stop --resource-group "serverless-aas-win" --name "serverless-windows32-node18-express-self-monitoring"
     - az webapp stop --resource-group "serverless-aas-win" --name "serverless-windows64-node18-express-self-monitoring"
     - sleep 30
-    - az resource create --resource-group serverless-aas-win --resource-type "Microsoft.Web/sites/siteextensions" --name "serverless-windows32-node18-express-self-monitoring/siteextensions/Datadog.AzureAppServices.Node.APM" --properties "{}" --debug
-    - az resource create --resource-group serverless-aas-win --resource-type "Microsoft.Web/sites/siteextensions" --name "serverless-windows64-node18-express-self-monitoring/siteextensions/Datadog.AzureAppServices.Node.APM" --properties "{}" --debug
+    - az resource create --resource-group serverless-aas-win --resource-type "Microsoft.Web/sites/siteextensions" --name "serverless-windows32-node18-express-self-monitoring/siteextensions/Datadog.AzureAppServices.Node.Apm" --properties "{}" --debug
+    - az resource create --resource-group serverless-aas-win --resource-type "Microsoft.Web/sites/siteextensions" --name "serverless-windows64-node18-express-self-monitoring/siteextensions/Datadog.AzureAppServices.Node.Apm" --properties "{}" --debug
     - az webapp start --resource-group "serverless-aas-win" --name "serverless-windows32-node18-express-self-monitoring"
     - az webapp start --resource-group "serverless-aas-win" --name "serverless-windows64-node18-express-self-monitoring"

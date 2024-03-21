@@ -73,5 +73,5 @@ cp node/process_manager/target/x86_64-pc-windows-gnu/release/process_manager.exe
 cp node/process_manager/target/x86_64-pc-windows-gnu/release/process_manager.exe $DEVELOPMENT_DIR
 
 echo "Building nuget packages"
-dotnet pack node/Datadog.AzureAppServices.Node.csproj -p:Version=${RELEASE_VERSION} -p:NoBuild=true -p:NoDefaultExcludes=true -o package
+dotnet pack node/Datadog.AzureAppServices.Node.Apm.csproj -p:Version=${RELEASE_VERSION} -p:NoBuild=true -p:NoDefaultExcludes=true -o package
 dotnet pack node/DevelopmentVerification.DdNode.Apm.csproj -p:Version=${DEVELOPMENT_VERSION} -p:NoBuild=true -p:NoDefaultExcludes=true -o package

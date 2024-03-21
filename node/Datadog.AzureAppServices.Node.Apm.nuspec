@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <metadata>
-    <id>Datadog.AzureAppServices.Node</id>
+    <id>Datadog.AzureAppServices.Node.Apm</id>
     <title>Node Datadog APM</title>
     <authors>Datadog</authors>
     <version>0.0.0</version> <!-- placeholder that is overridden -->
