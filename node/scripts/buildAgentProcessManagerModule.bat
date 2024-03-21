@@ -17,6 +17,5 @@ echo CD is %CD%
 dir node\AgentProcessManager\x64\Release
 mkdir c:\mnt\node\AgentProcessManager\x64\Release
 mkdir c:\mnt\node\AgentProcessManager\Release
-
 copy node\AgentProcessManager\x64\Release\AgentProcessManager.dll c:\mnt\node\AgentProcessManager\x64\Release\AgentProcessManager.dll
 copy node\AgentProcessManager\Release\AgentProcessManager.dll c:\mnt\node\AgentProcessManager\Release\AgentProcessManager.dll
