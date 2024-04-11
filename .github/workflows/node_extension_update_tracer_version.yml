@@ -12,12 +12,12 @@ jobs:
           - {
               type: "tracer",
               repo: "dd-trace-js",
-              tag_pattern: "7\\.[0-9]+\\.[0-9]+",
+              tag_pattern: "v4\\.[0-9]+\\.[0-9]+",
             }
           - {
               type: "agent",
               repo: "datadog-agent",
-              tag_pattern: "v4\\.[0-9]+\\.[0-9]+",
+              tag_pattern: "7\\.[0-9]+\\.[0-9]+",
             }
 
     steps:
