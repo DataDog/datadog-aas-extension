@@ -31,8 +31,8 @@ jobs:
           VERSION=$(echo "$response" | jq -r --arg pattern "${{ matrix.config.tag_pattern }}" '.[] | select(.tag_name | test($pattern)) | .tag_name | ltrimstr("v")' | sort -V | tail -n 1)
           echo "Updating ${{ matrix.config.type }} to version: $VERSION"
 
-          VARIABLE_NAME="${${{ matrix.config.type }}^^}"
-          sed -i -e "s/$VARIABLE_NAME=\"[0-9]+\.[0-9]+\.[0-9]\"/$VARIABLE_NAME=\"$VERSION\"/" node/scripts/build-packages.sh
+          VARIABLE_NAME="${${{ matrix.config.type }}^^}_VERSION"
+          sed -i -e "s/$VARIABLE_NAME=\"[0-9]*\.[0-9]*\.[0-9]*\"/$VARIABLE_NAME=\"$VERSION\"/" node/scripts/build-packages.sh
 
           PR_BODY="Bumps the ${{ matrix.config.type }} version for the Node Extension to $VERSION."
 
