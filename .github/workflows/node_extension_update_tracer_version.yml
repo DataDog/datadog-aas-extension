@@ -1,17 +1,25 @@
-name: Update Tracer for Node Extension
+name: Update Versions for Node Extension
 
-on:
-  workflow_dispatch:
-    inputs:
-      tracer_version:
-        description: "Node version tag (v0.0.0) to be used for a tracer version bump."
-        required: true
-  repository_dispatch:
-    types: [dd-trace-js-release]
+on: push
 
 jobs:
   bump_version:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        config:
+          - {
+              type: "tracer",
+              repo: "dd-trace-js",
+              tag_pattern: "7\\.[0-9]+\\.[0-9]+",
+            }
+          - {
+              type: "agent",
+              repo: "datadog-agent",
+              tag_pattern: "v4\\.[0-9]+\\.[0-9]+",
+            }
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -19,30 +27,27 @@ jobs:
       - name: Modify build-packages
         id: version
         run: |
-          CURRENT_TRACER_VERSION=$(awk '/TRACER_VERSION=/{print}' node/scripts/build-packages.sh | awk -F '=' '{print $2}' | tr -d '"')
+          response=$(curl -s "https://api.github.com/repos/datadog/${{ matrix.config.repo }}/releases")
+          VERSION=$(echo "$response" | jq -r --arg pattern "${{ matrix.config.tag_pattern }}" '.[] | select(.tag_name | test($pattern)) | .tag_name | ltrimstr("v")' | sort -V | tail -n 1)
+          echo "Updating ${{ matrix.config.type }} to version: $VERSION"
 
-          NODE_VERSION_TAG=${{ github.event.client_payload.version }}
-          TRACER_VERSION=${TEST_VERSION#v}
+          VARIABLE_NAME="${${{ matrix.config.type }}^^}"
+          sed -i -e "s/$VARIABLE_NAME=\"[0-9]+\.[0-9]+\.[0-9]\"/$VARIABLE_NAME=\"$VERSION\"/" node/scripts/build-packages.sh
 
-          echo "Current Tracer Version: $CURRENT_TRACER_VERSION"
-          echo "Updating to Tracer Version: $TRACER_VERSION"
+          PR_BODY="Bumps the ${{ matrix.config.type }} version for the Node Extension to $VERSION."
 
-          sed -i -e "s/TRACER_VERSION=\"$CURRENT_TRACER_VERSION\"/TRACER_VERSION=\"$TRACER_VERSION\"/" node/scripts/build-packages.sh
-
-          PR_BODY="Bumps the tracer version for the Node Extension to $TRACER_VERSION."
-
-          echo "tracer_version=$TRACER_VERSION" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "pr_body=$PR_BODY" >> "$GITHUB_OUTPUT"
 
       - name: Create Pull Request
         id: pr
-        uses: peter-evans/create-pull-request@v6.0.2
+        uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: "node-extension-tracer-version-bump-${{steps.version.outputs.tracer_version}}"
-          commit-message: "[Node Tracer Version Bump] Bump Tracer to ${{steps.version.outputs.tracer_version}}"
+          branch: "node-extension-${{ matrix.config.type }}-version-bump-${{steps.version.outputs.version}}"
+          commit-message: "[Node Version Bump] Bump ${{ matrix.config.type }} to ${{steps.version.outputs.version}}"
           delete-branch: true
-          title: "[Node Tracer Version Bump] Bump Tracer to ${{steps.version.outputs.tracer_version}}"
+          title: "[Node Version Bump] Bump ${{ matrix.config.type }} to ${{steps.version.outputs.version}}"
           body: "${{steps.version.outputs.pr_body}}"
 
       - name: Display output
