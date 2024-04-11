@@ -27,27 +27,49 @@ jobs:
       - name: Modify build-packages
         id: version
         run: |
-          response=$(curl -s "https://api.github.com/repos/datadog/${{ matrix.config.repo }}/releases")
-          VERSION=$(echo "$response" | jq -r --arg pattern "${{ matrix.config.tag_pattern }}" '.[] | select(.tag_name | test($pattern)) | .tag_name | ltrimstr("v")' | sort -V | tail -n 1)
-          echo "Updating ${{ matrix.config.type }} to version: $VERSION"
+          CURRENT_AGENT_VERSION=$(awk '/AGENT_VERSION=/{print}' node/scripts/build-packages.sh | awk -F '=' '{print $2}' | tr -d '"')
+          AGENT_RESPONSE=$(curl -s "https://api.github.com/repos/datadog/datadog-agent/releases")
+          AGENT_VERSION=$(echo "$AGENT_RESPONSE" | jq -r --arg pattern "7\.[0-9]*\.[0-9]*" '.[] | select(.tag_name | test($pattern)) | .tag_name' | sort -V | tail -n 1)
 
-          VARIABLE_NAME="${${{ matrix.config.type }}^^}_VERSION"
-          sed -i -e "s/$VARIABLE_NAME=\"[0-9]*\.[0-9]*\.[0-9]*\"/$VARIABLE_NAME=\"$VERSION\"/" node/scripts/build-packages.sh
+          if [ "$CURRENT_AGENT_VERSION" != "$AGENT_VERSION" ]; then
+            echo "Updating agent to version: $AGENT_VERSION"
+            sed -i -e "s/AGENT_VERSION=\"[0-9]*\.[0-9]*\.[0-9]*\"/AGENT_VERSION=\"$AGENT_VERSION\"/" node/scripts/build-packages.sh
+            PR_BODY="Bumps the agent version for the Node Extension to $AGENT_VERSION."
+            PR_TITLE="[Node Version Bump] Bump agent to $AGENT_VERSION"
+            BRANCH_SUFFIX="agent-$AGENT_VERSION"
+          fi
 
-          PR_BODY="Bumps the ${{ matrix.config.type }} version for the Node Extension to $VERSION."
+          CURRENT_TRACER_VERSION=$(awk '/TRACER_VERSION=/{print}' node/scripts/build-packages.sh | awk -F '=' '{print $2}' | tr -d '"')
+          TRACER_RESPONSE=$(curl -s "https://api.github.com/repos/datadog/dd-trace-js/releases")
+          TRACER_VERSION=$(echo "$TRACER_RESPONSE" | jq -r --arg pattern "v4\.[0-9]*\.[0-9]*" '.[] | select(.tag_name | test($pattern)) | .tag_name | ltrimstr("v")' | sort -V | tail -n 1)
 
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if [ "$CURRENT_TRACER_VERSION" != "$TRACER_VERSION" ]; then
+            echo "Updating tracer to version: $TRACER_VERSION"
+            sed -i -e "s/TRACER_VERSION=\"[0-9]*\.[0-9]*\.[0-9]*\"/TRACER_VERSION=\"$TRACER_VERSION\"/" node/scripts/build-packages.sh
+            PR_BODY="Bumps the tracer version for the Node Extension to $TRACER_VERSION."
+            PR_TITLE="[Node Version Bump] Bump tracer to $TRACER_VERSION"
+            BRANCH_SUFFIX="tracer-$TRACER_VERSION"
+          fi
+
+          if [ "$CURRENT_AGENT_VERSION" != "$AGENT_VERSION" ] && [ "$CURRENT_TRACER_VERSION" != "$TRACER_VERSION" ]; then
+            PR_BODY="Bumps the agent version for the Node Extension to $AGENT_VERSION and the tracer version to $TRACER_VERSION."
+            PR_TITLE="[Node Version Bump] Bump agent to $AGENT_VERSION and tracer to $TRACER_VERSION"
+            BRANCH_SUFFIX="agent-$AGENT_VERSION-tracer-$TRACER_VERSION"
+          fi
+
           echo "pr_body=$PR_BODY" >> "$GITHUB_OUTPUT"
+          echo "pr_title=$PR_TITLE" >> "$GITHUB_OUTPUT"
+          echo "branch_suffix=$BRANCH_SUFFIX" >> "$GITHUB_OUTPUT"
 
       - name: Create Pull Request
         id: pr
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: "node-extension-${{ matrix.config.type }}-version-bump-${{steps.version.outputs.version}}"
-          commit-message: "[Node Version Bump] Bump ${{ matrix.config.type }} to ${{steps.version.outputs.version}}"
+          branch: "node-extension-version-bump-${{steps.version.outputs.branch_suffix}}"
+          commit-message: "${{steps.version.outputs.pr_title}}"
           delete-branch: true
-          title: "[Node Version Bump] Bump ${{ matrix.config.type }} to ${{steps.version.outputs.version}}"
+          title:  "${{steps.version.outputs.pr_title}}"
           body: "${{steps.version.outputs.pr_body}}"
 
       - name: Display output
