@@ -1,0 +1,48 @@
+name: Update Node Tracer for Node Extension
+
+on: push
+  # workflow_dispatch:
+  #   inputs:
+  #     tracer_version:
+  #       description: "Next Version Number (x.y.z). To be used for a tracer version bump."
+  #       required: false
+  # repository_dispatch:
+  #   types: [dd-trace-js-release]
+
+jobs:
+  bump_version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Modify build-packages
+        id: version
+        run: |
+          CURRENT_TRACER_VERSION=$(awk '/TRACER_VERSION=/{print}' node/scripts/build-packages.sh | awk -F '=' '{print $2}' | tr -d '"')
+          
+          TEST_VERSION=v4.34.0
+          TRACER_VERSION=${TEST_VERSION#v}
+
+          sed -i -e "s/TRACER_VERSION=$CURRENT_TRACER_VERSION/TRACER_VERSION=$TRACER_VERSION/" node/scripts/build-packages.sh
+
+          PR_BODY="Bumps the tracer version for the Node Extension to v$TRACER_VERSION."
+
+          echo "tracer_version=$TRACER_VERSION" >> "$GITHUB_OUTPUT"
+          echo "pr_body=$PR_BODY" >> "$GITHUB_OUTPUT"
+
+      - name: Create Pull Request
+        id: pr
+        uses: peter-evans/create-pull-request@v6.0.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: "node-extension-tracer-version-bump-${{steps.version.outputs.tracer_version}}"
+          commit-message: "[Node Tracer Version Bump] Bump Tracer to v${{steps.version.outputs.tracer_version}}"
+          delete-branch: true
+          title: "[Node Tracer Version Bump] Bump Tracer to v${{steps.versions.outputs.tracer_version}}"
+          body: "${{steps.versions.outputs.pr_body}}"
+
+      - name: Display output
+        run: |
+          echo "Pull Request Number - ${{ steps.pr.outputs.pull-request-number }}"
+          echo "Pull Request URL - ${{ steps.pr.outputs.pull-request-url }}"
