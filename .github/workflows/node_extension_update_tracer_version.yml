@@ -1,6 +1,7 @@
 name: Update Node Tracer for Node Extension
 
-on: push
+on:
+  push
   # workflow_dispatch:
   #   inputs:
   #     tracer_version:
@@ -20,11 +21,14 @@ jobs:
         id: version
         run: |
           CURRENT_TRACER_VERSION=$(awk '/TRACER_VERSION=/{print}' node/scripts/build-packages.sh | awk -F '=' '{print $2}' | tr -d '"')
-          
+
           TEST_VERSION=v4.34.0
           TRACER_VERSION=${TEST_VERSION#v}
 
-          sed -i -e "s/TRACER_VERSION=$CURRENT_TRACER_VERSION/TRACER_VERSION=$TRACER_VERSION/" node/scripts/build-packages.sh
+          echo "Current Tracer Version: $CURRENT_TRACER_VERSION"
+          echo "Updating to Tracer Version: $TRACER_VERSION"
+
+          sed -i -e "s/TRACER_VERSION=\"$CURRENT_TRACER_VERSION\"/TRACER_VERSION=\"$TRACER_VERSION\"/" node/scripts/build-packages.sh
 
           PR_BODY="Bumps the tracer version for the Node Extension to $TRACER_VERSION."
 
