@@ -26,7 +26,7 @@ jobs:
 
           sed -i -e "s/TRACER_VERSION=$CURRENT_TRACER_VERSION/TRACER_VERSION=$TRACER_VERSION/" node/scripts/build-packages.sh
 
-          PR_BODY="Bumps the tracer version for the Node Extension to v$TRACER_VERSION."
+          PR_BODY="Bumps the tracer version for the Node Extension to $TRACER_VERSION."
 
           echo "tracer_version=$TRACER_VERSION" >> "$GITHUB_OUTPUT"
           echo "pr_body=$PR_BODY" >> "$GITHUB_OUTPUT"
@@ -37,10 +37,10 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: "node-extension-tracer-version-bump-${{steps.version.outputs.tracer_version}}"
-          commit-message: "[Node Tracer Version Bump] Bump Tracer to v${{steps.version.outputs.tracer_version}}"
+          commit-message: "[Node Tracer Version Bump] Bump Tracer to ${{steps.version.outputs.tracer_version}}"
           delete-branch: true
-          title: "[Node Tracer Version Bump] Bump Tracer to v${{steps.versions.outputs.tracer_version}}"
-          body: "${{steps.versions.outputs.pr_body}}"
+          title: "[Node Tracer Version Bump] Bump Tracer to ${{steps.version.outputs.tracer_version}}"
+          body: "${{steps.version.outputs.pr_body}}"
 
       - name: Display output
         run: |
