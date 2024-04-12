@@ -2,7 +2,7 @@ name: Update Versions for Node Extension
 
 on:
   schedule:
-    - cron: '0 14 * * *' # cron schedule uses UTC timezone. Run tests at the beginning of the day in US-East
+    - cron: "0 14 * * *" # cron schedule uses UTC timezone. Run tests at the beginning of the day in US-East
 
 jobs:
   bump_version:
@@ -22,9 +22,8 @@ jobs:
           if [ "$CURRENT_AGENT_VERSION" != "$AGENT_VERSION" ]; then
             echo "Updating agent to version: $AGENT_VERSION"
             sed -i -e "s/AGENT_VERSION=\"[0-9]*\.[0-9]*\.[0-9]*\"/AGENT_VERSION=\"$AGENT_VERSION\"/" node/scripts/build-packages.sh
-            PR_BODY="Bumps the agent version for the Node Extension to $AGENT_VERSION."
-            PR_TITLE="[Node Version Bump] Bump agent to $AGENT_VERSION"
-            BRANCH_SUFFIX="agent-$AGENT_VERSION"
+            PR_BODY="Bumps the agent version to $AGENT_VERSION for the Node Extension."
+            PR_TITLE="[Node Extension] Bump agent to $AGENT_VERSION"
           fi
 
           CURRENT_TRACER_VERSION=$(awk '/TRACER_VERSION=/{print}' node/scripts/build-packages.sh | awk -F '=' '{print $2}' | tr -d '"')
@@ -34,30 +33,27 @@ jobs:
           if [ "$CURRENT_TRACER_VERSION" != "$TRACER_VERSION" ]; then
             echo "Updating tracer to version: $TRACER_VERSION"
             sed -i -e "s/TRACER_VERSION=\"[0-9]*\.[0-9]*\.[0-9]*\"/TRACER_VERSION=\"$TRACER_VERSION\"/" node/scripts/build-packages.sh
-            PR_BODY="Bumps the tracer version for the Node Extension to $TRACER_VERSION."
-            PR_TITLE="[Node Version Bump] Bump tracer to $TRACER_VERSION"
-            BRANCH_SUFFIX="tracer-$TRACER_VERSION"
+            PR_BODY="Bumps the tracer version to $TRACER_VERSION for the Node Extension."
+            PR_TITLE="[Node Extension] Bump tracer to $TRACER_VERSION"
           fi
 
           if [ "$CURRENT_AGENT_VERSION" != "$AGENT_VERSION" ] && [ "$CURRENT_TRACER_VERSION" != "$TRACER_VERSION" ]; then
-            PR_BODY="Bumps the agent version for the Node Extension to $AGENT_VERSION and the tracer version to $TRACER_VERSION."
-            PR_TITLE="[Node Version Bump] Bump agent to $AGENT_VERSION and tracer to $TRACER_VERSION"
-            BRANCH_SUFFIX="agent-$AGENT_VERSION-tracer-$TRACER_VERSION"
+            PR_BODY="Bumps the agent version to $AGENT_VERSION and the tracer version to $TRACER_VERSION for the Node Extension."
+            PR_TITLE="[Node Extension] Bump agent to $AGENT_VERSION and tracer to $TRACER_VERSION"
           fi
 
           echo "pr_body=$PR_BODY" >> "$GITHUB_OUTPUT"
           echo "pr_title=$PR_TITLE" >> "$GITHUB_OUTPUT"
-          echo "branch_suffix=$BRANCH_SUFFIX" >> "$GITHUB_OUTPUT"
 
       - name: Create Pull Request
         id: pr
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: "node-extension-version-bump-${{steps.version.outputs.branch_suffix}}"
+          branch: "node-extension-version-bump"
           commit-message: "${{steps.version.outputs.pr_title}}"
           delete-branch: true
-          title:  "${{steps.version.outputs.pr_title}}"
+          title: "${{steps.version.outputs.pr_title}}"
           body: "${{steps.version.outputs.pr_body}}"
 
       - name: Display output
