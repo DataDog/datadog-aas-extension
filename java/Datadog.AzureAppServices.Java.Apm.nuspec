@@ -18,7 +18,7 @@
     </packageTypes>
   </metadata>
   <files>
-    <file src="content\**\*.*" target="content" />
+    <file src="content\**\*.*" target="content" exclude="**\.DS_Store"/>
     <file src="image\icon.png" target="" />
   </files>
 </package>
