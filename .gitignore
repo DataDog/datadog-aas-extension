@@ -12,11 +12,16 @@ obj/
 trace-agent*
 
 .DS_Store
+
 node/downloads
 node/content
 node/dev
 node/process_manager/target
 node/src/win-*
+
+java/downloads
+java/content
+java/dev
 
 ## visual studio files
 .vs/
