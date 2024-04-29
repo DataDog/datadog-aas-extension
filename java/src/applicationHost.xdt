@@ -38,8 +38,6 @@
         <add name="DD_DOGSTATSD_WINDOWS_PIPE_NAME" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_DOGSTATSD_WINDOWS_PIPE_NAME" value="dogstatsd-uniqueStatsPipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Dogstatsd server variable -->
 
-        <add name="DD_LOG_LEVEL" value="WARN" xdt:Locator="Match(name)" xdt:Transform="InsertIfMissing"/> <!-- Keep agent logs reasonably quiet for v1, until logging levels are settled in tracer -->
-
         <add name="DD_REMOTE_CONFIGURATION_ENABLED" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_REMOTE_CONFIGURATION_ENABLED" value="false" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
