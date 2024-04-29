@@ -40,6 +40,9 @@
 
         <add name="DD_LOG_LEVEL" value="WARN" xdt:Locator="Match(name)" xdt:Transform="InsertIfMissing"/> <!-- Keep agent logs reasonably quiet for v1, until logging levels are settled in tracer -->
 
+        <add name="DD_REMOTE_CONFIGURATION_ENABLED" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
+        <add name="DD_REMOTE_CONFIGURATION_ENABLED" value="false" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+
         <add name="DD_TRACE_AGENT_ARGS" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_TRACE_AGENT_ARGS" value="--config %XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Agent\datadog.yaml" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
