@@ -40,11 +40,9 @@ $newConfigContent = $configContent -replace "ARCHITECTURE", "$architecture"
 # Save the modified content back to the file
 $newConfigContent | Set-Content -Path $configPath
 
-# Set the unique pipe names in the applicationHost.xdt file for traces and metrics
+# Set the unique pipe names in the applicationHost.xdt file for traces
 $tracePipeId=([guid]::NewGuid().ToString().ToUpper())
-$statsPipeId=([guid]::NewGuid().ToString().ToUpper())
 
-SetPipe ".\applicationHost.xdt" "uniqueStatsPipeId" "${statsPipeId}"
 SetPipe ".\applicationHost.xdt" "uniqueTracePipeId" "${tracePipeId}"
 
 Log("Install complete")
