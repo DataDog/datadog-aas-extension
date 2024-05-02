@@ -136,7 +136,7 @@ update-self-monitoring-node-dev:
     - az webapp start --resource-group "serverless-aas-win" --name "serverless-windows32-node18-express-self-monitoring-dev"
     - az webapp start --resource-group "serverless-aas-win" --name "serverless-windows64-node18-express-self-monitoring-dev"
 
-create-github-release:
+create-github-release-node:
   tags: ["arch:amd64"]
   image: registry.ddbuild.io/images/mirror/golang:1.22.0
   rules:
@@ -180,7 +180,7 @@ push-nuget-package-node-prod:
   stage: deploy
   needs:
     - build-nuget-packages-node
-    - create-github-release
+    - create-github-release-node
   script:
     - apt-get update
     - apt-get install -y awscli
