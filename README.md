@@ -1,10 +1,15 @@
 ## Requirements:
-The .NET Datadog APM Site Extension requires that you setup the [Datadog Azure App Service Integration](https://docs.datadoghq.com/integrations/azure_app_services/) first.
+The Datadog APM Windows Site Extensions require that you setup the [Datadog Azure App Service Integration](https://docs.datadoghq.com/integrations/azure_app_services/) first.
 Please follow the directions in the referenced document.
 
+## Supported Runtimes
+
+- .NET
+- Java
+- Node
+
 ## Installation:
-Fully stop your web app before installing, modifying, or removing the .NET Datadog APM Site Extension.
-This site extension uses the [.NET Profiling API](https://docs.microsoft.com/en-us/dotnet/framework/unmanaged-api/profiling/profiling-interfaces) which hooks in at process start.
+Fully stop your web app before installing, modifying, or removing a Datadog APM Site Extension.
 
 ### IMPORTANT NOTICES:
 #### *Restart* recycles an Application Pool. The app must be *STOPPED* before any changes to this extension.
@@ -18,4 +23,6 @@ This site extension uses the [.NET Profiling API](https://docs.microsoft.com/en-
 ### Relevant Links:
 - [Datadog Azure App Service Blog](https://www.datadoghq.com/blog/azure-app-service-extension/)
 - [Azure App Service Documentation](https://docs.microsoft.com/en-us/azure/app-service/)
-- [NuGet Package](https://www.nuget.org/packages/Datadog.AzureAppServices.DotNet)
+- [.NET NuGet Package](https://www.nuget.org/packages/Datadog.AzureAppServices.DotNet)
+- [Java NuGet Package](https://www.nuget.org/packages/Datadog.AzureAppServices.Java.Apm)
+- [Node NuGet Package](https://www.nuget.org/packages/Datadog.AzureAppServices.Node.Apm)
