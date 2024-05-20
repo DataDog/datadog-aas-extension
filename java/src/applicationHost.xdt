@@ -18,7 +18,7 @@
         <add name="DD_APM_WINDOWS_PIPE_NAME" value="datadogtrace-uniqueTracePipeId" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Set the trace pipe on the agent  -->
 
         <add name="DD_AZURE_APP_SERVICES" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="DD_AZURE_APP_SERVICES" value="1" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_AZURE_APP_SERVICES" value="true" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <add name="DD_DOGSTATSD_ARGS" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_DOGSTATSD_ARGS" value="start -c %XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Agent" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
