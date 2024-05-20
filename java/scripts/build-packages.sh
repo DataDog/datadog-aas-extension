@@ -49,10 +49,10 @@ cp $DOWNLOADS_DIR/dd-java-agent.jar $DEVELOPMENT_VERSION_DIR/Tracer
 
 echo "Moving agent executables"
 cp $DOWNLOADS_DIR/java-agent-extract/bin/agent/dogstatsd.exe $RELEASE_VERSION_DIR/Agent
-cp $DOWNLOADS_DIR/java-agent-extract/bin/agent/trace-agent.exe $RELEASE_VERSION_DIR/Agent/trace-agent.exe
+cp $DOWNLOADS_DIR/java-agent-extract/bin/agent/trace-agent.exe $RELEASE_VERSION_DIR/Agent/datadog-trace-agent.exe
 
 cp $DOWNLOADS_DIR/java-agent-extract/bin/agent/dogstatsd.exe $DEVELOPMENT_VERSION_DIR/Agent
-cp $DOWNLOADS_DIR/java-agent-extract/bin/agent/trace-agent.exe $DEVELOPMENT_VERSION_DIR/Agent/trace-agent.exe
+cp $DOWNLOADS_DIR/java-agent-extract/bin/agent/trace-agent.exe $DEVELOPMENT_VERSION_DIR/Agent/datadog-trace-agent.exe
 
 echo "Copying configuration files"
 rsync --exclude=Agent java/src/* $RELEASE_DIR
