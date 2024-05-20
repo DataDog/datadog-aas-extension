@@ -39,7 +39,7 @@
         <add name="DD_TRACE_AGENT_ARGS" value="--config %XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Agent\datadog.yaml" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <add name="DD_TRACE_AGENT_PATH" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
-        <add name="DD_TRACE_AGENT_PATH" value="%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Agent\datadog-trace-agent.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_TRACE_AGENT_PATH" value="%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Agent\trace-agent.exe" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
 
         <add name="DD_TRACE_LOG_PATH" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="DD_TRACE_LOG_PATH" value="%HOME%\LogFiles\datadog\java\vFOLDERUNKNOWN" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
