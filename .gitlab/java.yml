@@ -52,9 +52,12 @@ update-self-monitoring-java-dev:
     - export AZ_PASSWORD=$(echo "$AZ_SERVICE_PRINCIPAL" | jq -r '.password')
     - export AZ_TENANT=$(echo "$AZ_SERVICE_PRINCIPAL" | jq -r '.tenant')
     - az login --service-principal -u $AZ_APP_ID -p $AZ_PASSWORD --tenant $AZ_TENANT
+    - az webapp stop --resource-group "serverless-aas-win" --name "serverless-windows-java17-spring-self-monitoring-dev"
     - az webapp stop --resource-group "serverless-aas-win" --name "serverless-windows-java21-spring-self-monitoring-dev"
     - sleep 30
+    - az resource create --resource-group serverless-aas-win --resource-type "Microsoft.Web/sites/siteextensions" --name "serverless-windows-java17-spring-self-monitoring-dev/siteextensions/DevelopmentVerification.DdJava.Apm" --properties "{}" --debug
     - az resource create --resource-group serverless-aas-win --resource-type "Microsoft.Web/sites/siteextensions" --name "serverless-windows-java21-spring-self-monitoring-dev/siteextensions/DevelopmentVerification.DdJava.Apm" --properties "{}" --debug
+    - az webapp start --resource-group "serverless-aas-win" --name "serverless-windows-java17-spring-self-monitoring-dev"
     - az webapp start --resource-group "serverless-aas-win" --name "serverless-windows-java21-spring-self-monitoring-dev"
 
 create-github-release-java:
@@ -122,7 +125,10 @@ update-self-monitoring-java-prod:
     - apk add aws-cli jq
     - export AZ_SERVICE_PRINCIPAL=$(aws ssm get-parameter --region us-east-1 --name ci.datadog-aas-extension.azure-service-principal --with-decryption --query "Parameter.Value" --out text)
     - az login --service-principal -u $(echo "$AZ_SERVICE_PRINCIPAL" | jq -r '.appId') -p $(echo "$AZ_SERVICE_PRINCIPAL" | jq -r '.password') --tenant $(echo "$AZ_SERVICE_PRINCIPAL" | jq -r '.tenant')
+    - az webapp stop --resource-group "serverless-aas-win" --name "serverless-windows-java17-spring-self-monitoring"
     - az webapp stop --resource-group "serverless-aas-win" --name "serverless-windows-java21-spring-self-monitoring"
     - sleep 30
+    - az resource create --resource-group serverless-aas-win --resource-type "Microsoft.Web/sites/siteextensions" --name "serverless-windows-java17-spring-self-monitoring/siteextensions/Datadog.AzureAppServices.Java.Apm" --properties "{}" --debug
     - az resource create --resource-group serverless-aas-win --resource-type "Microsoft.Web/sites/siteextensions" --name "serverless-windows-java21-spring-self-monitoring/siteextensions/Datadog.AzureAppServices.Java.Apm" --properties "{}" --debug
+    - az webapp start --resource-group "serverless-aas-win" --name "serverless-windows-java17-spring-self-monitoring"
     - az webapp start --resource-group "serverless-aas-win" --name "serverless-windows-java21-spring-self-monitoring"
