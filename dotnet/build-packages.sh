@@ -1,6 +1,6 @@
-RELEASE_VERSION="3.3.100"
+RELEASE_VERSION="2.60.000"
 AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.54.1-1-x86_64.zip"
-TRACER_DOWNLOAD_URL="https://github.com/DataDog/dd-trace-dotnet/releases/download/v3.3.1/windows-tracer-home.zip"
+TRACER_DOWNLOAD_URL="https://github.com/DataDog/dd-trace-dotnet/releases/download/v2.60.0/windows-tracer-home.zip"
 
 echo "Downloading tracer from ${TRACER_DOWNLOAD_URL}"
 wget -O tracer.zip $TRACER_DOWNLOAD_URL
