@@ -20,6 +20,10 @@ on:
 jobs:
   bump_version:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Creates a branch
+      pull-requests: write # Creates a PR
+      actions: read # read secrets
     env:
       GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
