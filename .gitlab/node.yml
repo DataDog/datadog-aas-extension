@@ -13,7 +13,7 @@ build-agent-process-manager-module:
       docker run
       --rm
       -v "$(Get-Location):c:\mnt"
-      486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-buildimages/windows_1809_${Env:ARCH}${Env:CI_IMAGE_WIN_1809_X64_SUFFIX}:${Env:CI_IMAGE_WIN_1809_X64}
+      registry.ddbuild.io/ci/datadog-agent-buildimages/windows_1809_${Env:ARCH}${Env:CI_IMAGE_WIN_1809_X64_SUFFIX}:${Env:CI_IMAGE_WIN_1809_X64}
       powershell -Command c:\mnt\node\scripts\buildAgentProcessManagerModule.bat
   artifacts:
     expire_in: 1 weeks
@@ -56,7 +56,7 @@ sign-files:
       --rm
       -v "$(Get-Location):c:\mnt"
       -e AWS_NETWORKING=true
-      486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-buildimages/windows_1809_${Env:ARCH}${Env:CI_IMAGE_WIN_1809_X64_SUFFIX}:${Env:CI_IMAGE_WIN_1809_X64}
+      registry.ddbuild.io/ci/datadog-agent-buildimages/windows_1809_${Env:ARCH}${Env:CI_IMAGE_WIN_1809_X64_SUFFIX}:${Env:CI_IMAGE_WIN_1809_X64}
       powershell -Command c:\mnt\node\scripts\signFiles.bat
   artifacts:
     expire_in: 1 weeks
