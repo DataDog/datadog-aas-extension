@@ -4,16 +4,16 @@ build-agent-process-manager-module:
     - if: $RUNTIME == "node"
   stage: build
   variables:
-    DATADOG_AGENT_WINBUILDIMAGES_SUFFIX: ""
+    CI_IMAGE_WIN_1809_X64_SUFFIX: ""
     ARCH: "x64"
   script:
     - >
-      $coreimg = (((iwr -UseBasicParsing -DisableKeepAlive https://raw.githubusercontent.com/DataDog/datadog-agent/main/.gitlab-ci.yml).content  -split "`n"| select-string "DATADOG_AGENT_BUILDIMAGES:") -split ":")[1].Trim();
-      $Env:DATADOG_AGENT_WINBUILDIMAGES = $coreimg;
+      $coreimg = (((iwr -UseBasicParsing -DisableKeepAlive https://raw.githubusercontent.com/DataDog/datadog-agent/main/.gitlab-ci.yml).content  -split "`n"| select-string "CI_IMAGE_WIN_1809_X64:") -split ":")[1].Trim();
+      $Env:CI_IMAGE_WIN_1809_X64 = $coreimg;
       docker run
       --rm
       -v "$(Get-Location):c:\mnt"
-      486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-buildimages/windows_1809_${Env:ARCH}${Env:DATADOG_AGENT_WINBUILDIMAGES_SUFFIX}:${Env:DATADOG_AGENT_WINBUILDIMAGES}
+      registry.ddbuild.io/ci/datadog-agent-buildimages/windows_1809_${Env:ARCH}${Env:CI_IMAGE_WIN_1809_X64_SUFFIX}:${Env:CI_IMAGE_WIN_1809_X64}
       powershell -Command c:\mnt\node\scripts\buildAgentProcessManagerModule.bat
   artifacts:
     expire_in: 1 weeks
@@ -46,17 +46,17 @@ sign-files:
     - build-agent-process-manager-module
     - build-process-manager
   variables:
-    DATADOG_AGENT_WINBUILDIMAGES_SUFFIX: ""
+    CI_IMAGE_WIN_1809_X64_SUFFIX: ""
     ARCH: "x64"
   script:
     - >
-      $coreimg = (((iwr -UseBasicParsing -DisableKeepAlive https://raw.githubusercontent.com/DataDog/datadog-agent/main/.gitlab-ci.yml).content  -split "`n"| select-string "DATADOG_AGENT_BUILDIMAGES:") -split ":")[1].Trim();
-      $Env:DATADOG_AGENT_WINBUILDIMAGES = $coreimg;
+      $coreimg = (((iwr -UseBasicParsing -DisableKeepAlive https://raw.githubusercontent.com/DataDog/datadog-agent/main/.gitlab-ci.yml).content  -split "`n"| select-string "CI_IMAGE_WIN_1809_X64:") -split ":")[1].Trim();
+      $Env:CI_IMAGE_WIN_1809_X64 = $coreimg;
       docker run
       --rm
       -v "$(Get-Location):c:\mnt"
       -e AWS_NETWORKING=true
-      486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-buildimages/windows_1809_${Env:ARCH}${Env:DATADOG_AGENT_WINBUILDIMAGES_SUFFIX}:${Env:DATADOG_AGENT_WINBUILDIMAGES}
+      registry.ddbuild.io/ci/datadog-agent-buildimages/windows_1809_${Env:ARCH}${Env:CI_IMAGE_WIN_1809_X64_SUFFIX}:${Env:CI_IMAGE_WIN_1809_X64}
       powershell -Command c:\mnt\node\scripts\signFiles.bat
   artifacts:
     expire_in: 1 weeks
