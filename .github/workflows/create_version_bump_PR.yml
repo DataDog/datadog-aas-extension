@@ -33,15 +33,15 @@ jobs:
         id: "set_variables"
         run: |
           if [[ ! -z "${{ github.event.inputs.version }}" ]]; then
-            echo "::set-output name=version::${{ github.event.inputs.version }}"
-            echo "::set-output name=tracer_version::${{ github.event.inputs.tracer_version }}"
+            echo "version=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
+            echo "tracer_version=${{ github.event.inputs.tracer_version }}" >> "$GITHUB_OUTPUT"
           elif [[ ! -z "${{ github.event.client_payload.version }}" ]]; then
             TRACERVERSION=${{ github.event.client_payload.version }}
             echo "Version received from dd-trace-dotnet: $TRACERVERSION"
             TRACERVERSION=${TRACERVERSION:1}
             echo "Version received once normalized: $TRACERVERSION"
-            echo "::set-output name=version::${TRACERVERSION}00"
-            echo "::set-output name=tracer_version::$TRACERVERSION"
+            echo "version=${TRACERVERSION}00" >> "$GITHUB_OUTPUT"
+            echo "tracer_version=$TRACERVERSION" >> "$GITHUB_OUTPUT"
           else
             echo "Error. Versions weren't provided in input."
             exit 1
@@ -129,9 +129,9 @@ jobs:
           fi
 
           PR_BODY="$PR_BODY."
-          echo "::set-output name=version::$VERSION"
-          echo "::set-output name=tracer_version::$TRACER_VERSION"
-          echo "::set-output name=pr_body::$PR_BODY"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tracer_version=$TRACER_VERSION" >> "$GITHUB_OUTPUT"
+          echo "pr_body=$PR_BODY" >> "$GITHUB_OUTPUT"
 
       - name: Create Pull Request
         id: pr

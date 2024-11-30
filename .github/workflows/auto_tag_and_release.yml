@@ -28,10 +28,10 @@ jobs:
           TRACER_VERSION="$(grep -o -e dd-trace-dotnet/releases/download/v[0-9]*\.[0-9]*\.[0-9]* dotnet/build-packages.sh | sed 's#dd-trace-dotnet/releases/download/v##')"
           TAGNAME=dotnet-v$VERSION
           AGENT_VERSION="$(grep -o -e agent-binaries-[0-9]*\.[0-9]*\.[0-9]*  dotnet/build-packages.sh | sed 's/agent-binaries-//')"
-          echo "::set-output name=tagname::$TAGNAME"
-          echo "::set-output name=version::$VERSION"
-          echo "::set-output name=tracer_version::$TRACER_VERSION"
-          echo "::set-output name=agent_version::$AGENT_VERSION"
+          echo "tagname=$TAGNAME" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tracer_version=$TRACER_VERSION" >> "$GITHUB_OUTPUT"
+          echo "agent_version=$AGENT_VERSION" >> "$GITHUB_OUTPUT"
           git tag "$TAGNAME"
           git push origin "$TAGNAME"
       - name: Create Release
