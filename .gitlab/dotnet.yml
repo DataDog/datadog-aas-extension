@@ -1,4 +1,4 @@
-dotnet-package:
+dotnet-package-dev:
   tags: ["runner:main"]
   image: mcr.microsoft.com/dotnet/core/sdk:3.1
   rules:
@@ -9,6 +9,20 @@ dotnet-package:
     - apt-get update
     - apt-get install unzip
     - bash ./dotnet/build-packages-dev.sh
+  artifacts:
+    expire_in: 1 weeks
+    paths:
+      - package
+dotnet-package-prod:
+  tags: ["runner:main"]
+  image: mcr.microsoft.com/dotnet/core/sdk:3.1
+  rules:
+    - if: $RUNTIME != "node" && $RUNTIME != "java"
+  stage: build
+  script:
+    - echo "Installing dependencies"
+    - apt-get update
+    - apt-get install unzip
     - bash ./dotnet/build-packages.sh
   artifacts:
     expire_in: 1 weeks
