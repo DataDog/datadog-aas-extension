@@ -1,19 +1,19 @@
 build-agent-process-manager-module:
-  tags: ["runner:windows-docker", "windowsversion:1809"]
+  tags: ["runner:windows-docker", "windowsversion:2022"]
   rules:
     - if: $RUNTIME == "node"
   stage: build
   variables:
-    CI_IMAGE_WIN_1809_X64_SUFFIX: ""
+    CI_IMAGE_WIN_LTSC2022_X64_SUFFIX: ""
     ARCH: "x64"
   script:
     - >
-      $coreimg = (((iwr -UseBasicParsing -DisableKeepAlive https://raw.githubusercontent.com/DataDog/datadog-agent/main/.gitlab-ci.yml).content  -split "`n"| select-string "CI_IMAGE_WIN_1809_X64:") -split ":")[1].Trim();
-      $Env:CI_IMAGE_WIN_1809_X64 = $coreimg;
+      $coreimg = (((iwr -UseBasicParsing -DisableKeepAlive https://raw.githubusercontent.com/DataDog/datadog-agent/main/.gitlab-ci.yml).content  -split "`n"| select-string "CI_IMAGE_WIN_LTSC2022_X64:") -split ":")[1].Trim();
+      $Env:CI_IMAGE_WIN_LTSC2022_X64 = $coreimg;
       docker run
       --rm
       -v "$(Get-Location):c:\mnt"
-      registry.ddbuild.io/ci/datadog-agent-buildimages/windows_1809_${Env:ARCH}${Env:CI_IMAGE_WIN_1809_X64_SUFFIX}:${Env:CI_IMAGE_WIN_1809_X64}
+      registry.ddbuild.io/ci/datadog-agent-buildimages/windows_ltsc2022_${Env:ARCH}${Env:CI_IMAGE_WIN_LTSC2022_X64_SUFFIX}:${Env:CI_IMAGE_WIN_LTSC2022_X64}
       powershell -Command c:\mnt\node\scripts\buildAgentProcessManagerModule.bat
   artifacts:
     expire_in: 1 weeks
@@ -38,7 +38,7 @@ build-process-manager:
       - node/process_manager/target/x86_64-pc-windows-gnu/release/process_manager.exe
 
 sign-files:
-  tags: ["runner:windows-docker", "windowsversion:1809"]
+  tags: ["runner:windows-docker", "windowsversion:2022"]
   rules:
     - if: $RUNTIME == "node"
   stage: build
@@ -46,17 +46,17 @@ sign-files:
     - build-agent-process-manager-module
     - build-process-manager
   variables:
-    CI_IMAGE_WIN_1809_X64_SUFFIX: ""
+    CI_IMAGE_WIN_LTSC2022_X64_SUFFIX: ""
     ARCH: "x64"
   script:
     - >
-      $coreimg = (((iwr -UseBasicParsing -DisableKeepAlive https://raw.githubusercontent.com/DataDog/datadog-agent/main/.gitlab-ci.yml).content  -split "`n"| select-string "CI_IMAGE_WIN_1809_X64:") -split ":")[1].Trim();
-      $Env:CI_IMAGE_WIN_1809_X64 = $coreimg;
+      $coreimg = (((iwr -UseBasicParsing -DisableKeepAlive https://raw.githubusercontent.com/DataDog/datadog-agent/main/.gitlab-ci.yml).content  -split "`n"| select-string "CI_IMAGE_WIN_LTSC2022_X64:") -split ":")[1].Trim();
+      $Env:CI_IMAGE_WIN_LTSC2022_X64 = $coreimg;
       docker run
       --rm
       -v "$(Get-Location):c:\mnt"
       -e AWS_NETWORKING=true
-      registry.ddbuild.io/ci/datadog-agent-buildimages/windows_1809_${Env:ARCH}${Env:CI_IMAGE_WIN_1809_X64_SUFFIX}:${Env:CI_IMAGE_WIN_1809_X64}
+      registry.ddbuild.io/ci/datadog-agent-buildimages/windows_ltsc2022_${Env:ARCH}${Env:CI_IMAGE_WIN_LTSC2022_X64_SUFFIX}:${Env:CI_IMAGE_WIN_LTSC2022_X64}
       powershell -Command c:\mnt\node\scripts\signFiles.bat
   artifacts:
     expire_in: 1 weeks
