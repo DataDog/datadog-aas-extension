@@ -8,6 +8,7 @@ dotnet-package:
     - echo "Installing dependencies"
     - apt-get update
     - apt-get install unzip
+    - bash ./dotnet/build-packages-dev.sh
     - bash ./dotnet/build-packages.sh
   artifacts:
     expire_in: 1 weeks
