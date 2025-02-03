@@ -138,7 +138,7 @@ update-self-monitoring-node-dev:
 
 create-github-release-node:
   tags: ["arch:amd64"]
-  image: registry.ddbuild.io/images/mirror/golang:1.22.0
+  image: registry.ddbuild.io/images/mirror/golang:1.23.5
   rules:
     - if: $RUNTIME == "node" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   stage: deploy
