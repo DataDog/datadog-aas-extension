@@ -1,0 +1,50 @@
+name: "Bug Report (Low Priority)"
+description: "Create a public Bug Report. Note that these may not be addressed as quickly as the helpdesk and that looking up account information will be difficult."
+title: "[BUG]: "
+labels: type:bug
+body:
+  - type: input
+    attributes:
+      label: AAS extension version used
+      description: "Version of the AAS extension used"
+      placeholder: 1.9.0
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: Operating system and platform
+      description: "The operating system (Windows, Linux, Ubuntu) and platform (arm64, x64) on which you are experiencing the issue"
+      placeholder: Windows (x64), Linux (arm64)
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: Language
+      description: "What language is your application written in?"
+      placeholder: ".NET, Java, Node.js"
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: Language Runtime Version
+      description: "Please provide the version of the language runtime (.NET TFM, `java --version`, `node --version)"
+      placeholder: "net462, net9.0"
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Bug Report
+      description: Please add a clear and concise description of the bug here
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Reproduction Code
+      description: Please add code here to help us reproduce the problem
+    validations:
+      required: false
