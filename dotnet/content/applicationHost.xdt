@@ -88,6 +88,7 @@
         <add name="DD_APM_RECEIVER_PORT" value="0" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- Needed to force no port conflicts -->
         <add name="DD_AAS_DOTNET_EXTENSION_VERSION" value="vUNKNOWN" xdt:Locator="Match(name)" xdt:Transform="Insert"/> <!-- For troubleshooting and tagging traces -->
 
+        <add name="DD_INSTRUMENTATION_INSTALL_TYPE" value="aas_extension" xdt:Locator="Match(name)" xdt:Transform="InsertIfMissing"/>
       </environmentVariables>
     </runtime>
   </system.webServer>
