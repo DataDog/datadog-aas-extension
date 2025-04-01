@@ -90,7 +90,7 @@
 
         <add name="DD_INSTRUMENTATION_INSTALL_TYPE" value="aas_extension" xdt:Locator="Match(name)" xdt:Transform="InsertIfMissing"/>
 
-        <add name="DD_TRACE_DATA_PIPELINE_ENABLED" value="1" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
+        <add name="DD_TRACE_DATA_PIPELINE_ENABLED" value="1" xdt:Locator="Match(name)" xdt:Transform="InsertIfMissing"/>
       </environmentVariables>
     </runtime>
   </system.webServer>
