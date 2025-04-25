@@ -40,7 +40,7 @@ $allSites=az webapp list -g $ResourceGroup | ConvertFrom-Json
 Foreach($webapp in @($allSites)) {
 	
 	$siteName=$webapp.name
-	$baseApiUrl = "https://${siteName}.scm.azurewebsites.net/api"
+	$baseApiUrl = "https://$($webapp.enabledHostNames -like "*.scm.*")/api"
 	$siteExtensionsBase="${baseApiUrl}/siteextensions"
 	$siteExtensionManage="${baseApiUrl}/siteextensions/${extension}"
 
