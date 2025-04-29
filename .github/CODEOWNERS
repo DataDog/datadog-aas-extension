@@ -11,7 +11,7 @@
 
 # Config files for various CI systems / tasks
 
-*        @DataDog/serverless
-/dotnet/ @DataDog/serverless @DataDog/apm-dotnet
-/java/   @DataDog/serverless @DataDog/apm-java
-/node/   @DataDog/serverless @DataDog/apm-js
+*        @DataDog/serverless-azure-gcp @DataDog/apm-serverless
+/dotnet/ @DataDog/serverless-azure-gcp @DataDog/apm-serverless @DataDog/apm-dotnet
+/java/   @DataDog/serverless-azure-gcp @DataDog/apm-serverless @DataDog/apm-java
+/node/   @DataDog/serverless-azure-gcp @DataDog/apm-serverless @DataDog/apm-js
