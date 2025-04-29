@@ -46,15 +46,15 @@ if ($Password -eq "ambient") {
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-$baseApiUrl = "https://${SiteName}.scm.azurewebsites.net/api"
-
 $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $Username, $Password)))
 $userAgent = "powershell/1.0"
 
+$siteApiUrl="https://management.azure.com/subscriptions/${SubscriptionId}/resourceGroups/${ResourceGroup}/providers/Microsoft.Web/sites/${SiteName}"
+$siteConfig = az rest -m GET --header "Accept=application/json" -u "${siteApiUrl}?api-version=2019-08-01" | ConvertFrom-Json
+
+$baseApiUrl = "https://$($siteConfig.properties.enabledHostNames -like "*.scm.*")/api"
 $siteExtensionsBase="${baseApiUrl}/siteextensions"
 $siteExtensionManage="${baseApiUrl}/siteextensions/${Extension}"
-
-$siteApiUrl="https://management.azure.com/subscriptions/${SubscriptionId}/resourceGroups/${ResourceGroup}/providers/Microsoft.Web/sites/${SiteName}"
 
 # Stop the web app
 # https://docs.microsoft.com/en-us/rest/api/appservice/webapps/stop
@@ -137,8 +137,8 @@ else {
 	}
 	else {
         Write-Output "Attempting to install latest ${Extension}"
-        Invoke-RestMethod -Uri $siteExtensionManage -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -UserAgent $userAgent -Method PUT
-        Write-Output "[${SiteName}] Completed request to install latest of ${Extension}"
+        Invoke-RestMethod -Uri $siteExtensionManage -Headers @{Authorization=$("Basic {0}" -f $base64AuthInfo)} -UserAgent $userAgent -Method PUT
+		Write-Output "[${SiteName}] Completed request to install latest of ${Extension}"
 	}
 }
 
