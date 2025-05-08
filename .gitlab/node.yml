@@ -1,5 +1,5 @@
 build-agent-process-manager-module:
-  tags: ["runner:windows-docker", "windowsversion:2022"]
+  tags: ["windows-v2:2022"]
   rules:
     - if: $RUNTIME == "node"
   stage: build
@@ -38,7 +38,7 @@ build-process-manager:
       - node/process_manager/target/x86_64-pc-windows-gnu/release/process_manager.exe
 
 sign-files:
-  tags: ["runner:windows-docker", "windowsversion:2022"]
+  tags: ["windows-v2:2022"]
   rules:
     - if: $RUNTIME == "node"
   stage: build
