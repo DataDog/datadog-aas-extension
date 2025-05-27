@@ -112,6 +112,7 @@ jobs:
               "dd-dotnet-latest-build"
               "dd-dotnet-latest-build-stats"
               "dd-dotnet-latest-build-profiler-only"
+              "dd-dotnet-latest-data-pipeline"
               "dd-dotnet-profiler-backend-test-latest-build"
               "dd-dotnet-security-aspnetcore"
             )
