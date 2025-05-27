@@ -105,49 +105,43 @@ jobs:
         with:
           inlineScript: |
             resourceGroupName="apm-aas-junkyard"
-            aasName="dd-dotnet-latest-build"
-            aasStatsName="dd-dotnet-latest-build-stats"
-            aasProfilerOnlyName="dd-dotnet-latest-build-profiler-only"
-            aasProfilerBackendName="dd-dotnet-profiler-backend-test-latest-build"
-            aasSecuritySample="dd-dotnet-security-aspnetcore"
+            imageTag="ghcr.io/datadog/dd-trace-dotnet/junkyard-release-app:${{ steps.set_variables.outputs.sha }}"
+            
+            # Define app sets
+            dotnetApps=(
+              "dd-dotnet-latest-build"
+              "dd-dotnet-latest-build-stats"
+              "dd-dotnet-latest-build-profiler-only"
+              "dd-dotnet-profiler-backend-test-latest-build"
+              "dd-dotnet-security-aspnetcore"
+            )
 
+            # We need to update the baseline too, in case the application code changed.
+            linuxApps=(
+              "dd-dotnet-linux-baseline"
+              "dd-dotnet-linux-latest-build"
+              "dd-dotnet-linux-latest-build-stats"
+              "dd-dotnet-linux-latest-build-profiler-default"
+              "dd-dotnet-linux-latest-build-profiler-all"
+            )
+            
             echo "Login"
             az login --service-principal -u ${{ secrets.AZURE_APP_ID }} -p ${{ secrets.AZURE_PASSWORD }} --tenant ${{ secrets.AZURE_TENANT }}
-
+            
             echo "Update Site Extensions"
-            az resource create --resource-group $resourceGroupName --resource-type "Microsoft.Web/sites/siteextensions" --name "$aasName/siteextensions/DevelopmentVerification.DdDotNet.Apm" -p "{}"
-            az resource create --resource-group $resourceGroupName --resource-type "Microsoft.Web/sites/siteextensions" --name "$aasStatsName/siteextensions/DevelopmentVerification.DdDotNet.Apm" -p "{}"
-            az resource create --resource-group $resourceGroupName --resource-type "Microsoft.Web/sites/siteextensions" --name "$aasProfilerOnlyName/siteextensions/DevelopmentVerification.DdDotNet.Apm" -p "{}"
-            az resource create --resource-group $resourceGroupName --resource-type "Microsoft.Web/sites/siteextensions" --name "$aasProfilerBackendName/siteextensions/DevelopmentVerification.DdDotNet.Apm" -p "{}"
-            az resource create --resource-group $resourceGroupName --resource-type "Microsoft.Web/sites/siteextensions" --name "$aasSecuritySample/siteextensions/DevelopmentVerification.DdDotNet.Apm" -p "{}"
-
-            aasLinuxBaseLine="dd-dotnet-linux-baseline"
-            aasLinuxDotnetLatestName="dd-dotnet-linux-latest-build"
-            aasLinuxStatsName="dd-dotnet-linux-latest-build-stats"
-            aasLinuxProfilerDefaultName="dd-dotnet-linux-latest-build-profiler-default"
-            aasLinuxProfilerAllName="dd-dotnet-linux-latest-build-profiler-all"
-
+            for app in "${dotnetApps[@]}"; do
+              az resource create --resource-group "$resourceGroupName" --resource-type "Microsoft.Web/sites/siteextensions" --name "$app/siteextensions/DevelopmentVerification.DdDotNet.Apm" -p "{}"
+            done
+            
             echo "Update Linux Image Version"
-            # We need to update the baseline too, in case the application code changed.
-            az webapp config container set --name $aasLinuxBaseLine --resource-group $resourceGroupName --docker-custom-image-name ghcr.io/datadog/dd-trace-dotnet/junkyard-release-app:${{ steps.set_variables.outputs.sha }} --docker-registry-server-url https://docker.io
-            az webapp config container set --name $aasLinuxDotnetLatestName --resource-group $resourceGroupName --docker-custom-image-name ghcr.io/datadog/dd-trace-dotnet/junkyard-release-app:${{ steps.set_variables.outputs.sha }} --docker-registry-server-url https://docker.io
-            az webapp config container set --name $aasLinuxStatsName --resource-group $resourceGroupName --docker-custom-image-name ghcr.io/datadog/dd-trace-dotnet/junkyard-release-app:${{ steps.set_variables.outputs.sha }} --docker-registry-server-url https://docker.io
-            az webapp config container set --name $aasLinuxProfilerDefaultName --resource-group $resourceGroupName --docker-custom-image-name ghcr.io/datadog/dd-trace-dotnet/junkyard-release-app:${{ steps.set_variables.outputs.sha }} --docker-registry-server-url https://docker.io
-            az webapp config container set --name $aasLinuxProfilerAllName --resource-group $resourceGroupName --docker-custom-image-name ghcr.io/datadog/dd-trace-dotnet/junkyard-release-app:${{ steps.set_variables.outputs.sha }} --docker-registry-server-url https://docker.io
-
+            for app in "${linuxApps[@]}"; do
+              az webapp config container set --name "$app" --resource-group "$resourceGroupName" --docker-custom-image-name "$imageTag" --docker-registry-server-url https://docker.io
+            done
+            
             echo "Waiting 10 seconds for extension to be actually installed"
             sleep 10
-
-            echo "Restart Application"
-            az webapp restart --resource-group $resourceGroupName --name $aasName
-            az webapp restart --resource-group $resourceGroupName --name $aasStatsName
-            az webapp restart --resource-group $resourceGroupName --name $aasProfilerOnlyName
-            az webapp restart --resource-group $resourceGroupName --name $aasProfilerBackendName
-            az webapp restart --resource-group $resourceGroupName --name $aasSecuritySample
-
-            # Linux apps 
-            az webapp restart --resource-group $resourceGroupName --name $aasLinuxBaseLine
-            az webapp restart --resource-group $resourceGroupName --name $aasLinuxDotnetLatestName
-            az webapp restart --resource-group $resourceGroupName --name $aasLinuxStatsName
-            az webapp restart --resource-group $resourceGroupName --name $aasLinuxProfilerDefaultName
-            az webapp restart --resource-group $resourceGroupName --name $aasLinuxProfilerAllName
+            
+            echo "Restart Applications"
+            for app in "${dotnetApps[@]}" "${linuxApps[@]}"; do
+              az webapp restart --resource-group "$resourceGroupName" --name "$app"
+            done
