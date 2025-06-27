@@ -136,42 +136,6 @@ update-self-monitoring-node-dev:
     - az webapp start --resource-group "serverless-aas-win" --name "serverless-windows32-node18-express-self-monitoring-dev"
     - az webapp start --resource-group "serverless-aas-win" --name "serverless-windows64-node18-express-self-monitoring-dev"
 
-create-github-release-node:
-  tags: ["arch:amd64"]
-  image: registry.ddbuild.io/images/mirror/golang:1.23.4
-  rules:
-    - if: $RUNTIME == "node" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-  stage: deploy
-  needs:
-    - build-nuget-packages-node
-    - update-self-monitoring-node-dev
-  when: manual
-  script:
-    - git clone https://github.com/cli/cli.git gh-cli
-    - cd gh-cli
-    - make install
-    - cd ..
-    - apt-get update
-    - apt-get install -y awscli
-    - export GH_TOKEN=$(aws ssm get-parameter --region us-east-1 --name ci.datadog-aas-extension.github-token --with-decryption --query "Parameter.Value" --out text)
-    - export LATEST_TAG=$(gh release list --repo DataDog/datadog-aas-extension --exclude-drafts --exclude-pre-releases --json tagName --jq '.[] | select(.tagName | contains("node")) | .tagName' --order desc | head -n 1)
-    - export TRACER_VERSION=$(grep -o 'TRACER_VERSION="[0-9.]*"' node/scripts/build-packages.sh | awk -F '=' '{print $2}' | tr -d '"')
-    - export AGENT_VERSION=$(grep -o 'AGENT_VERSION="[0-9.]*"' node/scripts/build-packages.sh | awk -F '=' '{print $2}' | tr -d '"')
-    - |
-      cat <<EOF > release-notes.md
-      ## Versions included
-      [Node.js Tracer v${TRACER_VERSION}](https://github.com/DataDog/dd-trace-js/releases/tag/v${TRACER_VERSION})
-      [Datadog Agent v${AGENT_VERSION}](https://github.com/DataDog/datadog-agent/releases/tag/${AGENT_VERSION})
-      Hosted on [Nuget](https://www.nuget.org/packages/Datadog.AzureAppServices.Node.Apm/${RELEASE_VERSION})
-      [Site Extension Documentation](https://docs.datadoghq.com/serverless/azure_app_services/)
-      EOF
-    - |
-      if [ -z "$LATEST_TAG" ]; then
-        gh release create node-v${RELEASE_VERSION} --draft --repo DataDog/datadog-aas-extension --title node-v${RELEASE_VERSION} --notes-file release-notes.md
-      else
-        gh release create node-v${RELEASE_VERSION} --draft --repo DataDog/datadog-aas-extension --generate-notes --notes-start-tag $LATEST_TAG --notes-file release-notes.md
-      fi
-
 push-nuget-package-node-prod:
   tags: ["arch:amd64"]
   image: registry.ddbuild.io/images/mirror/dotnet:sdk-8.0.100-1
@@ -180,7 +144,7 @@ push-nuget-package-node-prod:
   stage: deploy
   needs:
     - build-nuget-packages-node
-    - create-github-release-node
+  when: manual
   script:
     - apt-get update
     - apt-get install -y awscli
