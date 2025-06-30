@@ -75,9 +75,7 @@ create-github-release-java:
     - cd gh-cli
     - make install
     - cd ..
-    - apt-get update
-    - apt-get install -y awscli
-    - export GH_TOKEN=$(aws ssm get-parameter --region us-east-1 --name ci.datadog-aas-extension.github-token --with-decryption --query "Parameter.Value" --out text)
+    - source .gitlab/scripts/get_secrets.sh
     - export LATEST_TAG=$(gh release list --repo DataDog/datadog-aas-extension --exclude-drafts --exclude-pre-releases --json tagName --jq '.[] | select(.tagName | contains("java")) | .tagName' --order desc | head -n 1)
     - export TRACER_VERSION=$(grep -o 'TRACER_VERSION="[0-9.]*"' java/scripts/build-packages.sh | awk -F '=' '{print $2}' | tr -d '"')
     - export AGENT_VERSION=$(grep -o 'AGENT_VERSION="[0-9.]*"' java/scripts/build-packages.sh | awk -F '=' '{print $2}' | tr -d '"')
