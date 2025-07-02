@@ -4,9 +4,9 @@ set -e
 
 printf "Getting GitHub Token"
 
-export GH_APP_ID=$(vault kv get -field="gh_app_id" kv/k8s/gitlab-runner/datadog-aas-extension/secrets)
-export GH_PRIVATE_KEY=$(vault kv get -field="gh_private_key" kv/k8s/gitlab-runner/datadog-aas-extension/secrets)
-export GH_INSTALLATION_ID=$(vault kv get -field="gh_installation_id" kv/k8s/gitlab-runner/datadog-aas-extension/secrets)
+export GH_APP_ID=$(vault kv get -field="gh_app_id" kv/k8s/gitlab-runner/datadog-aas-extension/secret)
+export GH_PRIVATE_KEY=$(vault kv get -field="gh_private_key" kv/k8s/gitlab-runner/datadog-aas-extension/secret)
+export GH_INSTALLATION_ID=$(vault kv get -field="gh_installation_id" kv/k8s/gitlab-runner/datadog-aas-extension/secret)
 
 # Write private key to a temporary file
 PRIVATE_KEY_FILE=$(mktemp)

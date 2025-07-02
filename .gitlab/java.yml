@@ -62,7 +62,7 @@ update-self-monitoring-java-dev:
 
 create-github-release-java:
   tags: ["arch:amd64"]
-  image: registry.ddbuild.io/images/mirror/golang:1.23.4
+  image: registry.ddbuild.io/images/docker:24.0.5
   rules:
     - if: $RUNTIME == "java" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   stage: deploy
@@ -71,10 +71,7 @@ create-github-release-java:
     - update-self-monitoring-java-dev
   when: manual
   script:
-    - git clone https://github.com/cli/cli.git gh-cli
-    - cd gh-cli
-    - make install
-    - cd ..
+    - apt-get update && apt-get install gh -y
     - source .gitlab/scripts/get_secrets.sh
     - export LATEST_TAG=$(gh release list --repo DataDog/datadog-aas-extension --exclude-drafts --exclude-pre-releases --json tagName --jq '.[] | select(.tagName | contains("java")) | .tagName' --order desc | head -n 1)
     - export TRACER_VERSION=$(grep -o 'TRACER_VERSION="[0-9.]*"' java/scripts/build-packages.sh | awk -F '=' '{print $2}' | tr -d '"')
