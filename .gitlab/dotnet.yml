@@ -1,6 +1,6 @@
 dotnet-package:
   tags: ["runner:main"]
-  image: mcr.microsoft.com/dotnet/core/sdk:3.1
+  image: mcr.microsoft.com/dotnet/sdk:8.0
   rules:
     - if: $RUNTIME != "node" && $RUNTIME != "java"
   stage: build
