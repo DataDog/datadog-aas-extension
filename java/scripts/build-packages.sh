@@ -3,7 +3,7 @@ if [[ -z ${RELEASE_VERSION+x} ]] || [[ -z ${DEVELOPMENT_VERSION+x} ]]; then
     exit 1
 fi
 
-AGENT_VERSION="7.60.1"
+AGENT_VERSION="7.61.0"
 TRACER_VERSION="1.51.2"
 
 echo "Building version ${RELEASE_VERSION} for prod environment"
