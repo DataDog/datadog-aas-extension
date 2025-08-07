@@ -9,4 +9,5 @@ claim_pattern:
   job_workflow_ref: DataDog/datadog-aas-extension/\.github/workflows/create_version_bump_PR\.yml@refs/heads/master
 
 permissions:
+  contents: write
   pull_requests: write
