@@ -54,6 +54,7 @@ jobs:
           owner: DataDog
           repo: datadog-agent
           excludes: prerelease, draft
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: "Modify build-packages"
         id: "versions"
