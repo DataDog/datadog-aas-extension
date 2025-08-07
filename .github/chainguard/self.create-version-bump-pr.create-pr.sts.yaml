@@ -1,0 +1,12 @@
+issuer: https://token.actions.githubusercontent.com
+
+subject_pattern: repo:DataDog/datadog-aas-extension:.*
+
+claim_pattern:
+  event_name: (workflow_dispatch|repository_dispatch)
+  ref: refs/heads/master
+  ref_protected: "true"
+  job_workflow_ref: DataDog/datadog-aas-extension/\.github/workflows/create_version_bump_PR\.yml@refs/heads/master
+
+permissions:
+  pull_requests: write

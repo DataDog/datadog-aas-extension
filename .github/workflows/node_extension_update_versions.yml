@@ -8,8 +8,7 @@ jobs:
   bump_version:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Creates a branch
-      pull-requests: write # Creates a PR
+      id-token: write # Needed to federate tokens for dd-octo-sts
       actions: read # read secrets
 
     steps:
@@ -33,11 +32,17 @@ jobs:
           echo "pr_body=$PR_BODY" >> "$GITHUB_OUTPUT"
           echo "pr_title=$PR_TITLE" >> "$GITHUB_OUTPUT"
 
+      - uses: DataDog/dd-octo-sts-action@acaa02eee7e3bb0839e4272dacb37b8f3b58ba80 # v1.0.3
+        id: octo-sts
+        with:
+          scope: DataDog/datadog-aas-extension
+          policy: self.java-extension-update-versions.create-pr
+
       - name: Create Pull Request
         id: pr
         uses: peter-evans/create-pull-request@v6
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.octo-sts.outputs.token }}
           branch: "node-extension-version-bump"
           commit-message: "${{steps.version.outputs.pr_title}}"
           delete-branch: true

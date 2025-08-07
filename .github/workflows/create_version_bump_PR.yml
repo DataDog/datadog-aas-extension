@@ -21,11 +21,8 @@ jobs:
   bump_version:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Creates a branch
-      pull-requests: write # Creates a PR
       actions: read # read secrets
-    env:
-      GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      id-token: write # Needed to federate tokens for dd-octo-sts
 
     steps:
 
@@ -133,11 +130,17 @@ jobs:
           echo "::set-output name=tracer_version::$TRACER_VERSION"
           echo "::set-output name=pr_body::$PR_BODY"
 
+      - uses: DataDog/dd-octo-sts-action@acaa02eee7e3bb0839e4272dacb37b8f3b58ba80 # v1.0.3
+        id: octo-sts
+        with:
+          scope: DataDog/datadog-aas-extension
+          policy: self.create-version-bump-pr.create-pr
+
       - name: Create Pull Request
         id: pr
         uses: peter-evans/create-pull-request@v3.10.0
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.octo-sts.outputs.token }}
           branch: "version-bump-${{steps.versions.outputs.version}}"
           commit-message: "[.Net Version Bump] Bump to v${{steps.versions.outputs.version}}"
           delete-branch: true

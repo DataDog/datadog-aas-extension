@@ -1,0 +1,12 @@
+issuer: https://token.actions.githubusercontent.com
+
+subject: repo:DataDog/datadog-aas-extension:ref:refs/heads/master
+
+claim_pattern:
+  event_name: schedule
+  ref: refs/heads/master
+  ref_protected: "true"
+  job_workflow_ref: DataDog/datadog-aas-extension/\.github/workflows/java_extension_update_versions\.yml@refs/heads/master
+
+permissions:
+  pull_requests: write
