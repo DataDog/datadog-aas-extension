@@ -36,7 +36,7 @@ jobs:
         id: octo-sts
         with:
           scope: DataDog/datadog-aas-extension
-          policy: self.java-extension-update-versions.create-pr
+          policy: self.node-extension-update-versions.create-pr
 
       - name: Create Pull Request
         id: pr
