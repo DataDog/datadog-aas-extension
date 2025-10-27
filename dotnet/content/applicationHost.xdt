@@ -5,6 +5,7 @@
       <environmentVariables xdt:Transform="InsertIfMissing">
         <add name="COMPLUS_LoaderOptimization" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
 
+        <add name="COR_ENABLE_PROFILING" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="COR_PROFILER" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="COR_PROFILER_PATH" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
         <add name="COR_PROFILER_PATH_32" xdt:Locator="Match(name)" xdt:Transform="RemoveAll"/>
@@ -48,7 +49,7 @@
 
         <!-- We're unable to instrument domain-neutral assemblies when our managed assemblies are not in the GAC, so force LoaderOptimization to be LoaderOptimization.SingleDomain -->
         <add name="COMPLUS_LoaderOptimization" value="1" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
-        <add name="COR_ENABLE_PROFILING" value="1" xdt:Locator="Match(name)" xdt:Transform="InsertIfMissing"/>
+        <add name="COR_ENABLE_PROFILING" value="1" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
         <add name="COR_PROFILER" value="{846F5F1C-F9AE-4B07-969E-05C26BC060D8}" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
         <add name="COR_PROFILER_PATH" value="%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Tracer\win-x64\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
         <add name="COR_PROFILER_PATH_32" value="%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Tracer\win-x86\Datadog.Trace.ClrProfiler.Native.dll" xdt:Locator="Match(name)" xdt:Transform="Insert"/>
