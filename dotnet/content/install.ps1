@@ -32,20 +32,18 @@ SetPipe ".\applicationHost.xdt" "uniqueTracePipeId" "${tracePipeId}"
 SetPipe ".\scmApplicationHost.xdt" "uniqueStatsPipeId" "${statsPipeId}"
 SetPipe ".\scmApplicationHost.xdt" "uniqueTracePipeId" "${tracePipeId}"
 
-$corEnableProfiling=[Environment]::GetEnvironmentVariable("APPSETTING_COR_ENABLE_PROFILING").ToLower()
+$corEnableProfiling=[Environment]::GetEnvironmentVariable("APPSETTING_COR_ENABLE_PROFILING")
 
 if (-not ([string]::IsNullOrEmpty($corEnableProfiling)))
 {
 	Log("User set COR_ENABLE_PROFILING to ${corEnableProfiling} in app settings")
-	if ($corEnableProfiling -eq "0" -or $corEnableProfiling -eq "false")
+	if ($corEnableProfiling -eq "0" -or $corEnableProfiling.toLower() -eq "false")
 	{
-		Log("User set COR_ENABLE_PROFILING to 0 or false in app settings. Don't insert COR_ENABLE_PROFILING=1 in applicationHost.xdt to disable .NET Framework Profiling.")
+		Log("User set COR_ENABLE_PROFILING to 0 or false in app settings. Removing COR_ENABLE_PROFILING from applicationHost.xdt to disable .NET Framework Profiling.")
 		$xdtPath=".\applicationHost.xdt"
 		$xdtContent=Get-Content -Path $xdtPath -Raw
-		# Match lines that have both name="COR_ENABLE_PROFILING" AND value= to target only the Insert
-		$xdtContent=$xdtContent -replace '\s*<add name="COR_ENABLE_PROFILING" value="[^"]*"[^>]*/>[\r\n]*', ''
+		$xdtContent=$xdtContent -replace '\s*<add name="COR_ENABLE_PROFILING"[^>]*xdt:Transform="Insert"\s*\/>', ''
 		Set-Content -Path $xdtPath -Value $xdtContent
-		Log("COR_ENABLE_PROFILING Insert line removed from XDT")
 	}
 }
 
