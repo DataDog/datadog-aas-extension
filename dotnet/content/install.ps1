@@ -32,19 +32,37 @@ SetPipe ".\applicationHost.xdt" "uniqueTracePipeId" "${tracePipeId}"
 SetPipe ".\scmApplicationHost.xdt" "uniqueStatsPipeId" "${statsPipeId}"
 SetPipe ".\scmApplicationHost.xdt" "uniqueTracePipeId" "${tracePipeId}"
 
-$corEnableProfiling=[Environment]::GetEnvironmentVariable("APPSETTING_COR_ENABLE_PROFILING")
+function DetectDotNetRuntime() {
+	$webConfigPath=Join-Path -Path $env:HOME "site\wwwroot\web.config"
 
-if (-not ([string]::IsNullOrEmpty($corEnableProfiling)))
-{
-	Log("User set COR_ENABLE_PROFILING to ${corEnableProfiling} in app settings")
-	if ($corEnableProfiling -eq "0" -or $corEnableProfiling.toLower() -eq "false")
-	{
-		Log("User set COR_ENABLE_PROFILING to 0 or false in app settings. Removing COR_ENABLE_PROFILING from applicationHost.xdt to disable .NET Framework Profiling.")
-		$xdtPath=".\applicationHost.xdt"
-		$xdtContent=Get-Content -Path $xdtPath -Raw
-		$xdtContent=$xdtContent -replace '\s*<add name="COR_ENABLE_PROFILING"[^>]*xdt:Transform="Insert"\s*\/>', ''
-		Set-Content -Path $xdtPath -Value $xdtContent
+	if (Test-Path $webConfigPath) {
+		try {
+			$webConfigContent = Get-Content -Path $webConfigPath -Raw
+
+			# Look for AspNetCoreModule or AspNetCoreModuleV2
+			if ($webConfigContent -match "AspNetCoreModule|AspNetCoreModuleV2") {
+				return "Core"
+			} else {
+				return "Framework"
+			}
+		} catch {
+			return "Unknown"
+		}
 	}
+	else {
+		return "Unknown"
+	}
+}
+
+$dotnetRuntime=DetectDotNetRuntime
+Log("Detected .NET runtime: ${dotnetRuntime}")
+
+if ($dotnetRuntime -eq "Core") {
+	Log("Removing COR_ENABLE_PROFILING from applicationHost.xdt to disable .NET Framework Profiling.")
+	$xdtPath=".\applicationHost.xdt"
+	$xdtContent=Get-Content -Path $xdtPath -Raw
+	$xdtContent=$xdtContent -replace '\s*<add name="COR_ENABLE_PROFILING"[^>]*xdt:Transform="Insert"\s*\/>', ''
+	Set-Content -Path $xdtPath -Value $xdtContent
 }
 
 Log("Install complete")
