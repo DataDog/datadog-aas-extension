@@ -58,10 +58,10 @@ $dotnetRuntime=DetectDotNetRuntime
 Log("Detected .NET runtime: ${dotnetRuntime}")
 
 if ($dotnetRuntime -eq "Core") {
-	Log("Removing COR_ENABLE_PROFILING from applicationHost.xdt to disable .NET Framework Profiling.")
+	Log("Changing applicationHost.xdt to set COR_ENABLE_PROFILING to 0 so .NET Framework Profiling is disabled.")
 	$xdtPath=".\applicationHost.xdt"
 	$xdtContent=Get-Content -Path $xdtPath -Raw
-	$xdtContent=$xdtContent -replace '\s*<add name="COR_ENABLE_PROFILING"[^>]*xdt:Transform="Insert"\s*\/>', ''
+	$xdtContent=$xdtContent -replace '(<add name="COR_ENABLE_PROFILING" value=")[^"]*(")', '${1}0${2}'
 	Set-Content -Path $xdtPath -Value $xdtContent
 }
 
