@@ -35,21 +35,29 @@ SetPipe ".\scmApplicationHost.xdt" "uniqueTracePipeId" "${tracePipeId}"
 function DetectDotNetRuntime() {
 	$webConfigPath=Join-Path -Path $env:HOME "site\wwwroot\web.config"
 
-	if (Test-Path $webConfigPath) {
-		try {
-			$webConfigContent = Get-Content -Path $webConfigPath -Raw
-
-			# Look for AspNetCoreModule or AspNetCoreModuleV2
-			if ($webConfigContent -match "AspNetCoreModule|AspNetCoreModuleV2") {
-				return "Core"
-			} else {
-				return "Framework"
-			}
-		} catch {
-			return "Unknown"
-		}
+	if (-not (Test-Path $webConfigPath)) {
+		Log("No web.config found in wwwroot.")
+		return "Unknown"
 	}
-	else {
+
+	try {
+		$xmlContent = Get-Content -Path $webConfigPath
+		$xmlDocument = [xml]$xmlContent
+
+		# Look for AspNetCoreModule or AspNetCoreModuleV2
+		$aspNetCoreHandlers = $xmlDocument.SelectNodes("//location/system.webServer/handlers/add[@modules='AspNetCoreModule' or @modules='AspNetCoreModuleV2']")
+		if ($null -ne $aspNetCoreHandlers -and $aspNetCoreHandlers.Count -gt 0) {
+			return "Core"
+		}
+
+		$aspNetCoreNode = $xmlDocument.SelectSingleNode("//location/system.webServer/aspNetCore")
+		if ($null -ne $aspNetCoreNode) {
+			return "Core"
+		}
+
+		return "Framework"
+	} catch {
+		Log("Error parsing web.config: $_")
 		return "Unknown"
 	}
 }
