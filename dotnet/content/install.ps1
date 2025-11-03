@@ -45,12 +45,12 @@ function DetectDotNetRuntime() {
 		$xmlDocument = [xml]$xmlContent
 
 		# Look for AspNetCoreModule or AspNetCoreModuleV2
-		$aspNetCoreHandlers = $xmlDocument.SelectNodes("//location/system.webServer/handlers/add[@modules='AspNetCoreModule' or @modules='AspNetCoreModuleV2']")
+		$aspNetCoreHandlers = $xmlDocument.SelectNodes("//system.webServer/handlers/add[@modules='AspNetCoreModule' or @modules='AspNetCoreModuleV2']")
 		if ($null -ne $aspNetCoreHandlers -and $aspNetCoreHandlers.Count -gt 0) {
 			return "Core"
 		}
 
-		$aspNetCoreNode = $xmlDocument.SelectSingleNode("//location/system.webServer/aspNetCore")
+		$aspNetCoreNode = $xmlDocument.SelectSingleNode("//system.webServer/aspNetCore")
 		if ($null -ne $aspNetCoreNode) {
 			return "Core"
 		}
