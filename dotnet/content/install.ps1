@@ -32,4 +32,45 @@ SetPipe ".\applicationHost.xdt" "uniqueTracePipeId" "${tracePipeId}"
 SetPipe ".\scmApplicationHost.xdt" "uniqueStatsPipeId" "${statsPipeId}"
 SetPipe ".\scmApplicationHost.xdt" "uniqueTracePipeId" "${tracePipeId}"
 
+function DetectDotNetRuntime() {
+	$webConfigPath=Join-Path -Path $env:HOME "site\wwwroot\web.config"
+
+	if (-not (Test-Path $webConfigPath)) {
+		Log("No web.config found in wwwroot.")
+		return "Unknown"
+	}
+
+	try {
+		$xmlContent = Get-Content -Path $webConfigPath
+		$xmlDocument = [xml]$xmlContent
+
+		# Look for AspNetCoreModule or AspNetCoreModuleV2
+		$aspNetCoreHandlers = $xmlDocument.SelectNodes("//system.webServer/handlers/add[@modules='AspNetCoreModule' or @modules='AspNetCoreModuleV2']")
+		if ($null -ne $aspNetCoreHandlers -and $aspNetCoreHandlers.Count -gt 0) {
+			return "Core"
+		}
+
+		$aspNetCoreNode = $xmlDocument.SelectSingleNode("//system.webServer/aspNetCore")
+		if ($null -ne $aspNetCoreNode) {
+			return "Core"
+		}
+
+		return "Framework"
+	} catch {
+		Log("Error parsing web.config: $_")
+		return "Unknown"
+	}
+}
+
+$dotnetRuntime=DetectDotNetRuntime
+Log("Detected .NET runtime: ${dotnetRuntime}")
+
+if ($dotnetRuntime -eq "Core") {
+	Log("Changing applicationHost.xdt to not set COR_ENABLE_PROFILING so that .NET Framework instrumentation is disabled by default in .NET Core applications.")
+	$xdtPath=".\applicationHost.xdt"
+	$xdtContent=Get-Content -Path $xdtPath -Raw
+	$xdtContent=$xdtContent -replace '\s*<add name="COR_ENABLE_PROFILING"[^>]*xdt:Transform="Insert"\s*\/>', ''
+	Set-Content -Path $xdtPath -Value $xdtContent
+}
+
 Log("Install complete")
