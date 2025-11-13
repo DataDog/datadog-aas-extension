@@ -6,7 +6,7 @@ Please follow the directions in the referenced document.
 
 - .NET
 - Java
-- Node
+- Node.js
 
 ## Installation:
 Fully stop your web app before installing, modifying, or removing a Datadog APM Site Extension.
@@ -25,4 +25,4 @@ Fully stop your web app before installing, modifying, or removing a Datadog APM 
 - [Azure App Service Documentation](https://docs.microsoft.com/en-us/azure/app-service/)
 - [.NET NuGet Package](https://www.nuget.org/packages/Datadog.AzureAppServices.DotNet)
 - [Java NuGet Package](https://www.nuget.org/packages/Datadog.AzureAppServices.Java.Apm)
-- [Node NuGet Package](https://www.nuget.org/packages/Datadog.AzureAppServices.Node.Apm)
+- [Node.js NuGet Package](https://www.nuget.org/packages/Datadog.AzureAppServices.Node.Apm)
