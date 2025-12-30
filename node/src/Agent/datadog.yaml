@@ -3,6 +3,8 @@ enable_metadata_collection: false
 apm_config:
   enabled: true
   log_file: D:\home\LogFiles\datadog\vFOLDERUNKNOWN\trace-log.txt
+  additional_profile_tags:
+    _dd.origin: appservice
 ## log_level: debug
 cloud_provider_metadata:
   - "azure"
