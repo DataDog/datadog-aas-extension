@@ -4,7 +4,7 @@ if [[ -z ${RELEASE_VERSION+x} ]] || [[ -z ${DEVELOPMENT_VERSION+x} ]]; then
 fi
 
 AGENT_VERSION="7.75.0"
-TRACER_VERSION="1.58.1"
+TRACER_VERSION="1.58.2"
 
 echo "Building version ${RELEASE_VERSION} for prod environment"
 echo "Building version ${DEVELOPMENT_VERSION} for dev environment"
