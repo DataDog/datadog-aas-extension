@@ -44,7 +44,7 @@ jobs:
           body: |
             ## Versions included
             [.NET Tracer v${{steps.version.outputs.tracer_version}}](https://github.com/DataDog/dd-trace-dotnet/releases/tag/v${{steps.version.outputs.tracer_version}})
-            [Datadog Agent v${{steps.version.outputs.agent_version}}](https://github.com/DataDog/datadog-agent/releases/tag/{{steps.version.outputs.agent_version}})
+            [Datadog Agent v${{steps.version.outputs.agent_version}}](https://github.com/DataDog/datadog-agent/releases/tag/${{steps.version.outputs.agent_version}})
             Hosted on [Nuget](https://www.nuget.org/packages/Datadog.AzureAppServices.DotNet/${{steps.version.outputs.version}})
             [Site Extension Documentation](https://docs.datadoghq.com/serverless/azure_app_services/)
             ## Requirements
