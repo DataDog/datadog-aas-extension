@@ -1,5 +1,5 @@
 dotnet-package:
-  tags: ["runner:main"]
+  tags: ["arch:amd64"]
   image: mcr.microsoft.com/dotnet/sdk:8.0
   rules:
     - if: $RUNTIME != "node" && $RUNTIME != "java"
