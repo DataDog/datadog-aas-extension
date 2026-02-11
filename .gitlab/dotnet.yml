@@ -1,6 +1,6 @@
 dotnet-package:
-  tags: ["runner:main"]
-  image: mcr.microsoft.com/dotnet/sdk:8.0
+  tags: ["arch:amd64"]
+  image: registry.ddbuild.io/images/mirror/dotnet:sdk-8.0.100-1
   rules:
     - if: $RUNTIME != "node" && $RUNTIME != "java"
   stage: build
