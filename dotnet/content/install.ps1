@@ -33,36 +33,58 @@ SetPipe ".\scmApplicationHost.xdt" "uniqueStatsPipeId" "${statsPipeId}"
 SetPipe ".\scmApplicationHost.xdt" "uniqueTracePipeId" "${tracePipeId}"
 
 function DetectDotNetRuntime() {
-	$webConfigPath=Join-Path -Path $env:HOME "site\wwwroot\web.config"
+	$wwwroot = Join-Path -Path $env:HOME "site\wwwroot"
 
-	if (-not (Test-Path $webConfigPath)) {
+	$webConfigPath = Join-Path -Path $wwwroot "web.config"
+	if (Test-Path $webConfigPath) {
+		try {
+			$xmlContent = Get-Content -Path $webConfigPath
+			$xmlDocument = [xml]$xmlContent
+
+			# Look for AspNetCoreModule or AspNetCoreModuleV2
+			$aspNetCoreHandlers = $xmlDocument.SelectNodes("//system.webServer/handlers/add[@modules='AspNetCoreModule' or @modules='AspNetCoreModuleV2']")
+			if ($null -ne $aspNetCoreHandlers -and $aspNetCoreHandlers.Count -gt 0) {
+				Log("Detected .NET Core via web.config system.webServer/handlers")
+				return "Core"
+			}
+
+			$aspNetCoreNode = $xmlDocument.SelectSingleNode("//system.webServer/aspNetCore")
+			if ($null -ne $aspNetCoreNode) {
+				Log("Detected .NET Core via web.config system.webServer/aspNetCore")
+				return "Core"
+			}
+
+			return "Framework"
+		} catch {
+			Log("Error parsing web.config: $_")
+		}
+	} else {
 		Log("No web.config found in wwwroot.")
-		return "Unknown"
 	}
 
-	try {
-		$xmlContent = Get-Content -Path $webConfigPath
-		$xmlDocument = [xml]$xmlContent
-
-		# Look for AspNetCoreModule or AspNetCoreModuleV2
-		$aspNetCoreHandlers = $xmlDocument.SelectNodes("//system.webServer/handlers/add[@modules='AspNetCoreModule' or @modules='AspNetCoreModuleV2']")
-		if ($null -ne $aspNetCoreHandlers -and $aspNetCoreHandlers.Count -gt 0) {
-			return "Core"
+	$configFile = (Get-ChildItem -Path $wwwroot -Filter "*.runtimeconfig.json" -ErrorAction SilentlyContinue)[0]
+	if ($configFile) {
+		try {
+			$json = Get-Content -Path $configFile.FullName -Raw | ConvertFrom-Json
+			$runtimeOptions = $json.runtimeOptions
+			if ($runtimeOptions.frameworks) {
+				foreach ($framework in $runtimeOptions.frameworks) {
+					if ($framework.name -eq 'Microsoft.NETCore.App' -or $framework.name -eq 'Microsoft.AspNetCore.App') { 
+						Log("Detected .NET Core via runtime config: $configFile.FullName")
+						return "Core"
+					}
+				}
+			}
+		} catch {
+			Log("Could not parse runtime config $configFile.FullName : $_")
 		}
-
-		$aspNetCoreNode = $xmlDocument.SelectSingleNode("//system.webServer/aspNetCore")
-		if ($null -ne $aspNetCoreNode) {
-			return "Core"
-		}
-
-		return "Framework"
-	} catch {
-		Log("Error parsing web.config: $_")
-		return "Unknown"
 	}
+	Log("No .NET Core runtimeconfig.json found in wwwroot.")
+
+	return "Unknown"
 }
 
-$dotnetRuntime=DetectDotNetRuntime
+$dotnetRuntime=DetectDotNetRuntime()
 Log("Detected .NET runtime: ${dotnetRuntime}")
 
 if ($dotnetRuntime -eq "Core") {
