@@ -33,6 +33,7 @@ SetPipe ".\scmApplicationHost.xdt" "uniqueStatsPipeId" "${statsPipeId}"
 SetPipe ".\scmApplicationHost.xdt" "uniqueTracePipeId" "${tracePipeId}"
 
 function DetectDotNetRuntime() {
+	$script:dotnetRuntimeResult = "Unknown"
 	$wwwroot = Join-Path -Path $env:HOME "site\wwwroot"
 
 	$webConfigPath = Join-Path -Path $wwwroot "web.config"
@@ -45,16 +46,19 @@ function DetectDotNetRuntime() {
 			$aspNetCoreHandlers = $xmlDocument.SelectNodes("//system.webServer/handlers/add[@modules='AspNetCoreModule' or @modules='AspNetCoreModuleV2']")
 			if ($null -ne $aspNetCoreHandlers -and $aspNetCoreHandlers.Count -gt 0) {
 				Log("Detected .NET Core via web.config system.webServer/handlers")
-				return "Core"
+				$script:dotnetRuntimeResult = "Core"
+				return
 			}
 
 			$aspNetCoreNode = $xmlDocument.SelectSingleNode("//system.webServer/aspNetCore")
 			if ($null -ne $aspNetCoreNode) {
 				Log("Detected .NET Core via web.config system.webServer/aspNetCore")
-				return "Core"
+				$script:dotnetRuntimeResult = "Core"
+				return
 			}
 
-			return "Framework"
+			$script:dotnetRuntimeResult = "Framework"
+			return
 		} catch {
 			Log("Error parsing web.config: $_")
 		}
@@ -70,22 +74,22 @@ function DetectDotNetRuntime() {
 			if ($runtimeOptions.frameworks) {
 				foreach ($framework in $runtimeOptions.frameworks) {
 					if ($framework.name -eq 'Microsoft.NETCore.App' -or $framework.name -eq 'Microsoft.AspNetCore.App') { 
-						Log("Detected .NET Core via runtime config: $configFile.FullName")
-						return "Core"
+						Log("Detected .NET Core via runtime config: $configFile")
+						$script:dotnetRuntimeResult = "Core"
+						return
 					}
 				}
 			}
 		} catch {
-			Log("Could not parse runtime config $configFile.FullName : $_")
+			Log("Could not parse runtime config $configFile : $_")
 		}
 	}
 	Log("No .NET Core runtimeconfig.json found in wwwroot.")
-
-	return "Unknown"
 }
 
-$dotnetRuntime=DetectDotNetRuntime()
-Log("Detected .NET runtime: ${dotnetRuntime}")
+& (Get-Item Function:\DetectDotNetRuntime)
+$dotnetRuntime = $script:dotnetRuntimeResult
+Log("Detected .NET runtime: $dotnetRuntime")
 
 if ($dotnetRuntime -eq "Core") {
 	Log("Changing applicationHost.xdt to not set COR_ENABLE_PROFILING so that .NET Framework instrumentation is disabled by default in .NET Core applications.")
