@@ -66,7 +66,7 @@ function DetectDotNetRuntime() {
 		Log("No web.config found in wwwroot.")
 	}
 
-	$configFile = (Get-ChildItem -Path $wwwroot -Filter "*.runtimeconfig.json" -ErrorAction SilentlyContinue)[0]
+	$configFile = Get-ChildItem -Path $wwwroot -Filter "*.runtimeconfig.json" -ErrorAction SilentlyContinue | Select-Object -First 1
 	if ($configFile) {
 		try {
 			$json = Get-Content -Path $configFile.FullName -Raw | ConvertFrom-Json
@@ -84,7 +84,7 @@ function DetectDotNetRuntime() {
 			Log("Could not parse runtime config $configFile : $_")
 		}
 	}
-	Log("No .NET Core runtimeconfig.json found in wwwroot.")
+	Log("No .NET Core *.runtimeconfig.json found in wwwroot.")
 }
 
 & (Get-Item Function:\DetectDotNetRuntime)
