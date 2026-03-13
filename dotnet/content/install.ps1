@@ -84,7 +84,11 @@ function DetectDotNetRuntime() {
 			Log("Could not parse runtime config $configFile : $_")
 		}
 	}
+
 	Log("No .NET Core *.runtimeconfig.json found in wwwroot.")
+
+	# Assume .NET Core if web.config and *.runtimeconfig.json are not found
+	$script:dotnetRuntimeResult = "Core"
 }
 
 & (Get-Item Function:\DetectDotNetRuntime)
