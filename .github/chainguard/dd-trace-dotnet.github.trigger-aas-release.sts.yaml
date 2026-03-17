@@ -1,0 +1,13 @@
+# Policy for: .github/workflows/auto-trigger-aas-release.yml in DataDog/dd-trace-dotnet
+issuer: https://token.actions.githubusercontent.com
+
+subject_pattern: repo:DataDog/dd-trace-dotnet:ref:refs/tags/.*
+
+claim_pattern:
+  event_name: release
+  job_workflow_ref: DataDog/dd-trace-dotnet/\.github/workflows/auto-trigger-aas-release\.yml@refs/tags/.*
+  ref: refs/tags/.*
+  repository: DataDog/dd-trace-dotnet
+
+permissions:
+  contents: read

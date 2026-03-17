@@ -1,0 +1,14 @@
+# Policy for: deploy-aas-dev-apps action in DataDog/dd-trace-dotnet
+# Called from auto_deploy_aas_test_apps.yml, code_freeze_start.yml, scheduled_aas_deploy.yml
+issuer: https://token.actions.githubusercontent.com
+
+subject: repo:DataDog/dd-trace-dotnet:ref:refs/heads/master
+
+claim_pattern:
+  event_name: (schedule|workflow_dispatch|milestone)
+  job_workflow_ref: DataDog/dd-trace-dotnet/\.github/workflows/(auto_deploy_aas_test_apps|code_freeze_start|scheduled_aas_deploy)\.yml@refs/heads/master
+  ref: refs/heads/master
+  repository: DataDog/dd-trace-dotnet
+
+permissions:
+  contents: read
