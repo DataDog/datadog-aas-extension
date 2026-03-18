@@ -68,24 +68,12 @@ function DetectDotNetRuntime() {
 
 	$configFile = Get-ChildItem -Path $wwwroot -Filter "*.runtimeconfig.json" -ErrorAction SilentlyContinue | Select-Object -First 1
 	if ($configFile) {
-		try {
-			$json = Get-Content -Path $configFile.FullName -Raw | ConvertFrom-Json
-			$runtimeOptions = $json.runtimeOptions
-			if ($runtimeOptions.frameworks) {
-				foreach ($framework in $runtimeOptions.frameworks) {
-					if ($framework.name -eq 'Microsoft.NETCore.App' -or $framework.name -eq 'Microsoft.AspNetCore.App') { 
-						Log("Detected .NET Core via runtime config: $configFile")
-						$script:dotnetRuntimeResult = "Core"
-						return
-					}
-				}
-			}
-		} catch {
-			Log("Could not parse runtime config $configFile : $_")
-		}
+		Log("Detected .NET Core via runtime config: $($configFile.Name)")
+		$script:dotnetRuntimeResult = "Core"
+		return
 	}
 
-	Log("No .NET Core *.runtimeconfig.json found in wwwroot.")
+	Log("No *.runtimeconfig.json found in wwwroot.")
 
 	# Assume .NET Core if web.config and *.runtimeconfig.json are not found
 	$script:dotnetRuntimeResult = "Core"
