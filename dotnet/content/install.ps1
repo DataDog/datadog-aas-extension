@@ -33,37 +33,55 @@ SetPipe ".\scmApplicationHost.xdt" "uniqueStatsPipeId" "${statsPipeId}"
 SetPipe ".\scmApplicationHost.xdt" "uniqueTracePipeId" "${tracePipeId}"
 
 function DetectDotNetRuntime() {
-	$webConfigPath=Join-Path -Path $env:HOME "site\wwwroot\web.config"
+	$script:dotnetRuntimeResult = "Unknown"
+	$wwwroot = Join-Path -Path $env:HOME "site\wwwroot"
 
-	if (-not (Test-Path $webConfigPath)) {
+	$webConfigPath = Join-Path -Path $wwwroot "web.config"
+	if (Test-Path $webConfigPath) {
+		try {
+			$xmlContent = Get-Content -Path $webConfigPath
+			$xmlDocument = [xml]$xmlContent
+
+			# Look for AspNetCoreModule or AspNetCoreModuleV2
+			$aspNetCoreHandlers = $xmlDocument.SelectNodes("//system.webServer/handlers/add[@modules='AspNetCoreModule' or @modules='AspNetCoreModuleV2']")
+			if ($null -ne $aspNetCoreHandlers -and $aspNetCoreHandlers.Count -gt 0) {
+				Log("Detected .NET Core via web.config system.webServer/handlers")
+				$script:dotnetRuntimeResult = "Core"
+				return
+			}
+
+			$aspNetCoreNode = $xmlDocument.SelectSingleNode("//system.webServer/aspNetCore")
+			if ($null -ne $aspNetCoreNode) {
+				Log("Detected .NET Core via web.config system.webServer/aspNetCore")
+				$script:dotnetRuntimeResult = "Core"
+				return
+			}
+
+			$script:dotnetRuntimeResult = "Framework"
+			return
+		} catch {
+			Log("Error parsing web.config: $_")
+		}
+	} else {
 		Log("No web.config found in wwwroot.")
-		return "Unknown"
 	}
 
-	try {
-		$xmlContent = Get-Content -Path $webConfigPath
-		$xmlDocument = [xml]$xmlContent
-
-		# Look for AspNetCoreModule or AspNetCoreModuleV2
-		$aspNetCoreHandlers = $xmlDocument.SelectNodes("//system.webServer/handlers/add[@modules='AspNetCoreModule' or @modules='AspNetCoreModuleV2']")
-		if ($null -ne $aspNetCoreHandlers -and $aspNetCoreHandlers.Count -gt 0) {
-			return "Core"
-		}
-
-		$aspNetCoreNode = $xmlDocument.SelectSingleNode("//system.webServer/aspNetCore")
-		if ($null -ne $aspNetCoreNode) {
-			return "Core"
-		}
-
-		return "Framework"
-	} catch {
-		Log("Error parsing web.config: $_")
-		return "Unknown"
+	$configFile = Get-ChildItem -Path $wwwroot -Filter "*.runtimeconfig.json" -ErrorAction SilentlyContinue | Select-Object -First 1
+	if ($configFile) {
+		Log("Detected .NET Core via runtime config: $($configFile.Name)")
+		$script:dotnetRuntimeResult = "Core"
+		return
 	}
+
+	Log("No *.runtimeconfig.json found in wwwroot.")
+
+	# Unable to determine .NET runtime from web.config or *.runtimeconfig.json
+	$script:dotnetRuntimeResult = "Unknown"
 }
 
-$dotnetRuntime=DetectDotNetRuntime
-Log("Detected .NET runtime: ${dotnetRuntime}")
+& (Get-Item Function:\DetectDotNetRuntime)
+$dotnetRuntime = $script:dotnetRuntimeResult
+Log("Detected .NET runtime: $dotnetRuntime")
 
 if ($dotnetRuntime -eq "Core") {
 	Log("Changing applicationHost.xdt to not set COR_ENABLE_PROFILING so that .NET Framework instrumentation is disabled by default in .NET Core applications.")
