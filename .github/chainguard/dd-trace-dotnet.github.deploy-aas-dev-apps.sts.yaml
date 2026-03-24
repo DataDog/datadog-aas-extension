@@ -11,4 +11,4 @@ claim_pattern:
   repository: DataDog/dd-trace-dotnet
 
 permissions:
-  contents: read
+  contents: write

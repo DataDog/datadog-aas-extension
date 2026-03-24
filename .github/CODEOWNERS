@@ -16,6 +16,7 @@
 # .NET
 /dotnet/            @DataDog/serverless-azure-and-gcp @DataDog/apm-serverless @DataDog/apm-dotnet
 .gitlab/dotnet.yml  @DataDog/serverless-azure-and-gcp @DataDog/apm-serverless @DataDog/apm-dotnet
+.github/chainguard/dd-trace-dotnet.*  @DataDog/serverless-azure-and-gcp @DataDog/apm-serverless @DataDog/apm-dotnet
 
 # Java
 /java/              @DataDog/serverless-azure-and-gcp @DataDog/apm-serverless @DataDog/apm-java
