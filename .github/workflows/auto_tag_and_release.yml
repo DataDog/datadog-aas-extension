@@ -15,7 +15,7 @@ jobs:
       actions: read # read secrets
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
 
       - name: "Configure Git Credentials"
         run: |
@@ -35,7 +35,7 @@ jobs:
           git tag "$TAGNAME"
           git push origin "$TAGNAME"
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v1.0.0
         with:
           draft: true
           name: "${{steps.version.outputs.tagname}}"

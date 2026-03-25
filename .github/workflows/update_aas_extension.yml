@@ -35,7 +35,7 @@ jobs:
           fi
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
       
       - name: "Modify build-packages-dev"
         id: "versions"
@@ -76,7 +76,7 @@ jobs:
 
       - name: Build and push Junkyard WebApp Docker image
         id: build-image-amd64
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@1104d471370f9806843c095c1db02b5a90c5f8b6 # v3.3.1
         with:
           push: true
           tags: 'ghcr.io/datadog/dd-trace-dotnet/junkyard-release-app:${{ steps.set_variables.outputs.sha }}'
@@ -85,7 +85,7 @@ jobs:
           build-args: |
             APM_COMMIT_SHA=${{ steps.set_variables.outputs.sha }}
     
-      - uses: actions/setup-dotnet@v1
+      - uses: actions/setup-dotnet@871f041373faaad213a635d9afb62905ec029bbb # v1.10.1
         with:
           dotnet-version: '6.0.100'
 
@@ -101,7 +101,7 @@ jobs:
           dotnet nuget push package/DevelopmentVerification.DdDotNet.Apm.$dev_version.nupkg --source Public_Feed --api-key any_string
 
       - name: Azure CLI script
-        uses: azure/CLI@v1
+        uses: azure/CLI@4db43908b9df2e7ac93c8275a8f9a448c59338dd # v1.0.9
         with:
           inlineScript: |
             resourceGroupName="apm-aas-junkyard"
