@@ -1,0 +1,14 @@
+# Policy for: .github/workflows/auto_tag_and_release.yml in DataDog/datadog-aas-extension
+issuer: https://token.actions.githubusercontent.com
+
+subject: repo:DataDog/datadog-aas-extension:ref:refs/heads/master
+
+claim_pattern:
+  event_name: push
+  job_workflow_ref: DataDog/datadog-aas-extension/\.github/workflows/auto_tag_and_release\.yml@refs/heads/master
+  ref: refs/heads/master
+  ref_protected: "true"
+  repository: DataDog/datadog-aas-extension
+
+permissions:
+  contents: write

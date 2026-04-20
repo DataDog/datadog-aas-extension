@@ -11,17 +11,19 @@ jobs:
     if: startsWith(github.event.head_commit.message, '[.Net Version Bump]')
     runs-on: ubuntu-latest
     permissions:
-      contents: write # create release
-      actions: read # read secrets
+      contents: read # Needed for actions/checkout to use GITHUB_TOKEN
+      id-token: write # Needed to federate tokens for dd-octo-sts
     steps:
+      - uses: DataDog/dd-octo-sts-action@96a25462dbcb10ebf0bfd6e2ccc917d2ab235b9a # v1.0.4
+        id: octo-sts
+        with:
+          scope: DataDog/datadog-aas-extension
+          policy: self.auto-tag-and-release.master
+
       - name: Checkout
         uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
 
-      - name: "Configure Git Credentials"
-        run: |
-          git config user.name "${{ github.actor }}"
-          git config user.email "${{ github.actor }}@users.noreply.github.com"
-      - name: "Create and push git tag"
+      - name: "Extract version info"
         id: version
         run: |
           VERSION="$(grep -o -e RELEASE_VERSION\=\"[0-9]*\.[0-9]*\.[0-9]*  dotnet/build-packages.sh | sed 's/RELEASE_VERSION="//')"
@@ -32,14 +34,15 @@ jobs:
           echo "::set-output name=version::$VERSION"
           echo "::set-output name=tracer_version::$TRACER_VERSION"
           echo "::set-output name=agent_version::$AGENT_VERSION"
-          git tag "$TAGNAME"
-          git push origin "$TAGNAME"
       - name: Create Release
         uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v1.0.0
+        env:
+          GITHUB_TOKEN: ${{ steps.octo-sts.outputs.token }}
         with:
           draft: true
           name: "${{steps.version.outputs.tagname}}"
           tag_name: "${{steps.version.outputs.tagname}}"
+          target_commitish: ${{ github.sha }}
           prerelease: false
           body: |
             ## Versions included
