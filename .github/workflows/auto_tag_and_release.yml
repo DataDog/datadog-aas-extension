@@ -41,6 +41,7 @@ jobs:
           draft: true
           name: "${{steps.version.outputs.tagname}}"
           tag_name: "${{steps.version.outputs.tagname}}"
+          target_commitish: ${{ github.sha }}
           prerelease: false
           body: |
             ## Versions included
