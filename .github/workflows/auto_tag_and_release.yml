@@ -11,6 +11,7 @@ jobs:
     if: startsWith(github.event.head_commit.message, '[.Net Version Bump]')
     runs-on: ubuntu-latest
     permissions:
+      contents: read # Needed for actions/checkout to use GITHUB_TOKEN
       id-token: write # Needed to federate tokens for dd-octo-sts
     steps:
       - uses: DataDog/dd-octo-sts-action@96a25462dbcb10ebf0bfd6e2ccc917d2ab235b9a # v1.0.4
