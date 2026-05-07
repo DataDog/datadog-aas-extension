@@ -6,6 +6,7 @@ spike-download-agent-pr-zip:
   stage: build
   script:
     - apt-get update && apt-get install -y curl unzip jq
+    - export GITLAB_PAT=$(vault kv get -field="gitlab_pat" kv/k8s/gitlab-runner/datadog-aas-extension/secret)
     - |
       AGENT_PROJECT="DataDog%2Fdatadog-agent"
       AGENT_REF="sam-maya/add-back-config-for-serverless-envs"
@@ -14,33 +15,39 @@ spike-download-agent-pr-zip:
       API="https://gitlab.ddbuild.io/api/v4"
 
       hr() { echo; echo "===== $1 ====="; }
+      AUTH=(-H "PRIVATE-TOKEN: $GITLAB_PAT")
 
-      hr "1) Project visibility (anonymous)"
-      curl -sS -o /tmp/proj.json -w 'http=%{http_code}\n' "$API/projects/${AGENT_PROJECT}" || true
+      hr "1) Project visibility (PAT)"
+      curl -sS -o /tmp/proj.json -w 'http=%{http_code}\n' "${AUTH[@]}" "$API/projects/${AGENT_PROJECT}" || true
       head -c 400 /tmp/proj.json; echo
 
-      hr "2) Project visibility (CI_JOB_TOKEN)"
-      curl -sS -o /tmp/proj2.json -w 'http=%{http_code}\n' -H "JOB-TOKEN: $CI_JOB_TOKEN" "$API/projects/${AGENT_PROJECT}" || true
-      head -c 400 /tmp/proj2.json; echo
+      hr "2) Pipeline jobs list (PAT) -- to discover real job_id"
+      curl -sS -o /tmp/jobs.json -w 'http=%{http_code}\n' "${AUTH[@]}" "$API/projects/${AGENT_PROJECT}/pipelines/111874260/jobs?per_page=100" || true
+      JOB_ID=$(jq -r --arg name "$AGENT_JOB" '.[] | select(.name==$name) | .id' /tmp/jobs.json 2>/dev/null | head -1)
+      echo "Resolved JOB_ID=${JOB_ID:-<none>}"
 
-      hr "3) Single-file raw artifact (CI_JOB_TOKEN) -- the original 403 path"
+      hr "3) Single-file raw artifact (PAT)"
       URL_RAW="$API/projects/${AGENT_PROJECT}/jobs/artifacts/${AGENT_REF}/raw/${ARTIFACT_PATH}?job=${AGENT_JOB}"
       echo "URL: $URL_RAW"
-      curl -sS -o /tmp/raw.bin -w 'http=%{http_code} size=%{size_download}\n' -H "JOB-TOKEN: $CI_JOB_TOKEN" "$URL_RAW" || true
+      curl -sS -o agent.zip -w 'http=%{http_code} size=%{size_download}\n' "${AUTH[@]}" "$URL_RAW" || true
 
-      hr "4) Bulk artifact archive download (CI_JOB_TOKEN)"
-      URL_BULK="$API/projects/${AGENT_PROJECT}/jobs/artifacts/${AGENT_REF}/download?job=${AGENT_JOB}"
-      echo "URL: $URL_BULK"
-      curl -sS -o /tmp/bulk.zip -w 'http=%{http_code} size=%{size_download}\n' -H "JOB-TOKEN: $CI_JOB_TOKEN" "$URL_BULK" || true
+      if [[ -n "$JOB_ID" ]]; then
+        hr "4) Single-file by job_id (PAT)"
+        URL_BYID="$API/projects/${AGENT_PROJECT}/jobs/${JOB_ID}/artifacts/${ARTIFACT_PATH}"
+        echo "URL: $URL_BYID"
+        curl -sS -o agent_byid.zip -w 'http=%{http_code} size=%{size_download}\n' "${AUTH[@]}" "$URL_BYID" || true
+      fi
 
-      hr "5) Anonymous bulk (sometimes public artifacts work)"
-      curl -sS -o /tmp/bulk_anon.zip -w 'http=%{http_code} size=%{size_download}\n' "$URL_BULK" || true
+      hr "Inspect downloads"
+      ls -lh agent.zip agent_byid.zip 2>/dev/null || true
+      for f in agent.zip agent_byid.zip; do
+        if [[ -f "$f" ]] && unzip -tq "$f" >/dev/null 2>&1; then
+          echo "--- $f contents (head) ---"
+          unzip -l "$f" | head -40
+        fi
+      done
 
-      hr "6) Pipeline jobs list (CI_JOB_TOKEN) -- to discover real job_id"
-      curl -sS -o /tmp/jobs.json -w 'http=%{http_code}\n' -H "JOB-TOKEN: $CI_JOB_TOKEN" "$API/projects/${AGENT_PROJECT}/pipelines/111874260/jobs?per_page=100" || true
-      head -c 600 /tmp/jobs.json; echo
-
-      hr "Done. Inspect HTTP codes above to choose next step."
+      hr "Done."
 
 build-agent-process-manager-module:
   tags: ["windows-v2:2022"]
