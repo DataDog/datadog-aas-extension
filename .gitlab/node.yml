@@ -1,6 +1,6 @@
 spike-download-agent-pr-zip:
   tags: ["arch:amd64"]
-  image: registry.ddbuild.io/images/mirror/dotnet:sdk-8.0.100-1
+  image: registry.ddbuild.io/images/docker:24.0.5
   rules:
     - if: $RUNTIME == "spike"
   stage: build
