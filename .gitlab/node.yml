@@ -1,20 +1,37 @@
-fetch-agent-binaries-node:
+spike-fetch-agent-by-branch:
   tags: ["arch:amd64"]
   image: registry.ddbuild.io/images/docker:24.0.5
   rules:
-    - if: $RUNTIME == "node" && $AGENT_BRANCH
+    - if: $RUNTIME == "spike"
   stage: build
   script:
-    - apt-get update && apt-get install -y curl unzip
+    - apt-get update && apt-get install -y curl unzip jq
     # gitlab_pat is a GitLab personal access token with `read_api` scope on
     # gitlab.ddbuild.io, minted by an account that's a member of
     # DataDog/datadog-agent. Needed to read cross-project artifacts since
     # CI_JOB_TOKEN is not allowlisted by the agent project. Rotate when expired.
     - export GITLAB_PAT=$(vault kv get -field="gitlab_pat" kv/k8s/gitlab-runner/datadog-aas-extension/secret)
     - mkdir -p node/downloads
-    - URL="https://gitlab.ddbuild.io/api/v4/projects/DataDog%2Fdatadog-agent/jobs/artifacts/${AGENT_BRANCH}/download?job=windows_zip_agent_binaries_x64-a7"
-    - echo "Fetching bulk artifacts from $URL"
-    - curl -fsSL -H "PRIVATE-TOKEN:$GITLAB_PAT" -o /tmp/bulk.zip "$URL"
+    - API="https://gitlab.ddbuild.io/api/v4/projects/DataDog%2Fdatadog-agent"
+    - AUTH=(-H "PRIVATE-TOKEN:$GITLAB_PAT")
+    # Resolve the latest successful pipeline + agent-binaries job on the branch,
+    # then download artifacts by job ID so the logs name the exact job we used.
+    - PIPELINE_JSON=$(curl -fsSL "${AUTH[@]}" "$API/pipelines?ref=${AGENT_BRANCH}&status=success&per_page=1")
+    - PIPELINE_ID=$(echo "$PIPELINE_JSON" | jq -r '.[0].id')
+    - PIPELINE_SHA=$(echo "$PIPELINE_JSON" | jq -r '.[0].sha')
+    - PIPELINE_URL=$(echo "$PIPELINE_JSON" | jq -r '.[0].web_url')
+    - if [[ "$PIPELINE_ID" == "null" ]]; then echo "No successful pipeline on $AGENT_BRANCH"; exit 1; fi
+    - JOB_JSON=$(curl -fsSL "${AUTH[@]}" "$API/pipelines/$PIPELINE_ID/jobs?per_page=100" | jq '[.[] | select(.name=="windows_zip_agent_binaries_x64-a7" and .status=="success")] | .[0]')
+    - JOB_ID=$(echo "$JOB_JSON" | jq -r '.id')
+    - JOB_URL=$(echo "$JOB_JSON" | jq -r '.web_url')
+    - if [[ "$JOB_ID" == "null" ]]; then echo "No successful windows_zip_agent_binaries_x64-a7 job in pipeline $PIPELINE_ID"; exit 1; fi
+    - |
+      echo "Using datadog-agent build:"
+      echo "  branch:   $AGENT_BRANCH"
+      echo "  commit:   $PIPELINE_SHA"
+      echo "  pipeline: $PIPELINE_ID  ($PIPELINE_URL)"
+      echo "  job:      $JOB_ID  ($JOB_URL)"
+    - curl -fsSL "${AUTH[@]}" -o /tmp/bulk.zip "$API/jobs/$JOB_ID/artifacts"
     - unzip -qo /tmp/bulk.zip -d /tmp/bulk
     - find /tmp/bulk -name 'agent-binaries-*-x86_64.zip' -print -exec cp {} node/downloads/agent.zip \;
     - test -s node/downloads/agent.zip
@@ -99,9 +116,6 @@ build-nuget-packages-node:
   stage: build
   needs:
     - sign-files
-    - job: fetch-agent-binaries-node
-      optional: true
-      artifacts: true
   script:
     - apt-get update
     - apt-get install -y jq rsync unzip

@@ -29,17 +29,13 @@ echo "Installing tracer"
 npm install --prefix $RELEASE_VERSION_DIR/Tracer dd-trace@${TRACER_VERSION}
 npm install --prefix $DEVELOPMENT_VERSION_DIR/Tracer dd-trace@${TRACER_VERSION}
 
+AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-${AGENT_VERSION}-1-x86_64.zip"
 DOWNLOADS_DIR=node/downloads
 
-if [[ -f $DOWNLOADS_DIR/agent.zip ]]; then
-    echo "Using pre-fetched agent zip at $DOWNLOADS_DIR/agent.zip"
-else
-    AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-${AGENT_VERSION}-1-x86_64.zip"
-    echo "Downloading agent from ${AGENT_DOWNLOAD_URL}"
-    curl -o $DOWNLOADS_DIR/agent.zip --create-dirs $AGENT_DOWNLOAD_URL
-    if [ $? -ne 0 ]; then
-        exit 1
-    fi
+echo "Downloading agent from ${AGENT_DOWNLOAD_URL}"
+curl -o $DOWNLOADS_DIR/agent.zip --create-dirs $AGENT_DOWNLOAD_URL
+if [ $? -ne 0 ]; then
+    exit 1
 fi
 
 unzip -o $DOWNLOADS_DIR/agent.zip -d $DOWNLOADS_DIR/node-agent-extract
