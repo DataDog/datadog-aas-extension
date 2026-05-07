@@ -1,8 +1,8 @@
-spike-fetch-agent-by-branch:
+fetch-agent-binaries-node:
   tags: ["arch:amd64"]
   image: registry.ddbuild.io/images/docker:24.0.5
   rules:
-    - if: $RUNTIME == "spike"
+    - if: $RUNTIME == "node" && $AGENT_BRANCH
   stage: build
   script:
     - apt-get update && apt-get install -y curl unzip jq
@@ -14,41 +14,36 @@ spike-fetch-agent-by-branch:
     - mkdir -p node/downloads
     - API="https://gitlab.ddbuild.io/api/v4/projects/DataDog%2Fdatadog-agent"
     - AUTH=(-H "PRIVATE-TOKEN:$GITLAB_PAT")
-    # Resolve the latest successful pipeline + agent-binaries job on the branch,
-    # then download artifacts by job ID so the logs name the exact job we used.
+    # Resolve the latest successful pipeline on the branch, then page through its
+    # jobs to find windows_zip_agent_binaries_x64-a7. We log the resolved IDs and
+    # download by job_id so the build log unambiguously names the exact job used.
     - PIPELINE_JSON=$(curl -fsSL "${AUTH[@]}" "$API/pipelines?ref=${AGENT_BRANCH}&status=success&per_page=1")
     - PIPELINE_ID=$(echo "$PIPELINE_JSON" | jq -r '.[0].id')
     - PIPELINE_SHA=$(echo "$PIPELINE_JSON" | jq -r '.[0].sha')
     - PIPELINE_URL=$(echo "$PIPELINE_JSON" | jq -r '.[0].web_url')
     - if [[ "$PIPELINE_ID" == "null" ]]; then echo "No successful pipeline on $AGENT_BRANCH"; exit 1; fi
-    # Walk all pipeline-jobs pages (datadog-agent has thousands of jobs).
-    - >
-      curl -fsSL "${AUTH[@]}" -o /tmp/jobs.json
-      "$API/pipelines/$PIPELINE_ID/jobs?include_retried=false&per_page=100&page=1"
+    # Pagination: datadog-agent pipelines have ~800 jobs, so the target is rarely on page 1.
     - JOBS=$(mktemp)
-    - cp /tmp/jobs.json "$JOBS"
-    - PAGE=2
-    - while [[ $(jq 'length' /tmp/jobs.json) -eq 100 ]]; do
-        curl -fsSL "${AUTH[@]}" -o /tmp/jobs.json "$API/pipelines/$PIPELINE_ID/jobs?include_retried=false&per_page=100&page=$PAGE";
-        jq -s 'add' "$JOBS" /tmp/jobs.json > /tmp/merged.json && mv /tmp/merged.json "$JOBS";
-        PAGE=$((PAGE+1));
-        if [[ $PAGE -gt 50 ]]; then echo "pagination runaway"; break; fi;
+    - echo '[]' > "$JOBS"
+    - PAGE=1
+    - |
+      while : ; do
+        curl -fsSL "${AUTH[@]}" -o /tmp/jobs.json "$API/pipelines/$PIPELINE_ID/jobs?include_retried=false&per_page=100&page=$PAGE"
+        jq -s 'add' "$JOBS" /tmp/jobs.json > /tmp/merged.json && mv /tmp/merged.json "$JOBS"
+        [[ $(jq 'length' /tmp/jobs.json) -lt 100 ]] && break
+        PAGE=$((PAGE+1))
+        if [[ $PAGE -gt 50 ]]; then echo "pagination runaway, aborting"; exit 1; fi
       done
-    - echo "Total jobs in pipeline $PIPELINE_ID:" $(jq 'length' "$JOBS")
-    - echo "Candidate agent-binaries jobs (any status):"
-    - jq -r '.[] | select(.name|test("agent_binaries")) | "  \(.id)  \(.status)  \(.name)"' "$JOBS"
-    - JOB_JSON=$(jq '[.[] | select(.name|test("windows_zip_agent_binaries_x64")) | select(.status=="success")] | sort_by(.id) | last' "$JOBS")
+    - JOB_JSON=$(jq '[.[] | select(.name=="windows_zip_agent_binaries_x64-a7" and .status=="success")] | first' "$JOBS")
     - JOB_ID=$(echo "$JOB_JSON" | jq -r '.id')
-    - JOB_NAME=$(echo "$JOB_JSON" | jq -r '.name')
     - JOB_URL=$(echo "$JOB_JSON" | jq -r '.web_url')
-    - if [[ "$JOB_ID" == "null" ]]; then echo "No successful windows_zip_agent_binaries_x64 job in pipeline $PIPELINE_ID"; exit 1; fi
+    - if [[ "$JOB_ID" == "null" ]]; then echo "No successful windows_zip_agent_binaries_x64-a7 job in pipeline $PIPELINE_ID"; exit 1; fi
     - |
       echo "Using datadog-agent build:"
       echo "  branch:   $AGENT_BRANCH"
       echo "  commit:   $PIPELINE_SHA"
       echo "  pipeline: $PIPELINE_ID  ($PIPELINE_URL)"
       echo "  job:      $JOB_ID  ($JOB_URL)"
-      echo "  job name: $JOB_NAME"
     - curl -fsSL "${AUTH[@]}" -o /tmp/bulk.zip "$API/jobs/$JOB_ID/artifacts"
     - unzip -qo /tmp/bulk.zip -d /tmp/bulk
     - find /tmp/bulk -name 'agent-binaries-*-x86_64.zip' -print -exec cp {} node/downloads/agent.zip \;
@@ -134,6 +129,9 @@ build-nuget-packages-node:
   stage: build
   needs:
     - sign-files
+    - job: fetch-agent-binaries-node
+      optional: true
+      artifacts: true
   script:
     - apt-get update
     - apt-get install -y jq rsync unzip
