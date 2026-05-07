@@ -1,53 +1,25 @@
-spike-download-agent-pr-zip:
+spike-fetch-agent-by-branch:
   tags: ["arch:amd64"]
   image: registry.ddbuild.io/images/docker:24.0.5
   rules:
     - if: $RUNTIME == "spike"
   stage: build
   script:
-    - apt-get update && apt-get install -y curl unzip jq
+    - apt-get update && apt-get install -y curl unzip
     - export GITLAB_PAT=$(vault kv get -field="gitlab_pat" kv/k8s/gitlab-runner/datadog-aas-extension/secret)
-    - |
-      AGENT_PROJECT="DataDog%2Fdatadog-agent"
-      AGENT_REF="sam-maya/add-back-config-for-serverless-envs"
-      AGENT_JOB="windows_zip_agent_binaries_x64-a7"
-      ARTIFACT_PATH="omnibus/pkg/pipeline-111874260/agent-binaries-7.80.0-devel.git.468.94912f7.pipeline.111874260-1-x86_64.zip"
-      API="https://gitlab.ddbuild.io/api/v4"
-
-      hr() { echo; echo "===== $1 ====="; }
-      AUTH=(-H "PRIVATE-TOKEN: $GITLAB_PAT")
-
-      hr "1) Project visibility (PAT)"
-      curl -sS -o /tmp/proj.json -w 'http=%{http_code}\n' "${AUTH[@]}" "$API/projects/${AGENT_PROJECT}" || true
-      head -c 400 /tmp/proj.json; echo
-
-      hr "2) Pipeline jobs list (PAT) -- to discover real job_id"
-      curl -sS -o /tmp/jobs.json -w 'http=%{http_code}\n' "${AUTH[@]}" "$API/projects/${AGENT_PROJECT}/pipelines/111874260/jobs?per_page=100" || true
-      JOB_ID=$(jq -r --arg name "$AGENT_JOB" '.[] | select(.name==$name) | .id' /tmp/jobs.json 2>/dev/null | head -1)
-      echo "Resolved JOB_ID=${JOB_ID:-<none>}"
-
-      hr "3) Single-file raw artifact (PAT)"
-      URL_RAW="$API/projects/${AGENT_PROJECT}/jobs/artifacts/${AGENT_REF}/raw/${ARTIFACT_PATH}?job=${AGENT_JOB}"
-      echo "URL: $URL_RAW"
-      curl -sS -o agent.zip -w 'http=%{http_code} size=%{size_download}\n' "${AUTH[@]}" "$URL_RAW" || true
-
-      if [[ -n "$JOB_ID" ]]; then
-        hr "4) Single-file by job_id (PAT)"
-        URL_BYID="$API/projects/${AGENT_PROJECT}/jobs/${JOB_ID}/artifacts/${ARTIFACT_PATH}"
-        echo "URL: $URL_BYID"
-        curl -sS -o agent_byid.zip -w 'http=%{http_code} size=%{size_download}\n' "${AUTH[@]}" "$URL_BYID" || true
-      fi
-
-      hr "Inspect downloads"
-      ls -lh agent.zip agent_byid.zip 2>/dev/null || true
-      for f in agent.zip agent_byid.zip; do
-        if [[ -f "$f" ]] && unzip -tq "$f" >/dev/null 2>&1; then
-          echo "--- $f contents (head) ---"
-          unzip -l "$f" | head -40
-        fi
-      done
-
-      hr "Done."
+    - mkdir -p node/downloads
+    - URL="https://gitlab.ddbuild.io/api/v4/projects/DataDog%2Fdatadog-agent/jobs/artifacts/${AGENT_BRANCH}/download?job=windows_zip_agent_binaries_x64-a7"
+    - echo "Fetching bulk artifacts from $URL"
+    - curl -fsSL -H "PRIVATE-TOKEN:$GITLAB_PAT" -o /tmp/bulk.zip "$URL"
+    - ls -lh /tmp/bulk.zip
+    - echo "Bulk archive contents:"
+    - unzip -l /tmp/bulk.zip
+    - unzip -qo /tmp/bulk.zip -d /tmp/bulk
+    - find /tmp/bulk -name 'agent-binaries-*-x86_64.zip' -print -exec cp {} node/downloads/agent.zip \;
+    - test -s node/downloads/agent.zip
+    - ls -lh node/downloads/agent.zip
+    - echo "Inner agent zip contents (head):"
+    - unzip -l node/downloads/agent.zip | head -25
 
 build-agent-process-manager-module:
   tags: ["windows-v2:2022"]

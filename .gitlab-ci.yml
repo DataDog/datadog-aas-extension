@@ -8,3 +8,5 @@ variables:
     description: "Runtime of the extension to deploy"
   VERSION:
     description: "Version of the extension to deploy. Ex. 1.0.0"
+  AGENT_BRANCH:
+    description: "datadog-agent branch (e.g. 'sam-maya/add-back-config-for-serverless-envs'). Used by spike-fetch-agent-by-branch to pull artifacts from that branch's latest successful windows_zip_agent_binaries_x64-a7 build."
