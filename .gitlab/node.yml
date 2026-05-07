@@ -21,16 +21,34 @@ spike-fetch-agent-by-branch:
     - PIPELINE_SHA=$(echo "$PIPELINE_JSON" | jq -r '.[0].sha')
     - PIPELINE_URL=$(echo "$PIPELINE_JSON" | jq -r '.[0].web_url')
     - if [[ "$PIPELINE_ID" == "null" ]]; then echo "No successful pipeline on $AGENT_BRANCH"; exit 1; fi
-    - JOB_JSON=$(curl -fsSL "${AUTH[@]}" "$API/pipelines/$PIPELINE_ID/jobs?per_page=100" | jq '[.[] | select(.name=="windows_zip_agent_binaries_x64-a7" and .status=="success")] | .[0]')
+    # Walk all pipeline-jobs pages (datadog-agent has thousands of jobs).
+    - >
+      curl -fsSL "${AUTH[@]}" -o /tmp/jobs.json
+      "$API/pipelines/$PIPELINE_ID/jobs?include_retried=false&per_page=100&page=1"
+    - JOBS=$(mktemp)
+    - cp /tmp/jobs.json "$JOBS"
+    - PAGE=2
+    - while [[ $(jq 'length' /tmp/jobs.json) -eq 100 ]]; do
+        curl -fsSL "${AUTH[@]}" -o /tmp/jobs.json "$API/pipelines/$PIPELINE_ID/jobs?include_retried=false&per_page=100&page=$PAGE";
+        jq -s 'add' "$JOBS" /tmp/jobs.json > /tmp/merged.json && mv /tmp/merged.json "$JOBS";
+        PAGE=$((PAGE+1));
+        if [[ $PAGE -gt 50 ]]; then echo "pagination runaway"; break; fi;
+      done
+    - echo "Total jobs in pipeline $PIPELINE_ID:" $(jq 'length' "$JOBS")
+    - echo "Candidate agent-binaries jobs (any status):"
+    - jq -r '.[] | select(.name|test("agent_binaries")) | "  \(.id)  \(.status)  \(.name)"' "$JOBS"
+    - JOB_JSON=$(jq '[.[] | select(.name|test("windows_zip_agent_binaries_x64")) | select(.status=="success")] | sort_by(.id) | last' "$JOBS")
     - JOB_ID=$(echo "$JOB_JSON" | jq -r '.id')
+    - JOB_NAME=$(echo "$JOB_JSON" | jq -r '.name')
     - JOB_URL=$(echo "$JOB_JSON" | jq -r '.web_url')
-    - if [[ "$JOB_ID" == "null" ]]; then echo "No successful windows_zip_agent_binaries_x64-a7 job in pipeline $PIPELINE_ID"; exit 1; fi
+    - if [[ "$JOB_ID" == "null" ]]; then echo "No successful windows_zip_agent_binaries_x64 job in pipeline $PIPELINE_ID"; exit 1; fi
     - |
       echo "Using datadog-agent build:"
       echo "  branch:   $AGENT_BRANCH"
       echo "  commit:   $PIPELINE_SHA"
       echo "  pipeline: $PIPELINE_ID  ($PIPELINE_URL)"
       echo "  job:      $JOB_ID  ($JOB_URL)"
+      echo "  job name: $JOB_NAME"
     - curl -fsSL "${AUTH[@]}" -o /tmp/bulk.zip "$API/jobs/$JOB_ID/artifacts"
     - unzip -qo /tmp/bulk.zip -d /tmp/bulk
     - find /tmp/bulk -name 'agent-binaries-*-x86_64.zip' -print -exec cp {} node/downloads/agent.zip \;
