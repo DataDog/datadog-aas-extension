@@ -1,25 +1,28 @@
-spike-fetch-agent-by-branch:
+fetch-agent-binaries-node:
   tags: ["arch:amd64"]
   image: registry.ddbuild.io/images/docker:24.0.5
   rules:
-    - if: $RUNTIME == "spike"
+    - if: $RUNTIME == "node" && $AGENT_BRANCH
   stage: build
   script:
     - apt-get update && apt-get install -y curl unzip
+    # gitlab_pat is a GitLab personal access token with `read_api` scope on
+    # gitlab.ddbuild.io, minted by an account that's a member of
+    # DataDog/datadog-agent. Needed to read cross-project artifacts since
+    # CI_JOB_TOKEN is not allowlisted by the agent project. Rotate when expired.
     - export GITLAB_PAT=$(vault kv get -field="gitlab_pat" kv/k8s/gitlab-runner/datadog-aas-extension/secret)
     - mkdir -p node/downloads
     - URL="https://gitlab.ddbuild.io/api/v4/projects/DataDog%2Fdatadog-agent/jobs/artifacts/${AGENT_BRANCH}/download?job=windows_zip_agent_binaries_x64-a7"
     - echo "Fetching bulk artifacts from $URL"
     - curl -fsSL -H "PRIVATE-TOKEN:$GITLAB_PAT" -o /tmp/bulk.zip "$URL"
-    - ls -lh /tmp/bulk.zip
-    - echo "Bulk archive contents:"
-    - unzip -l /tmp/bulk.zip
     - unzip -qo /tmp/bulk.zip -d /tmp/bulk
     - find /tmp/bulk -name 'agent-binaries-*-x86_64.zip' -print -exec cp {} node/downloads/agent.zip \;
     - test -s node/downloads/agent.zip
     - ls -lh node/downloads/agent.zip
-    - echo "Inner agent zip contents (head):"
-    - unzip -l node/downloads/agent.zip | head -25
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - node/downloads/agent.zip
 
 build-agent-process-manager-module:
   tags: ["windows-v2:2022"]
@@ -96,6 +99,9 @@ build-nuget-packages-node:
   stage: build
   needs:
     - sign-files
+    - job: fetch-agent-binaries-node
+      optional: true
+      artifacts: true
   script:
     - apt-get update
     - apt-get install -y jq rsync unzip

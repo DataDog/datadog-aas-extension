@@ -9,4 +9,4 @@ variables:
   VERSION:
     description: "Version of the extension to deploy. Ex. 1.0.0"
   AGENT_BRANCH:
-    description: "datadog-agent branch (e.g. 'sam-maya/add-back-config-for-serverless-envs'). Used by spike-fetch-agent-by-branch to pull artifacts from that branch's latest successful windows_zip_agent_binaries_x64-a7 build."
+    description: "Optional. datadog-agent branch (e.g. 'somebody/my-feature'). When set with RUNTIME=node, fetch-agent-binaries-node pulls the agent zip from that branch's latest successful windows_zip_agent_binaries_x64-a7 build (via gitlab_pat in vault) and the node build uses it instead of the default dsd6-staging zip."
