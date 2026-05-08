@@ -5,7 +5,7 @@ build-nuget-packages-java:
     - if: $RUNTIME == "java"
   stage: build
   script:
-    - if [[ -n "$AGENT_BRANCH" ]]; then echo "AGENT_BRANCH is only supported with RUNTIME=node"; exit 1; fi
+    - if [[ -n "$AGENT_JOB_URL" ]]; then echo "AGENT_JOB_URL is only supported with RUNTIME=node"; exit 1; fi
     - apt-get update
     - apt-get install -y jq rsync unzip
     - . ./java/scripts/set-versions.sh # run in current shell so exported environment variables can be used

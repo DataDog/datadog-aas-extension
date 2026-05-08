@@ -2,49 +2,26 @@ fetch-agent-binaries-node:
   tags: ["arch:amd64"]
   image: registry.ddbuild.io/images/docker:24.0.5
   rules:
-    - if: $RUNTIME == "node" && $AGENT_BRANCH
+    - if: $RUNTIME == "node" && $AGENT_JOB_URL
   stage: build
   script:
-    - apt-get update && apt-get install -y curl unzip jq
+    - apt-get update && apt-get install -y curl unzip
+    # Validate AGENT_JOB_URL up-front. CI variables are member-supplied, but
+    # this is a public repo and the value flows into a curl URL — fail fast on
+    # anything that isn't a recognized datadog-agent job URL.
+    - |
+      if [[ ! "$AGENT_JOB_URL" =~ ^https://gitlab\.ddbuild\.io/DataDog/datadog-agent/-/jobs/([0-9]+)$ ]]; then
+        echo "AGENT_JOB_URL '$AGENT_JOB_URL' is not a valid DataDog/datadog-agent job URL"; exit 1
+      fi
+    - JOB_ID="${BASH_REMATCH[1]}"
     # gitlab_pat is a GitLab personal access token with `read_api` scope on
     # gitlab.ddbuild.io, minted by an account that's a member of
     # DataDog/datadog-agent. Needed to read cross-project artifacts since
     # CI_JOB_TOKEN is not allowlisted by the agent project. Rotate when expired.
     - export GITLAB_PAT=$(vault kv get -field="gitlab_pat" kv/k8s/gitlab-runner/datadog-aas-extension/secret)
     - mkdir -p node/downloads
-    - API="https://gitlab.ddbuild.io/api/v4/projects/DataDog%2Fdatadog-agent"
-    - AUTH=(-H "PRIVATE-TOKEN:$GITLAB_PAT")
-    # Resolve the latest successful pipeline on the branch, then page through its
-    # jobs to find windows_zip_agent_binaries_x64-a7. We log the resolved IDs and
-    # download by job_id so the build log unambiguously names the exact job used.
-    - PIPELINE_JSON=$(curl -fsSL "${AUTH[@]}" "$API/pipelines?ref=${AGENT_BRANCH}&status=success&per_page=1")
-    - PIPELINE_ID=$(echo "$PIPELINE_JSON" | jq -r '.[0].id')
-    - PIPELINE_SHA=$(echo "$PIPELINE_JSON" | jq -r '.[0].sha')
-    - PIPELINE_URL=$(echo "$PIPELINE_JSON" | jq -r '.[0].web_url')
-    - if [[ "$PIPELINE_ID" == "null" ]]; then echo "No successful pipeline on $AGENT_BRANCH"; exit 1; fi
-    # Pagination: datadog-agent pipelines have ~800 jobs, so the target is rarely on page 1.
-    - JOBS=$(mktemp)
-    - echo '[]' > "$JOBS"
-    - PAGE=1
-    - |
-      while : ; do
-        curl -fsSL "${AUTH[@]}" -o /tmp/jobs.json "$API/pipelines/$PIPELINE_ID/jobs?include_retried=false&per_page=100&page=$PAGE"
-        jq -s 'add' "$JOBS" /tmp/jobs.json > /tmp/merged.json && mv /tmp/merged.json "$JOBS"
-        [[ $(jq 'length' /tmp/jobs.json) -lt 100 ]] && break
-        PAGE=$((PAGE+1))
-        if [[ $PAGE -gt 50 ]]; then echo "pagination runaway, aborting"; exit 1; fi
-      done
-    - JOB_JSON=$(jq '[.[] | select(.name=="windows_zip_agent_binaries_x64-a7" and .status=="success")] | first' "$JOBS")
-    - JOB_ID=$(echo "$JOB_JSON" | jq -r '.id')
-    - JOB_URL=$(echo "$JOB_JSON" | jq -r '.web_url')
-    - if [[ "$JOB_ID" == "null" ]]; then echo "No successful windows_zip_agent_binaries_x64-a7 job in pipeline $PIPELINE_ID"; exit 1; fi
-    - |
-      echo "Using datadog-agent build:"
-      echo "  branch:   $AGENT_BRANCH"
-      echo "  commit:   $PIPELINE_SHA"
-      echo "  pipeline: $PIPELINE_ID  ($PIPELINE_URL)"
-      echo "  job:      $JOB_ID  ($JOB_URL)"
-    - curl -fsSL "${AUTH[@]}" -o /tmp/bulk.zip "$API/jobs/$JOB_ID/artifacts"
+    - echo "Fetching agent artifact from $AGENT_JOB_URL"
+    - curl -fsSL -H "PRIVATE-TOKEN:$GITLAB_PAT" -o /tmp/bulk.zip "https://gitlab.ddbuild.io/api/v4/projects/DataDog%2Fdatadog-agent/jobs/$JOB_ID/artifacts"
     - unzip -qo /tmp/bulk.zip -d /tmp/bulk
     - find /tmp/bulk -name 'agent-binaries-*-x86_64.zip' -print -exec cp {} node/downloads/agent.zip \;
     - test -s node/downloads/agent.zip
