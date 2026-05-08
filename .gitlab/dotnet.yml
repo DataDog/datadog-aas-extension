@@ -5,6 +5,7 @@ dotnet-package:
     - if: $RUNTIME != "node" && $RUNTIME != "java"
   stage: build
   script:
+    - if [[ -n "$AGENT_JOB_URL" ]]; then echo "AGENT_JOB_URL is only supported with RUNTIME=node"; exit 1; fi
     - echo "Installing dependencies"
     - apt-get update
     - apt-get install unzip

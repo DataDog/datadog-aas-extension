@@ -8,3 +8,5 @@ variables:
     description: "Runtime of the extension to deploy"
   VERSION:
     description: "Version of the extension to deploy. Ex. 1.0.0"
+  AGENT_JOB_URL:
+    description: "Optional. URL of a specific datadog-agent windows_zip_agent_binaries_x64-a7 GitLab job (e.g. 'https://gitlab.ddbuild.io/DataDog/datadog-agent/-/jobs/1663094644'). When set with RUNTIME=node, fetch-agent-binaries-node pulls the agent zip from that job's artifacts (via gitlab_pat in vault) and the node build uses it instead of the default dsd6-staging zip."

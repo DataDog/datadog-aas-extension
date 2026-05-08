@@ -1,3 +1,36 @@
+fetch-agent-binaries-node:
+  tags: ["arch:amd64"]
+  image: registry.ddbuild.io/images/docker:24.0.5
+  rules:
+    - if: $RUNTIME == "node" && $AGENT_JOB_URL
+  stage: build
+  script:
+    - apt-get update && apt-get install -y curl unzip
+    # Validate AGENT_JOB_URL up-front. CI variables are member-supplied, but
+    # this is a public repo and the value flows into a curl URL — fail fast on
+    # anything that isn't a recognized datadog-agent job URL.
+    - |
+      if [[ ! "$AGENT_JOB_URL" =~ ^https://gitlab\.ddbuild\.io/DataDog/datadog-agent/-/jobs/([0-9]+)$ ]]; then
+        echo "AGENT_JOB_URL '$AGENT_JOB_URL' is not a valid DataDog/datadog-agent job URL"; exit 1
+      fi
+    - JOB_ID="${BASH_REMATCH[1]}"
+    # gitlab_pat is a GitLab personal access token with `read_api` scope on
+    # gitlab.ddbuild.io, minted by an account that's a member of
+    # DataDog/datadog-agent. Needed to read cross-project artifacts since
+    # CI_JOB_TOKEN is not allowlisted by the agent project. Rotate when expired.
+    - export GITLAB_PAT=$(vault kv get -field="gitlab_pat" kv/k8s/gitlab-runner/datadog-aas-extension/secret)
+    - mkdir -p node/downloads
+    - echo "Fetching agent artifact from $AGENT_JOB_URL"
+    - curl -fsSL -H "PRIVATE-TOKEN:$GITLAB_PAT" -o /tmp/bulk.zip "https://gitlab.ddbuild.io/api/v4/projects/DataDog%2Fdatadog-agent/jobs/$JOB_ID/artifacts"
+    - unzip -qo /tmp/bulk.zip -d /tmp/bulk
+    - find /tmp/bulk -name 'agent-binaries-*-x86_64.zip' -print -exec cp {} node/downloads/agent.zip \;
+    - test -s node/downloads/agent.zip
+    - ls -lh node/downloads/agent.zip
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - node/downloads/agent.zip
+
 build-agent-process-manager-module:
   tags: ["windows-v2:2022"]
   rules:
@@ -73,6 +106,9 @@ build-nuget-packages-node:
   stage: build
   needs:
     - sign-files
+    - job: fetch-agent-binaries-node
+      optional: true
+      artifacts: true
   script:
     - apt-get update
     - apt-get install -y jq rsync unzip
