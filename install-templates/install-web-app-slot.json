@@ -1,0 +1,78 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "description": "Install Datadog APM extension on an Azure Web App deployment slot.",
+    "version": "1.0.0"
+  },
+  "parameters": {
+    "webAppName": {
+      "type": "string",
+      "metadata": { "description": "Name of the Azure Web App" }
+    },
+    "slotName": {
+      "type": "string",
+      "metadata": { "description": "Name of the deployment slot (e.g. staging)" }
+    },
+    "datadogApiKey": {
+      "type": "securestring",
+      "metadata": { "description": "Your Datadog API key" }
+    },
+    "ddSite": {
+      "type": "string",
+      "defaultValue": "datadoghq.com",
+      "metadata": { "description": "Your Datadog site" }
+    },
+    "ddService": {
+      "type": "string",
+      "defaultValue": "my-service",
+      "metadata": { "description": "Service name for unified service tagging" }
+    },
+    "ddEnv": {
+      "type": "string",
+      "defaultValue": "staging",
+      "metadata": { "description": "Environment tag — set a distinct value for each slot" }
+    },
+    "ddVersion": {
+      "type": "string",
+      "defaultValue": "0.0.0",
+      "metadata": { "description": "Version for unified service tagging" }
+    },
+    "extensionName": {
+      "type": "string",
+      "defaultValue": "Datadog.AzureAppServices.DotNet",
+      "allowedValues": [
+        "Datadog.AzureAppServices.DotNet",
+        "Datadog.AzureAppServices.Java.Apm",
+        "Datadog.AzureAppServices.Node.Apm"
+      ],
+      "metadata": { "description": "Datadog extension name for your runtime" }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Web/sites/slots",
+      "apiVersion": "2025-03-01",
+      "name": "[concat(parameters('webAppName'), '/', parameters('slotName'))]",
+      "properties": {
+        "siteConfig": {
+          "appSettings": [
+            { "name": "DD_API_KEY", "value": "[parameters('datadogApiKey')]" },
+            { "name": "DD_SITE", "value": "[parameters('ddSite')]" },
+            { "name": "DD_SERVICE", "value": "[parameters('ddService')]" },
+            { "name": "DD_ENV", "value": "[parameters('ddEnv')]" },
+            { "name": "DD_VERSION", "value": "[parameters('ddVersion')]" }
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites/slots/siteextensions",
+      "apiVersion": "2025-03-01",
+      "name": "[concat(parameters('webAppName'), '/', parameters('slotName'), '/', parameters('extensionName'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites/slots', parameters('webAppName'), parameters('slotName'))]"
+      ]
+    }
+  ]
+}

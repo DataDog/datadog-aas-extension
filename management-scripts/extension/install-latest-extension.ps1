@@ -1,3 +1,6 @@
+# Version: 2.0.0
+# Changelog: Added -SlotName support and automatic WEBSITE_PRIVATE_EXTENSIONS=0 sticky
+#             slot setting for Azure Function Apps to prevent MoveDirectory install failures.
 
 # Per site, you can use the username and password from the publish profile you download.
 # The recommended approach is to use a service account which has permission to access Kudu
@@ -6,6 +9,7 @@
     [Parameter(Mandatory=$true)][string]$SubscriptionId,
     [Parameter(Mandatory=$true)][string]$ResourceGroup,
     [Parameter(Mandatory=$true)][string]$SiteName,
+    [Parameter(Mandatory=$false)][string]$SlotName,
     [Parameter(Mandatory=$false)][string]$Username="ambient",
     [Parameter(Mandatory=$false)][string]$Password="ambient",
     [Parameter(Mandatory=$false)][string]$Extension="Datadog.AzureAppServices.DotNet",
@@ -18,7 +22,7 @@
     [Parameter(Mandatory=$false)][Switch]$Remove
  )
 
-# 
+#
 # Example calls of this script:
 #
 # .\install-latest-extension.ps1 -SubscriptionId $subscriptionId -ResourceGroup $resourceGroupName -SiteName $webAppName -Username $username -Password $password
@@ -29,11 +33,16 @@
 # .\install-latest-extension.ps1 -SubscriptionId $subscriptionId -ResourceGroup $resourceGroupName -SiteName $webAppName -Remove
 #
 # .\install-latest-extension.ps1 -SubscriptionId 8c56d827-5f07-45ce-8f2b-6c5001db5c6f -ResourceGroup apm-aas-junkyard -SiteName dd-netcore31-junkyard-dev -Extension DevelopmentVerification.DdDotNet.Apm -ExtensionVersion 0.1.37-prerelease
-# 
+#
 
 # Example call of install with datadog environment variables applied:
-# 
+#
 # .\install-latest-extension.ps1 -Username $username -Password $password -SubscriptionId $subscriptionId -ResourceGroup $resourceGroupName -SiteName $webAppName -DDSite $ddSite -DDApiKey $ddApiKey -DDEnv $ddEnv -DDService $ddService -DDVersion $ddVersion
+#
+
+# Example call targeting a deployment slot on a Function App:
+#
+# .\install-latest-extension.ps1 -SubscriptionId $subscriptionId -ResourceGroup $resourceGroupName -SiteName $webAppName -SlotName staging -DDApiKey $ddApiKey -DDSite $ddSite
 #
 
 if ($Username -eq "ambient") {
@@ -52,97 +61,144 @@ $userAgent = "powershell/1.0"
 $siteApiUrl="https://management.azure.com/subscriptions/${SubscriptionId}/resourceGroups/${ResourceGroup}/providers/Microsoft.Web/sites/${SiteName}"
 $siteConfig = az rest -m GET --header "Accept=application/json" -u "${siteApiUrl}?api-version=2019-08-01" | ConvertFrom-Json
 
-$baseApiUrl = "https://$($siteConfig.properties.enabledHostNames -like "*.scm.*")/api"
+$kind = $siteConfig.kind
+
+$targetApiUrl = if ($SlotName) { "${siteApiUrl}/slots/${SlotName}" } else { $siteApiUrl }
+
+$displayName = if ($SlotName) { "${SiteName}/${SlotName}" } else { $SiteName }
+
+if ($SlotName) {
+    $slotConfig = az rest -m GET --header "Accept=application/json" -u "${targetApiUrl}?api-version=2019-08-01" | ConvertFrom-Json
+    $baseApiUrl = "https://$($slotConfig.properties.enabledHostNames -like "*.scm.*")/api"
+} else {
+    $baseApiUrl = "https://$($siteConfig.properties.enabledHostNames -like "*.scm.*")/api"
+}
+
 $siteExtensionsBase="${baseApiUrl}/siteextensions"
 $siteExtensionManage="${baseApiUrl}/siteextensions/${Extension}"
 
+# Function App file-lock workaround: set WEBSITE_PRIVATE_EXTENSIONS=0 as a sticky slot
+# setting so the Functions runtime does not hold file handles on C:\home\SiteExtensions\
+# during the Kudu MoveDirectory step. Only applies to Function App + slot deployments.
+# See: https://github.com/DataDog/datadog-aas-extension/issues/455
+if ($SlotName -and $kind -like '*functionapp*') {
+    Write-Output "[${SiteName}/${SlotName}] Function App detected — applying WEBSITE_PRIVATE_EXTENSIONS=0 as sticky slot setting to prevent install failures."
+    az webapp config appsettings set -n $SiteName -g $ResourceGroup --slot $SlotName --settings "WEBSITE_PRIVATE_EXTENSIONS=0"
+    az webapp config appsettings set -n $SiteName -g $ResourceGroup --slot $SlotName --slot-settings "WEBSITE_PRIVATE_EXTENSIONS=0"
+    Write-Output "[${SiteName}/${SlotName}] Sticky setting applied. Proceeding with stop/install/start."
+}
+
 # Stop the web app
 # https://docs.microsoft.com/en-us/rest/api/appservice/webapps/stop
-Write-Output "[${SiteName}] Stopping webapp"
-az rest -m POST --header "Accept=application/json" -u "${siteApiUrl}/stop?api-version=2019-08-01"
+Write-Output "[${displayName}] Stopping webapp"
+az rest -m POST --header "Accept=application/json" -u "${targetApiUrl}/stop?api-version=2019-08-01"
 
 $skipVar="<not-set>"
 
-az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --settings DD_AAS_SCRIPT_INSTALL=1
-	
-if ($DDApiKey -ne $skipVar) {
-	az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --settings DD_API_KEY=$DDApiKey
+if ($SlotName) {
+    az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --slot $SlotName --settings DD_AAS_SCRIPT_INSTALL=1
+} else {
+    az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --settings DD_AAS_SCRIPT_INSTALL=1
 }
-	
+
+if ($DDApiKey -ne $skipVar) {
+    if ($SlotName) {
+        az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --slot $SlotName --settings DD_API_KEY=$DDApiKey
+    } else {
+        az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --settings DD_API_KEY=$DDApiKey
+    }
+}
+
 if ($DDSite -ne $skipVar) {
-	az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --settings DD_SITE=$DDSite
+    if ($SlotName) {
+        az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --slot $SlotName --settings DD_SITE=$DDSite
+    } else {
+        az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --settings DD_SITE=$DDSite
+    }
 }
 
 if ($DDEnv -ne $skipVar) {
-	az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --settings DD_ENV=$DDEnv
+    if ($SlotName) {
+        az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --slot $SlotName --settings DD_ENV=$DDEnv
+    } else {
+        az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --settings DD_ENV=$DDEnv
+    }
 }
 
 if ($DDService -ne $skipVar) {
-	az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --settings DD_SERVICE=$DDService
+    if ($SlotName) {
+        az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --slot $SlotName --settings DD_SERVICE=$DDService
+    } else {
+        az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --settings DD_SERVICE=$DDService
+    }
 }
 
 if ($DDVersion -ne $skipVar) {
-	az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --settings DD_VERSION=$DDVersion
+    if ($SlotName) {
+        az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --slot $SlotName --settings DD_VERSION=$DDVersion
+    } else {
+        az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --settings DD_VERSION=$DDVersion
+    }
 }
 
 if ($Remove) {
-  Write-Output "[${SiteName}] Attempting to remove ${Extension}"
+  Write-Output "[${displayName}] Attempting to remove ${Extension}"
   Invoke-RestMethod -Uri $siteExtensionManage -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -UserAgent $userAgent -Method DELETE
-  Write-Output "[${SiteName}] Completed request to remove ${Extension}"
+  Write-Output "[${displayName}] Completed request to remove ${Extension}"
 }
 else {
 	if ($PSBoundParameters.ContainsKey('ExtensionVersion')) {
-		
-        Write-Output "[${SiteName}] Attempting to install version ${ExtensionVersion} of ${Extension}"
-		
+
+        Write-Output "[${displayName}] Attempting to install version ${ExtensionVersion} of ${Extension}"
+
 		$packageUrl="https://globalcdn.nuget.org/packages/${Extension}.${ExtensionVersion}.nupkg".ToLower()
-		
-		Write-Output "[${SiteName}] Setting package URL to ${packageUrl}"
-		
+
+		Write-Output "[${displayName}] Setting package URL to ${packageUrl}"
+
 		$install=$true
-		
+
 		# If this is a downgrade, we need to remove the extension first or the install logic will ignore the package
 		$installedExtensions=Invoke-RestMethod -Uri $siteExtensionsBase -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -UserAgent $userAgent -Method GET
-		
+
 		Foreach ($installedExtension in @($installedExtensions)){
-			
+
 			if ($installedExtension.id -eq $Extension) {
 				if ($installedExtension.version -eq $ExtensionVersion) {
-					Write-Output "[${SiteName}] Package version (${ExtensionVersion}) is already installed."
+					Write-Output "[${displayName}] Package version (${ExtensionVersion}) is already installed."
 					$install=$false
 					break;
 				}
 				else {
 					Invoke-RestMethod -Uri $siteExtensionManage -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -UserAgent $userAgent -Method DELETE
-					Write-Output "[${SiteName}] Requested package removal. "
-					Write-Output "[${SiteName}] Waiting ten seconds to ensure removal is complete. "
+					Write-Output "[${displayName}] Requested package removal. "
+					Write-Output "[${displayName}] Waiting ten seconds to ensure removal is complete. "
 					Start-Sleep -s 10
 					break;
 				}
 			}
 		}
-		
+
 		if ($install) {
 			# https://github.com/projectkudu/kudu/blob/98ad238b860f81a4cb4e3419c8785a58ba68e661/Kudu.Services/SiteExtensions/SiteExtensionController.cs#L240
-			$siteExtensionInfo = @{        
+			$siteExtensionInfo = @{
 			  packageUri = $packageUrl
 			};
-			
+
 			$json = $siteExtensionInfo | ConvertTo-Json;
-			
+
 			Invoke-RestMethod -Uri $siteExtensionManage -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -UserAgent $userAgent -Method PUT -ContentType application/json -Body $json
-			
-			Write-Output "[${SiteName}] Completed request to install version ${ExtensionVersion} of ${Extension}"
+
+			Write-Output "[${displayName}] Completed request to install version ${ExtensionVersion} of ${Extension}"
 		}
 	}
 	else {
         Write-Output "Attempting to install latest ${Extension}"
         Invoke-RestMethod -Uri $siteExtensionManage -Headers @{Authorization=$("Basic {0}" -f $base64AuthInfo)} -UserAgent $userAgent -Method PUT
-		Write-Output "[${SiteName}] Completed request to install latest of ${Extension}"
+		Write-Output "[${displayName}] Completed request to install latest of ${Extension}"
 	}
 }
 
 # Start the web app
 # https://docs.microsoft.com/en-us/rest/api/appservice/webapps/start
-Write-Output "[${SiteName}] Starting webapp"
-az rest -m POST --header "Accept=application/json" -u "${siteApiUrl}/start?api-version=2019-08-01"
+Write-Output "[${displayName}] Starting webapp"
+az rest -m POST --header "Accept=application/json" -u "${targetApiUrl}/start?api-version=2019-08-01"

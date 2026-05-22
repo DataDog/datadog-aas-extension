@@ -1,0 +1,79 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "description": "Install Datadog APM extension on an Azure Function App deployment slot. Applies WEBSITE_PRIVATE_EXTENSIONS=0 as a sticky slot setting to prevent MoveDirectory file-lock failures.",
+    "version": "1.0.0"
+  },
+  "parameters": {
+    "webAppName": {
+      "type": "string",
+      "metadata": { "description": "Name of the Azure Function App" }
+    },
+    "slotName": {
+      "type": "string",
+      "metadata": { "description": "Name of the deployment slot (e.g. staging)" }
+    },
+    "datadogApiKey": {
+      "type": "securestring",
+      "metadata": { "description": "Your Datadog API key" }
+    },
+    "ddSite": {
+      "type": "string",
+      "defaultValue": "datadoghq.com",
+      "metadata": { "description": "Your Datadog site (e.g. datadoghq.com, datadoghq.eu)" }
+    },
+    "ddService": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": { "description": "Service name for unified service tagging" }
+    },
+    "ddEnv": {
+      "type": "string",
+      "defaultValue": "staging",
+      "metadata": { "description": "Environment tag — set a distinct value for each slot" }
+    },
+    "ddVersion": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": { "description": "Version for unified service tagging" }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Web/sites/slots/config",
+      "apiVersion": "2025-03-01",
+      "name": "[concat(parameters('webAppName'), '/', parameters('slotName'), '/appsettings')]",
+      "properties": {
+        "WEBSITE_PRIVATE_EXTENSIONS": "0",
+        "DD_API_KEY": "[parameters('datadogApiKey')]",
+        "DD_SITE": "[parameters('ddSite')]",
+        "DD_SERVICE": "[parameters('ddService')]",
+        "DD_ENV": "[parameters('ddEnv')]",
+        "DD_VERSION": "[parameters('ddVersion')]"
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites/config",
+      "apiVersion": "2025-03-01",
+      "name": "[concat(parameters('webAppName'), '/slotConfigNames')]",
+      "properties": {
+        "appSettingNames": [
+          "WEBSITE_PRIVATE_EXTENSIONS"
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites/slots/config', parameters('webAppName'), parameters('slotName'), 'appsettings')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Web/sites/slots/siteextensions",
+      "apiVersion": "2025-03-01",
+      "name": "[concat(parameters('webAppName'), '/', parameters('slotName'), '/Datadog.AzureAppServices.DotNet')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites/config', parameters('webAppName'), 'slotConfigNames')]",
+        "[resourceId('Microsoft.Web/sites/slots/config', parameters('webAppName'), parameters('slotName'), 'appsettings')]"
+      ]
+    }
+  ]
+}

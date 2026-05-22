@@ -11,6 +11,11 @@ Please follow the directions in the referenced document.
 ## Installation:
 Fully stop your web app before installing, modifying, or removing a Datadog APM Site Extension.
 
+## In-repo resources
+
+- [`install-templates/`](install-templates/) — ARM JSON and Bicep templates for installing the extension. Includes a dedicated template for Azure Function Apps with deployment slots, which require extra steps to avoid file-lock failures during install.
+- [`management-scripts/extension/`](management-scripts/extension/) — PowerShell scripts for programmatic install and bulk update. The install script supports `-SlotName` for deployment slot targeting and automatically applies the Function App workaround when needed.
+
 ### IMPORTANT NOTICES:
 #### *Restart* recycles an Application Pool. The app must be *STOPPED* before any changes to this extension.
 #### *Beta users will need to uninstall the beta extension before installing the official release.*
