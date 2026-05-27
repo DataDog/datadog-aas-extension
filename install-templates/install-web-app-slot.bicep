@@ -7,9 +7,9 @@ param datadogApiKey string
 param webAppName string
 param slotName string
 param ddSite string = 'datadoghq.com'
-param ddService string = 'my-service'
+param ddService string = ''
 param ddEnv string = 'staging'
-param ddVersion string = '0.0.0'
+param ddVersion string = ''
 
 @allowed([
   'Datadog.AzureAppServices.DotNet'

@@ -83,7 +83,6 @@ $siteExtensionManage="${baseApiUrl}/siteextensions/${Extension}"
 # See: https://github.com/DataDog/datadog-aas-extension/issues/455
 if ($SlotName -and $kind -like '*functionapp*') {
     Write-Output "[${SiteName}/${SlotName}] Function App detected — applying WEBSITE_PRIVATE_EXTENSIONS=0 as sticky slot setting to prevent install failures."
-    az webapp config appsettings set -n $SiteName -g $ResourceGroup --slot $SlotName --settings "WEBSITE_PRIVATE_EXTENSIONS=0"
     az webapp config appsettings set -n $SiteName -g $ResourceGroup --slot $SlotName --slot-settings "WEBSITE_PRIVATE_EXTENSIONS=0"
     Write-Output "[${SiteName}/${SlotName}] Sticky setting applied. Proceeding with stop/install/start."
 }

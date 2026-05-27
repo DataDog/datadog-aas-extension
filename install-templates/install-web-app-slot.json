@@ -25,7 +25,7 @@
     },
     "ddService": {
       "type": "string",
-      "defaultValue": "my-service",
+      "defaultValue": "",
       "metadata": { "description": "Service name for unified service tagging" }
     },
     "ddEnv": {
@@ -35,7 +35,7 @@
     },
     "ddVersion": {
       "type": "string",
-      "defaultValue": "0.0.0",
+      "defaultValue": "",
       "metadata": { "description": "Version for unified service tagging" }
     },
     "extensionName": {

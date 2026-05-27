@@ -6,6 +6,9 @@ param datadogApiKey string
 
 param webAppName string
 param slotName string
+
+@description('Names of app settings already marked slot-sticky on this Function App. Pass [] for a new app with no existing sticky settings. This template does a full replace of slotConfigNames — omitting an existing sticky setting name will de-sticky it.')
+param existingStickyAppSettingNames array
 param ddSite string = 'datadoghq.com'
 param ddService string = ''
 @description('Environment tag — set a distinct value for each slot')
@@ -37,17 +40,13 @@ resource slot 'Microsoft.Web/sites/slots@2025-03-01' = {
   }
 }
 
-// Marks WEBSITE_PRIVATE_EXTENSIONS as slot-sticky so it survives swaps and never
-// propagates to production. WARNING: replaces the full sticky-settings list —
-// add any other slot-specific setting names to appSettingNames.
+// Marks WEBSITE_PRIVATE_EXTENSIONS as slot-sticky. Replaces the full slotConfigNames list —
+// existingStickyAppSettingNames must include any settings already marked sticky or they will be de-stickied.
 resource stickySettings 'Microsoft.Web/sites/config@2025-03-01' = {
   name: 'slotConfigNames'
   parent: webApp
   properties: {
-    appSettingNames: [
-      'WEBSITE_PRIVATE_EXTENSIONS'
-      // Add any other setting names you want to keep slot-specific
-    ]
+    appSettingNames: union(existingStickyAppSettingNames, ['WEBSITE_PRIVATE_EXTENSIONS'])
   }
   dependsOn: [slot]
 }

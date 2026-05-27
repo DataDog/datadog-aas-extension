@@ -105,18 +105,27 @@ This is only needed when both of the following are true:
 
 See [`install-function-app-slot.json`](install-function-app-slot.json) for the full template.
 
+`existingStickyAppSettingNames` is required. It must list every app setting name currently marked slot-sticky on your Function App — the template does a full replace of `slotConfigNames` and any name you omit will be de-stickied. For a brand-new app with no existing sticky settings, pass `[]`.
+
+To get the current list before deploying:
+```
+az rest -m GET --header "Accept=application/json" -u "https://management.azure.com/subscriptions/<SUB>/resourceGroups/<RG>/providers/Microsoft.Web/sites/<APP>/config/slotConfigNames?api-version=2019-08-01" --query "properties.appSettingNames"
+```
+
 Deploy with:
 ```
-az deployment group create --resource-group <RESOURCE GROUP> --template-file install-function-app-slot.json
+az deployment group create --resource-group <RESOURCE GROUP> --template-file install-function-app-slot.json \
+  --parameters existingStickyAppSettingNames='["AzureWebJobsStorage","FUNCTIONS_WORKER_RUNTIME"]'
 ```
 
 ### Bicep
 
 See [`install-function-app-slot.bicep`](install-function-app-slot.bicep) for the full template.
 
+Same requirement as above — provide `existingStickyAppSettingNames` with every currently-sticky setting name, or pass `[]` for a new app.
+
 Deploy with:
 ```
-az deployment group create --resource-group <RESOURCE GROUP> --template-file install-function-app-slot.bicep
+az deployment group create --resource-group <RESOURCE GROUP> --template-file install-function-app-slot.bicep \
+  --parameters existingStickyAppSettingNames='["AzureWebJobsStorage","FUNCTIONS_WORKER_RUNTIME"]'
 ```
-
-> **Note:** `slotConfigNames` replaces the full list of sticky setting names. If you have other slot-sticky settings, add their names to the `appSettingNames` array.

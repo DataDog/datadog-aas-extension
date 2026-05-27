@@ -101,13 +101,14 @@ Foreach($webapp in @($allSites)) {
 			$slotName = $slot.name.Split('/')[-1]
 			$slotBaseApiUrl = "https://$($slot.enabledHostNames -like "*.scm.*")/api"
 			$slotExtensionsUrl = "${slotBaseApiUrl}/siteextensions"
-			$slotExtensionManage = "${slotBaseApiUrl}/siteextensions/${Extension}"
 
 			Write-Output "[${siteName}/${slotName}] Requesting installed extensions."
 			$installedExtensions = Invoke-RestMethod -Uri $slotExtensionsUrl -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -UserAgent $userAgent -Method GET
 
+			$hasSlotExtension = $false
 			Foreach ($installedExtension in @($installedExtensions)) {
 				if ($installedExtension.id -eq $Extension) {
+					$hasSlotExtension = $true
 					$extensionUpdate = "$PSScriptRoot\install-latest-extension.ps1 -SubscriptionId $SubscriptionId -ResourceGroup $ResourceGroup -SiteName $siteName -SlotName $slotName -Username $Username -Password $Password -Extension $Extension"
 					if ($Remove) { $extensionUpdate = "${extensionUpdate} -Remove" }
 					elseif ($requiresSpecificVersion) { $extensionUpdate = "${extensionUpdate} -ExtensionVersion ${ExtensionVersion}" }
@@ -118,6 +119,9 @@ Foreach($webapp in @($allSites)) {
 					Write-Output "[${siteName}/${slotName}] Ready to modify ${Extension}."
 					iex $extensionUpdate
 				}
+			}
+			if (-Not $hasSlotExtension) {
+				Write-Output "[${siteName}/${slotName}] ${Extension} not found."
 			}
 		}
 	}

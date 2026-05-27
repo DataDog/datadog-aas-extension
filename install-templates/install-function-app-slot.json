@@ -37,6 +37,10 @@
       "type": "string",
       "defaultValue": "",
       "metadata": { "description": "Version for unified service tagging" }
+    },
+    "existingStickyAppSettingNames": {
+      "type": "array",
+      "metadata": { "description": "Names of app settings already marked slot-sticky on this Function App. Pass [] for a new app with no existing sticky settings. This template does a full replace of slotConfigNames — omitting an existing sticky setting name will de-sticky it." }
     }
   },
   "resources": [
@@ -58,9 +62,7 @@
       "apiVersion": "2025-03-01",
       "name": "[concat(parameters('webAppName'), '/slotConfigNames')]",
       "properties": {
-        "appSettingNames": [
-          "WEBSITE_PRIVATE_EXTENSIONS"
-        ]
+        "appSettingNames": "[union(parameters('existingStickyAppSettingNames'), createArray('WEBSITE_PRIVATE_EXTENSIONS'))]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.Web/sites/slots/config', parameters('webAppName'), parameters('slotName'), 'appsettings')]"
