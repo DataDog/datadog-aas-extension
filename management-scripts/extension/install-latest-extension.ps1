@@ -77,7 +77,7 @@ $displayName = if ($SlotName)
 { $SiteName
 }
 
-$mainScmHost = $siteConfig.properties.enabledHostNames -like "*.scm.*"
+$mainScmHost = ($siteConfig.properties.enabledHostNames -like "*.scm.*")[0]
 $baseApiUrl = if ($SlotName)
 {
     "https://$($mainScmHost -replace '\.scm\.', "-${SlotName}.scm.")/api"

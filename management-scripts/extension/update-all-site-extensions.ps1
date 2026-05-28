@@ -46,7 +46,7 @@ $allSites=az webapp list -g $ResourceGroup | ConvertFrom-Json
 Foreach($webapp in @($allSites)) {
 
 	$siteName=$webapp.name
-	$baseApiUrl = "https://$($webapp.enabledHostNames -like "*.scm.*")/api"
+	$baseApiUrl = "https://$(($webapp.enabledHostNames -like "*.scm.*")[0])/api"
 	$siteExtensionsBase="${baseApiUrl}/siteextensions"
 	$siteExtensionManage="${baseApiUrl}/siteextensions/${extension}"
 
@@ -99,7 +99,7 @@ Foreach($webapp in @($allSites)) {
 		$slots = az webapp deployment slot list -n $siteName -g $ResourceGroup | ConvertFrom-Json
 		Foreach ($slot in @($slots)) {
 			$slotName = $slot.name.Split('/')[-1]
-			$slotBaseApiUrl = "https://$($slot.enabledHostNames -like "*.scm.*")/api"
+			$slotBaseApiUrl = "https://$(($slot.enabledHostNames -like "*.scm.*")[0])/api"
 			$slotExtensionsUrl = "${slotBaseApiUrl}/siteextensions"
 
 			Write-Output "[${siteName}/${slotName}] Requesting installed extensions."
