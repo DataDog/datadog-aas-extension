@@ -93,53 +93,20 @@ if ($SlotName -and $kind -like '*functionapp*') {
     Write-Output "[${SiteName}/${SlotName}] Sticky setting applied."
 }
 
-$skipVar="<not-set>"
+$skipVar = "<not-set>"
 
-if ($SlotName) {
-    az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --slot $SlotName --settings DD_AAS_SCRIPT_INSTALL=1
-} else {
-    az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --settings DD_AAS_SCRIPT_INSTALL=1
+function Set-AppSetting($settingName, $value) {
+    $cmdArgs = @('-n', $SiteName, '-g', $ResourceGroup, '--settings', "$settingName=$value")
+    if ($SlotName) { $cmdArgs += @('--slot', $SlotName) }
+    az webapp config appsettings set @cmdArgs
 }
 
-if ($DDApiKey -ne $skipVar) {
-    if ($SlotName) {
-        az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --slot $SlotName --settings DD_API_KEY=$DDApiKey
-    } else {
-        az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --settings DD_API_KEY=$DDApiKey
-    }
-}
-
-if ($DDSite -ne $skipVar) {
-    if ($SlotName) {
-        az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --slot $SlotName --settings DD_SITE=$DDSite
-    } else {
-        az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --settings DD_SITE=$DDSite
-    }
-}
-
-if ($DDEnv -ne $skipVar) {
-    if ($SlotName) {
-        az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --slot $SlotName --settings DD_ENV=$DDEnv
-    } else {
-        az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --settings DD_ENV=$DDEnv
-    }
-}
-
-if ($DDService -ne $skipVar) {
-    if ($SlotName) {
-        az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --slot $SlotName --settings DD_SERVICE=$DDService
-    } else {
-        az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --settings DD_SERVICE=$DDService
-    }
-}
-
-if ($DDVersion -ne $skipVar) {
-    if ($SlotName) {
-        az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --slot $SlotName --settings DD_VERSION=$DDVersion
-    } else {
-        az webapp config appsettings set -n ${SiteName} -g ${ResourceGroup} --settings DD_VERSION=$DDVersion
-    }
-}
+Set-AppSetting 'DD_AAS_SCRIPT_INSTALL' '1'
+if ($DDApiKey  -ne $skipVar) { Set-AppSetting 'DD_API_KEY' $DDApiKey }
+if ($DDSite    -ne $skipVar) { Set-AppSetting 'DD_SITE'    $DDSite }
+if ($DDEnv     -ne $skipVar) { Set-AppSetting 'DD_ENV'     $DDEnv }
+if ($DDService -ne $skipVar) { Set-AppSetting 'DD_SERVICE' $DDService }
+if ($DDVersion -ne $skipVar) { Set-AppSetting 'DD_VERSION' $DDVersion }
 
 if ($Remove) {
   Write-Output "[${displayName}] Attempting to remove ${Extension}"
