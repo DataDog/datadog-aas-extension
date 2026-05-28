@@ -5,7 +5,7 @@
 # Per site, you can use the username and password from the publish profile you download.
 # The recommended approach is to use a service account which has permission to access Kudu
 # Note that the $username here should look like `SomeUserName`, and **not** `SomeSite\SomeUserName`
- param (
+param (
     [Parameter(Mandatory=$true)][string]$SubscriptionId,
     [Parameter(Mandatory=$true)][string]$ResourceGroup,
     [Parameter(Mandatory=$true)][string]$SiteName,
@@ -20,7 +20,7 @@
     [Parameter(Mandatory=$false)][string]$DDVersion="<not-set>",
     [Parameter(Mandatory=$false)][string]$ExtensionVersion,
     [Parameter(Mandatory=$false)][Switch]$Remove
- )
+)
 
 #
 # Example calls of this script:
@@ -45,12 +45,14 @@
 # .\install-latest-extension.ps1 -SubscriptionId $subscriptionId -ResourceGroup $resourceGroupName -SiteName $functionAppName -SlotName staging -DDApiKey $ddApiKey -DDSite $ddSite
 #
 
-if ($Username -eq "ambient") {
-	$Username=$env:DD_AAS_USER
+if ($Username -eq "ambient")
+{
+    $Username=$env:DD_AAS_USER
 }
 
-if ($Password -eq "ambient") {
-	$Password=$env:DD_AAS_PASS
+if ($Password -eq "ambient")
+{
+    $Password=$env:DD_AAS_PASS
 }
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -63,14 +65,24 @@ $siteConfig = az rest -m GET --header "Accept=application/json" -u "${siteApiUrl
 
 $kind = $siteConfig.kind
 
-$targetApiUrl = if ($SlotName) { "${siteApiUrl}/slots/${SlotName}" } else { $siteApiUrl }
+$targetApiUrl = if ($SlotName)
+{ "${siteApiUrl}/slots/${SlotName}"
+} else
+{ $siteApiUrl
+}
 
-$displayName = if ($SlotName) { "${SiteName}/${SlotName}" } else { $SiteName }
+$displayName = if ($SlotName)
+{ "${SiteName}/${SlotName}"
+} else
+{ $SiteName
+}
 
 $mainScmHost = $siteConfig.properties.enabledHostNames -like "*.scm.*"
-$baseApiUrl = if ($SlotName) {
+$baseApiUrl = if ($SlotName)
+{
     "https://$($mainScmHost -replace '\.scm\.', "-${SlotName}.scm.")/api"
-} else {
+} else
+{
     "https://${mainScmHost}/api"
 }
 
@@ -86,83 +98,103 @@ az rest -m POST --header "Accept=application/json" -u "${targetApiUrl}/stop?api-
 # setting so the Functions runtime does not hold file handles on C:\home\SiteExtensions\
 # during the Kudu MoveDirectory step. Applied after stop so no recycle is triggered —
 # the setting takes effect on the subsequent start. Only applies to Function App + slot deployments.
-# See: https://github.com/DataDog/datadog-aas-extension/issues/455
-if ($SlotName -and $kind -like '*functionapp*') {
+# slot-settings here not to be confused with settings block afterwards.
+if ($SlotName -and $kind -like '*functionapp*')
+{
     Write-Output "[${SiteName}/${SlotName}] Function App detected — applying WEBSITE_PRIVATE_EXTENSIONS=0 as sticky slot setting to prevent install failures."
     az webapp config appsettings set -n $SiteName -g $ResourceGroup --slot $SlotName --slot-settings "WEBSITE_PRIVATE_EXTENSIONS=0"
     Write-Output "[${SiteName}/${SlotName}] Sticky setting applied."
 }
 
-$skipVar = "<not-set>"
+$skipVar   = "<not-set>"
 
-function Set-AppSetting($settingName, $value) {
-    $cmdArgs = @('-n', $SiteName, '-g', $ResourceGroup, '--settings', "$settingName=$value")
-    if ($SlotName) { $cmdArgs += @('--slot', $SlotName) }
+function Set-AppSetting($name, $value)
+{
+    $cmdArgs = @('-n', $SiteName, '-g', $ResourceGroup, '--settings', "$name=$value")
+    if ($SlotName)
+    { $cmdArgs += @('--slot', $SlotName)
+    }
     az webapp config appsettings set @cmdArgs
 }
 
 Set-AppSetting 'DD_AAS_SCRIPT_INSTALL' '1'
-if ($DDApiKey  -ne $skipVar) { Set-AppSetting 'DD_API_KEY' $DDApiKey }
-if ($DDSite    -ne $skipVar) { Set-AppSetting 'DD_SITE'    $DDSite }
-if ($DDEnv     -ne $skipVar) { Set-AppSetting 'DD_ENV'     $DDEnv }
-if ($DDService -ne $skipVar) { Set-AppSetting 'DD_SERVICE' $DDService }
-if ($DDVersion -ne $skipVar) { Set-AppSetting 'DD_VERSION' $DDVersion }
-
-if ($Remove) {
-  Write-Output "[${displayName}] Attempting to remove ${Extension}"
-  Invoke-RestMethod -Uri $siteExtensionManage -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -UserAgent $userAgent -Method DELETE
-  Write-Output "[${displayName}] Completed request to remove ${Extension}"
+if ($DDApiKey  -ne $skipVar)
+{ Set-AppSetting 'DD_API_KEY' $DDApiKey
 }
-else {
-	if ($PSBoundParameters.ContainsKey('ExtensionVersion')) {
+if ($DDSite    -ne $skipVar)
+{ Set-AppSetting 'DD_SITE'    $DDSite
+}
+if ($DDEnv     -ne $skipVar)
+{ Set-AppSetting 'DD_ENV'     $DDEnv
+}
+if ($DDService -ne $skipVar)
+{ Set-AppSetting 'DD_SERVICE' $DDService
+}
+if ($DDVersion -ne $skipVar)
+{ Set-AppSetting 'DD_VERSION' $DDVersion
+}
+
+if ($Remove)
+{
+    Write-Output "[${displayName}] Attempting to remove ${Extension}"
+    Invoke-RestMethod -Uri $siteExtensionManage -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -UserAgent $userAgent -Method DELETE
+    Write-Output "[${displayName}] Completed request to remove ${Extension}"
+} else
+{
+    if ($PSBoundParameters.ContainsKey('ExtensionVersion'))
+    {
 
         Write-Output "[${displayName}] Attempting to install version ${ExtensionVersion} of ${Extension}"
 
-		$packageUrl="https://globalcdn.nuget.org/packages/${Extension}.${ExtensionVersion}.nupkg".ToLower()
+        $packageUrl="https://globalcdn.nuget.org/packages/${Extension}.${ExtensionVersion}.nupkg".ToLower()
 
-		Write-Output "[${displayName}] Setting package URL to ${packageUrl}"
+        Write-Output "[${displayName}] Setting package URL to ${packageUrl}"
 
-		$install=$true
+        $install=$true
 
-		# If this is a downgrade, we need to remove the extension first or the install logic will ignore the package
-		$installedExtensions=Invoke-RestMethod -Uri $siteExtensionsBase -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -UserAgent $userAgent -Method GET
+        # If this is a downgrade, we need to remove the extension first or the install logic will ignore the package
+        $installedExtensions=Invoke-RestMethod -Uri $siteExtensionsBase -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -UserAgent $userAgent -Method GET
 
-		Foreach ($installedExtension in @($installedExtensions)){
+        Foreach ($installedExtension in @($installedExtensions))
+        {
 
-			if ($installedExtension.id -eq $Extension) {
-				if ($installedExtension.version -eq $ExtensionVersion) {
-					Write-Output "[${displayName}] Package version (${ExtensionVersion}) is already installed."
-					$install=$false
-					break;
-				}
-				else {
-					Invoke-RestMethod -Uri $siteExtensionManage -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -UserAgent $userAgent -Method DELETE
-					Write-Output "[${displayName}] Requested package removal. "
-					Write-Output "[${displayName}] Waiting ten seconds to ensure removal is complete. "
-					Start-Sleep -s 10
-					break;
-				}
-			}
-		}
+            if ($installedExtension.id -eq $Extension)
+            {
+                if ($installedExtension.version -eq $ExtensionVersion)
+                {
+                    Write-Output "[${displayName}] Package version (${ExtensionVersion}) is already installed."
+                    $install=$false
+                    break;
+                } else
+                {
+                    Invoke-RestMethod -Uri $siteExtensionManage -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -UserAgent $userAgent -Method DELETE
+                    Write-Output "[${displayName}] Requested package removal. "
+                    Write-Output "[${displayName}] Waiting ten seconds to ensure removal is complete. "
+                    Start-Sleep -s 10
+                    break;
+                }
+            }
+        }
 
-		if ($install) {
-			# https://github.com/projectkudu/kudu/blob/98ad238b860f81a4cb4e3419c8785a58ba68e661/Kudu.Services/SiteExtensions/SiteExtensionController.cs#L240
-			$siteExtensionInfo = @{
-			  packageUri = $packageUrl
-			};
+        if ($install)
+        {
+            # https://github.com/projectkudu/kudu/blob/98ad238b860f81a4cb4e3419c8785a58ba68e661/Kudu.Services/SiteExtensions/SiteExtensionController.cs#L240
+            $siteExtensionInfo = @{
+                packageUri = $packageUrl
+            };
 
-			$json = $siteExtensionInfo | ConvertTo-Json;
+            $json = $siteExtensionInfo | ConvertTo-Json;
 
-			Invoke-RestMethod -Uri $siteExtensionManage -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -UserAgent $userAgent -Method PUT -ContentType application/json -Body $json
+            Invoke-RestMethod -Uri $siteExtensionManage -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} -UserAgent $userAgent -Method PUT -ContentType application/json -Body $json
 
-			Write-Output "[${displayName}] Completed request to install version ${ExtensionVersion} of ${Extension}"
-		}
-	}
-	else {
+            Write-Output "[${displayName}] Completed request to install version ${ExtensionVersion} of ${Extension}"
+        }
+    } else
+    {
         Write-Output "Attempting to install latest ${Extension}"
         Invoke-RestMethod -Uri $siteExtensionManage -Headers @{Authorization=$("Basic {0}" -f $base64AuthInfo)} -UserAgent $userAgent -Method PUT
-		Write-Output "[${displayName}] Completed request to install latest of ${Extension}"
-	}
+        Write-Output "[${displayName}] Completed request to install latest of ${Extension}"
+    }
 }
 
 # Start the web app
