@@ -42,7 +42,7 @@
 
 # Example call targeting a deployment slot on a Function App:
 #
-# .\install-latest-extension.ps1 -SubscriptionId $subscriptionId -ResourceGroup $resourceGroupName -SiteName $webAppName -SlotName staging -DDApiKey $ddApiKey -DDSite $ddSite
+# .\install-latest-extension.ps1 -SubscriptionId $subscriptionId -ResourceGroup $resourceGroupName -SiteName $functionAppName -SlotName staging -DDApiKey $ddApiKey -DDSite $ddSite
 #
 
 if ($Username -eq "ambient") {
@@ -67,11 +67,11 @@ $targetApiUrl = if ($SlotName) { "${siteApiUrl}/slots/${SlotName}" } else { $sit
 
 $displayName = if ($SlotName) { "${SiteName}/${SlotName}" } else { $SiteName }
 
-if ($SlotName) {
-    $slotConfig = az rest -m GET --header "Accept=application/json" -u "${targetApiUrl}?api-version=2019-08-01" | ConvertFrom-Json
-    $baseApiUrl = "https://$($slotConfig.properties.enabledHostNames -like "*.scm.*")/api"
+$mainScmHost = $siteConfig.properties.enabledHostNames -like "*.scm.*"
+$baseApiUrl = if ($SlotName) {
+    "https://$($mainScmHost -replace '\.scm\.', "-${SlotName}.scm.")/api"
 } else {
-    $baseApiUrl = "https://$($siteConfig.properties.enabledHostNames -like "*.scm.*")/api"
+    "https://${mainScmHost}/api"
 }
 
 $siteExtensionsBase="${baseApiUrl}/siteextensions"
