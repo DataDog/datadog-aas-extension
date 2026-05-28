@@ -111,7 +111,13 @@ Foreach($webapp in @($allSites)) {
 					$hasSlotExtension = $true
 					$extensionUpdate = "$PSScriptRoot\install-latest-extension.ps1 -SubscriptionId $SubscriptionId -ResourceGroup $ResourceGroup -SiteName $siteName -SlotName $slotName -Username $Username -Password $Password -Extension $Extension"
 					if ($Remove) { $extensionUpdate = "${extensionUpdate} -Remove" }
-					elseif ($requiresSpecificVersion) { $extensionUpdate = "${extensionUpdate} -ExtensionVersion ${ExtensionVersion}" }
+					elseif ($requiresSpecificVersion) {
+						if ($installedExtension.version -eq $ExtensionVersion) {
+							Write-Output "[${siteName}/${slotName}] Version (${extVersion}) of ${Extension} already installed."
+							break
+						}
+						else { $extensionUpdate = "${extensionUpdate} -ExtensionVersion ${ExtensionVersion}" }
+					}
 					elseif ($installedExtension.local_is_latest_version) {
 						Write-Output "[${siteName}/${slotName}] Latest version already installed."
 						break
