@@ -77,20 +77,21 @@ $baseApiUrl = if ($SlotName) {
 $siteExtensionsBase="${baseApiUrl}/siteextensions"
 $siteExtensionManage="${baseApiUrl}/siteextensions/${Extension}"
 
-# Function App file-lock workaround: set WEBSITE_PRIVATE_EXTENSIONS=0 as a sticky slot
-# setting so the Functions runtime does not hold file handles on C:\home\SiteExtensions\
-# during the Kudu MoveDirectory step. Only applies to Function App + slot deployments.
-# See: https://github.com/DataDog/datadog-aas-extension/issues/455
-if ($SlotName -and $kind -like '*functionapp*') {
-    Write-Output "[${SiteName}/${SlotName}] Function App detected — applying WEBSITE_PRIVATE_EXTENSIONS=0 as sticky slot setting to prevent install failures."
-    az webapp config appsettings set -n $SiteName -g $ResourceGroup --slot $SlotName --slot-settings "WEBSITE_PRIVATE_EXTENSIONS=0"
-    Write-Output "[${SiteName}/${SlotName}] Sticky setting applied. Proceeding with stop/install/start."
-}
-
 # Stop the web app
 # https://docs.microsoft.com/en-us/rest/api/appservice/webapps/stop
 Write-Output "[${displayName}] Stopping webapp"
 az rest -m POST --header "Accept=application/json" -u "${targetApiUrl}/stop?api-version=2019-08-01"
+
+# Function App file-lock workaround: set WEBSITE_PRIVATE_EXTENSIONS=0 as a sticky slot
+# setting so the Functions runtime does not hold file handles on C:\home\SiteExtensions\
+# during the Kudu MoveDirectory step. Applied after stop so no recycle is triggered —
+# the setting takes effect on the subsequent start. Only applies to Function App + slot deployments.
+# See: https://github.com/DataDog/datadog-aas-extension/issues/455
+if ($SlotName -and $kind -like '*functionapp*') {
+    Write-Output "[${SiteName}/${SlotName}] Function App detected — applying WEBSITE_PRIVATE_EXTENSIONS=0 as sticky slot setting to prevent install failures."
+    az webapp config appsettings set -n $SiteName -g $ResourceGroup --slot $SlotName --slot-settings "WEBSITE_PRIVATE_EXTENSIONS=0"
+    Write-Output "[${SiteName}/${SlotName}] Sticky setting applied."
+}
 
 $skipVar="<not-set>"
 
