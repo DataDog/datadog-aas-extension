@@ -49,7 +49,7 @@ update-self-monitoring-java-dev:
     ENVIRONMENT: "rc"
   trigger:
     project: DataDog/serverless-init-self-monitoring
-    branch: $SELF_MONITORING_REF
+    branch: $SELF_MONITORING_BRANCH
     strategy: depend
 
 create-github-release-java:
@@ -111,5 +111,5 @@ update-self-monitoring-java-prod:
     ENVIRONMENT: "prod"
   trigger:
     project: DataDog/serverless-init-self-monitoring
-    branch: $SELF_MONITORING_REF
+    branch: $SELF_MONITORING_BRANCH
     strategy: depend
