@@ -38,28 +38,19 @@ push-nuget-package-java-dev:
     - dotnet nuget push package/DevelopmentVerification.DdJava.Apm.${DEVELOPMENT_VERSION}.nupkg --source Public_Feed_Java --api-key any_string
 
 update-self-monitoring-java-dev:
-  tags: ["arch:amd64"]
-  image: registry.ddbuild.io/images/mirror/azure-cli:2.57.0
   rules:
     - if: $RUNTIME == "java"
   stage: test
   needs:
     - push-nuget-package-java-dev
-  script:
-    - apk update
-    - apk add aws-cli jq
-    - export AZ_SERVICE_PRINCIPAL=$(aws ssm get-parameter --region us-east-1 --name ci.datadog-aas-extension.azure-service-principal --with-decryption --query "Parameter.Value" --out text)
-    - export AZ_APP_ID=$(echo "$AZ_SERVICE_PRINCIPAL" | jq -r '.appId')
-    - export AZ_PASSWORD=$(echo "$AZ_SERVICE_PRINCIPAL" | jq -r '.password')
-    - export AZ_TENANT=$(echo "$AZ_SERVICE_PRINCIPAL" | jq -r '.tenant')
-    - az login --service-principal -u $AZ_APP_ID -p $AZ_PASSWORD --tenant $AZ_TENANT
-    - az webapp stop --resource-group "serverless-aas-win" --name "serverless-windows-java17-spring-self-monitoring-dev"
-    - az webapp stop --resource-group "serverless-aas-win" --name "serverless-windows-java21-spring-self-monitoring-dev"
-    - sleep 30
-    - az resource create --resource-group serverless-aas-win --resource-type "Microsoft.Web/sites/siteextensions" --name "serverless-windows-java17-spring-self-monitoring-dev/siteextensions/DevelopmentVerification.DdJava.Apm" --properties "{}" --debug
-    - az resource create --resource-group serverless-aas-win --resource-type "Microsoft.Web/sites/siteextensions" --name "serverless-windows-java21-spring-self-monitoring-dev/siteextensions/DevelopmentVerification.DdJava.Apm" --properties "{}" --debug
-    - az webapp start --resource-group "serverless-aas-win" --name "serverless-windows-java17-spring-self-monitoring-dev"
-    - az webapp start --resource-group "serverless-aas-win" --name "serverless-windows-java21-spring-self-monitoring-dev"
+  variables:
+    AAS_EXTENSION_ONLY: "true"
+    AAS_EXTENSION_TYPE: "dev"
+    ENVIRONMENT: "rc"
+  trigger:
+    project: DataDog/serverless-init-self-monitoring
+    branch: $SELF_MONITORING_BRANCH
+    strategy: depend
 
 create-github-release-java:
   tags: ["arch:amd64"]
@@ -108,23 +99,17 @@ push-nuget-package-java-prod:
     - dotnet nuget push package/Datadog.AzureAppServices.Java.Apm.${RELEASE_VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key $NUGET_API_KEY
 
 update-self-monitoring-java-prod:
-  tags: ["arch:amd64"]
-  image: registry.ddbuild.io/images/mirror/azure-cli:2.57.0
   rules:
     - if: $RUNTIME == "java" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   stage: deploy
   needs:
     - push-nuget-package-java-prod
   when: manual # Need to wait about 15 minutes for nuget package to be indexed before updating self monitoring apps
-  script:
-    - apk update
-    - apk add aws-cli jq
-    - export AZ_SERVICE_PRINCIPAL=$(aws ssm get-parameter --region us-east-1 --name ci.datadog-aas-extension.azure-service-principal --with-decryption --query "Parameter.Value" --out text)
-    - az login --service-principal -u $(echo "$AZ_SERVICE_PRINCIPAL" | jq -r '.appId') -p $(echo "$AZ_SERVICE_PRINCIPAL" | jq -r '.password') --tenant $(echo "$AZ_SERVICE_PRINCIPAL" | jq -r '.tenant')
-    - az webapp stop --resource-group "serverless-aas-win" --name "serverless-windows-java17-spring-self-monitoring"
-    - az webapp stop --resource-group "serverless-aas-win" --name "serverless-windows-java21-spring-self-monitoring"
-    - sleep 30
-    - az resource create --resource-group serverless-aas-win --resource-type "Microsoft.Web/sites/siteextensions" --name "serverless-windows-java17-spring-self-monitoring/siteextensions/Datadog.AzureAppServices.Java.Apm" --properties "{}" --debug
-    - az resource create --resource-group serverless-aas-win --resource-type "Microsoft.Web/sites/siteextensions" --name "serverless-windows-java21-spring-self-monitoring/siteextensions/Datadog.AzureAppServices.Java.Apm" --properties "{}" --debug
-    - az webapp start --resource-group "serverless-aas-win" --name "serverless-windows-java17-spring-self-monitoring"
-    - az webapp start --resource-group "serverless-aas-win" --name "serverless-windows-java21-spring-self-monitoring"
+  variables:
+    AAS_EXTENSION_ONLY: "true"
+    AAS_EXTENSION_TYPE: "prod"
+    ENVIRONMENT: "prod"
+  trigger:
+    project: DataDog/serverless-init-self-monitoring
+    branch: $SELF_MONITORING_BRANCH
+    strategy: depend
