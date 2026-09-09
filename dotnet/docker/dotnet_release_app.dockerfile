@@ -21,7 +21,7 @@ RUN set -x \
 
 # Retrieve and install .NET APM
 RUN set -x \
-    && curl -sS https://apmdotnetci.blob.core.windows.net/apm-dotnet-ci-artifacts-master/\?comp\=list\&prefix\=${APM_COMMIT_SHA} |  xq -x EnumerationResults/Blobs/Blob/Url | grep -E 'datadog-dotnet-apm-[0-9]+\.[0-9]+\.[0-9]+\.tar\.gz' | xargs curl -sSL -o ${ARTIFACT_NAME} \
+    && curl -sS https://apmdotnetbuildstorage.blob.core.windows.net/apm-dotnet-ci-artifacts-master/\?comp\=list\&prefix\=${APM_COMMIT_SHA} |  xq -x EnumerationResults/Blobs/Blob/Url | grep -E 'datadog-dotnet-apm-[0-9]+\.[0-9]+\.[0-9]+\.tar\.gz' | xargs curl -sSL -o ${ARTIFACT_NAME} \
     && mkdir -p /opt/datadog \
     && tar zxvf ${ARTIFACT_NAME} -C /opt/datadog
 
