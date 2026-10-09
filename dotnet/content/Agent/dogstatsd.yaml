@@ -1,6 +1,9 @@
 ## disable sending the host metadata payload
 enable_metadata_collection: false
 use_dogstatsd: true
+## exit if no listener can be created, for example when another DogStatsD from an overlapping
+## worker process still holds the named pipe, so the tracer starts a new one later
+dogstatsd_require_listener: true
 log_file: D:\home\LogFiles\datadog\vFOLDERUNKNOWN\dogstatsd.txt
 ## log_level: debug
 cloud_provider_metadata:
