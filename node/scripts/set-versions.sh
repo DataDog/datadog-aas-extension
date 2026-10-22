@@ -18,7 +18,7 @@ fi
 
 if [ -n "$CI_JOB_ID" ]; then
     echo "CI_JOB_ID is set, using it in the development version"
-    DEVELOPMENT_VERSION=$(echo "$RELEASE_VERSION" | awk -F '-' '{print $1}' | awk -v ci_job_id="$CI_JOB_ID" -F '.' '{print $1 "." $2 "." ci_job_id}')
+    DEVELOPMENT_VERSION=$(echo "$RELEASE_VERSION" | awk -F '-' '{print $1}' | awk -v ci_job_id="$CI_JOB_ID" -F '.' '{print $1 "." $2 "." (ci_job_id % 2147483647)}')
 else
     echo "CI_JOB_ID not set, using the release version as the development version"
     DEVELOPMENT_VERSION=$RELEASE_VERSION
