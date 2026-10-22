@@ -3,7 +3,7 @@ if [[ -z ${RELEASE_VERSION+x} ]] || [[ -z ${DEVELOPMENT_VERSION+x} ]]; then
     exit 1
 fi
 
-AGENT_VERSION="7.77.0"
+AGENT_VERSION="7.84.5"
 TRACER_VERSION="5.117.0"
 
 
