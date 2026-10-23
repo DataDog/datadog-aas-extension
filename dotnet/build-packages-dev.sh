@@ -31,9 +31,11 @@ echo "Versioning development files"
 sed -i "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" dotnet/content/Agent/datadog.yaml
 sed -i "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" dotnet/content/Agent/dogstatsd.yaml
 sed -i "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" dotnet/content/applicationHost.xdt
+sed -i "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" dotnet/content/scmApplicationHost.xdt
 sed -i "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" dotnet/content/install.cmd
 sed -i "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" dotnet/content/install.ps1
 sed -i "s/vUNKNOWN/v${DEVELOPMENT_VERSION}/g" dotnet/content/applicationHost.xdt
+sed -i "s/vUNKNOWN/v${DEVELOPMENT_VERSION}/g" dotnet/content/scmApplicationHost.xdt
 sed -i "s/vUNKNOWN/v${DEVELOPMENT_VERSION}/g" dotnet/content/install.cmd
 sed -i "s/vUNKNOWN/v${DEVELOPMENT_VERSION}/g" dotnet/content/install.ps1
 

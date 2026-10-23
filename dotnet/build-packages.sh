@@ -33,9 +33,11 @@ echo "Versioning release files"
 sed -i "s/vFOLDERUNKNOWN/v${RELEASE_VERSION_FILE}/g" dotnet/content/Agent/datadog.yaml
 sed -i "s/vFOLDERUNKNOWN/v${RELEASE_VERSION_FILE}/g" dotnet/content/Agent/dogstatsd.yaml
 sed -i "s/vFOLDERUNKNOWN/v${RELEASE_VERSION_FILE}/g" dotnet/content/applicationHost.xdt
+sed -i "s/vFOLDERUNKNOWN/v${RELEASE_VERSION_FILE}/g" dotnet/content/scmApplicationHost.xdt
 sed -i "s/vFOLDERUNKNOWN/v${RELEASE_VERSION_FILE}/g" dotnet/content/install.cmd
 sed -i "s/vFOLDERUNKNOWN/v${RELEASE_VERSION_FILE}/g" dotnet/content/install.ps1
 sed -i "s/vUNKNOWN/v${RELEASE_VERSION}/g" dotnet/content/applicationHost.xdt
+sed -i "s/vUNKNOWN/v${RELEASE_VERSION}/g" dotnet/content/scmApplicationHost.xdt
 sed -i "s/vUNKNOWN/v${RELEASE_VERSION}/g" dotnet/content/install.cmd
 sed -i "s/vUNKNOWN/v${RELEASE_VERSION}/g" dotnet/content/install.ps1
 
