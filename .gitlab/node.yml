@@ -22,8 +22,8 @@ fetch-agent-binaries-node:
     - mkdir -p node/downloads
     - echo "Fetching agent artifact from $AGENT_JOB_URL"
     # TODO(ddci-run migration, CIEXE-2696): downloads another project's job artifacts by job ID via the GitLab REST API with a PAT.
-    # `needs: project:` takes a ref/pipeline, not an arbitrary job ID, and the DDCI API has no cross-project artifact read,
-    # so there is no safe replacement yet. Needs an owner decision (e.g. publish the agent binaries somewhere DDCI-reachable).
+    # `needs: project:` takes a ref/pipeline, not an arbitrary job ID, and no DDCI API for cross-project artifact reads is known
+    # (unconfirmed with the DDCI owners), so there is no safe replacement yet. Needs an owner decision (e.g. publish the agent binaries somewhere DDCI-reachable).
     - curl -fsSL -H "PRIVATE-TOKEN:$GITLAB_PAT" -o /tmp/bulk.zip "https://gitlab.ddbuild.io/api/v4/projects/DataDog%2Fdatadog-agent/jobs/$JOB_ID/artifacts"
     - unzip -qo /tmp/bulk.zip -d /tmp/bulk
     - find /tmp/bulk -name 'agent-binaries-*-x86_64.zip' -print -exec cp {} node/downloads/agent.zip \;
