@@ -40,6 +40,24 @@ public class PackagingTests
     }
 
     [Fact]
+    public void PreflightLoadsExactlyTheEngineTheDllReferences()
+    {
+        // preflight.ps1 loads the engine from the GAC by full name. A wrong version or token makes it
+        // always fall back to the classic file (it did once, with the wrong public key token).
+        var md = Metadata(out var pe);
+        using (pe)
+        {
+            var reference = md.AssemblyReferences.Select(h => md.GetAssemblyReference(h))
+                .Single(r => md.GetString(r.Name) == "Microsoft.Web.XmlTransform");
+            var token = string.Concat(md.GetBlobBytes(reference.PublicKeyOrToken).Select(b => b.ToString("x2")));
+            var expected = $"Microsoft.Web.XmlTransform, Version={reference.Version}, Culture=neutral, PublicKeyToken={token}";
+            var preflight = File.ReadAllText(Path.Combine(Repo, "dotnet", "content", "preflight.ps1"));
+            var loaded = Regex.Match(preflight, @"Assembly\]::Load\(""([^""]+)""\)").Groups[1].Value;
+            Assert.Equal(expected, loaded);
+        }
+    }
+
+    [Fact]
     public void TargetsNetFramework45()
     {
         var md = Metadata(out var pe);

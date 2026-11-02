@@ -58,7 +58,7 @@ try {
         [void][Reflection.Assembly]::LoadFrom($EnginePath)
     } else {
         # The same assembly identity the DLL is built against; the platform's config step binds to it from the GAC.
-        [void][Reflection.Assembly]::Load("Microsoft.Web.XmlTransform, Version=1.4.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35")
+        [void][Reflection.Assembly]::Load("Microsoft.Web.XmlTransform, Version=1.4.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")
     }
 
     $dll = Join-Path (Join-Path $ExtensionPath $VersionFolder) "Datadog.AzureAppServices.DotNet.Xdt.dll"
