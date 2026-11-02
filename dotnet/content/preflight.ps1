@@ -1,9 +1,10 @@
 # Install-time check to decide how to apply applicationHost.xdt config. Called by install.ps1.
 #
 # install.ps1 runs once, in Kudu, on the instance, when the extension is installed or updated.
-# If the instance can load our custom transform DLL against Azure's Microsoft.Web.XmlTransform
-# and our custom transform DLL produces the expected variables, we use that. If anything fails,
-# we use the standard .xdt transform instead.
+# The one-step file is off unless install.ps1 passes -OneStep. Then, if the instance can load our
+# custom transform DLL against Azure's Microsoft.Web.XmlTransform and our custom transform DLL
+# produces the expected variables, we use that. If anything fails, we use the standard .xdt
+# transform instead.
 #
 # Expects, next to install.ps1, with the pipe GUIDs and the .NET Core edit already applied:
 #   applicationHost.xdt          the standard RemoveAll + Insert file
@@ -14,13 +15,14 @@
 # This check runs once, on the instance that runs the install. If the platform's config step later
 # can't load the DLL, for example after a platform update changes its Microsoft.Web.XmlTransform,
 # the whole run fails and every site extension's config is dropped, not only ours.
-# -StandardOnly skips the check and puts the standard file back, as a way out of that case.
+# That is why the one-step file is opt-in. Without -OneStep, the preflight skips the check and puts
+# the standard file back.
 #
 # -EnginePath is for local tests only. On App Service the engine is loaded from the GAC by name.
 param(
     [string] $ExtensionPath = $PSScriptRoot,
     [string] $EnginePath = "",
-    [switch] $StandardOnly
+    [switch] $OneStep
 )
 
 function Log ([string] $text) { Write-Output "[preflight] $text" }
@@ -54,8 +56,8 @@ if ((Get-Content $target -Raw) -notmatch 'xdt:Transform="SetEnvironmentVariables
     Log("applicationHost.xdt is already the one-step file and there is no standard copy; leaving it")
     return "custom"
 }
-if ($StandardOnly) {
-    Log("Using standard applicationHost.xdt: the one-step file is turned off")
+if (-not $OneStep) {
+    Log("Using standard applicationHost.xdt: the one-step file is off; DD_AAS_DOTNET_ONE_STEP_XDT_ENABLED=true turns it on")
     Copy-Item $standard $target -Force
     return $choice
 }
