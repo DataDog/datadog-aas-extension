@@ -105,8 +105,10 @@ if ($dotnetRuntime -eq "Core") {
 # Decide between standard and custom .xdt transform
 # Custom applies config faster, avoiding AAS startup deadlines
 # However, in the case of an error, we fall back to standard
+# The app setting DD_AAS_DOTNET_ONE_STEP_XDT_ENABLED=false keeps the standard file
+$standardOnly = $env:DD_AAS_DOTNET_ONE_STEP_XDT_ENABLED -in @("false", "0")
 try {
-	$lines = @(& "$PSScriptRoot\preflight.ps1" -ExtensionPath $PSScriptRoot)
+	$lines = @(& "$PSScriptRoot\preflight.ps1" -ExtensionPath $PSScriptRoot -StandardOnly:$standardOnly)
 	foreach ($line in $lines | Select-Object -SkipLast 1) { Log($line) }
 	Log("applicationHost.xdt: $($lines[-1])")
 } catch {

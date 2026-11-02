@@ -11,10 +11,16 @@
 # Keeps the standard file as applicationHost.standard.xdt, then writes the chosen file to
 # applicationHost.xdt. The last output line is "custom" or "standard".
 #
+# This check runs once, on the instance that runs the install. If the platform's config step later
+# can't load the DLL, for example after a platform update changes its Microsoft.Web.XmlTransform,
+# the whole run fails and every site extension's config is dropped, not only ours.
+# -StandardOnly skips the check and puts the standard file back, as a way out of that case.
+#
 # -EnginePath is for local tests only. On App Service the engine is loaded from the GAC by name.
 param(
     [string] $ExtensionPath = $PSScriptRoot,
-    [string] $EnginePath = ""
+    [string] $EnginePath = "",
+    [switch] $StandardOnly
 )
 
 function Log ([string] $text) { Write-Output "[preflight] $text" }
@@ -45,8 +51,13 @@ $choice = "standard"
 if ((Get-Content $target -Raw) -notmatch 'xdt:Transform="SetEnvironmentVariables"') {
     Copy-Item $target $standard -Force
 } elseif (-not (Test-Path $standard)) {
-    Log("applicationHost.xdt is already the one-step file; leaving it")
+    Log("applicationHost.xdt is already the one-step file and there is no standard copy; leaving it")
     return "custom"
+}
+if ($StandardOnly) {
+    Log("Using standard applicationHost.xdt: the one-step file is turned off")
+    Copy-Item $standard $target -Force
+    return $choice
 }
 try {
     if ($EnginePath) {

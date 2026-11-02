@@ -15,9 +15,9 @@ setup() {
     cp "$DLL" "$dir/vTEST/"
     echo "$dir"
 }
-check() {  # check LABEL EXPECTED DIR
+check() {  # check LABEL EXPECTED DIR [EXTRA PREFLIGHT ARGS...]
     local got used
-    got="$(pwsh -NoProfile -File "$REPO/dotnet/content/preflight.ps1" -ExtensionPath "$3" -EnginePath "$ENGINE" | tail -1)"
+    got="$(pwsh -NoProfile -File "$REPO/dotnet/content/preflight.ps1" -ExtensionPath "$3" -EnginePath "$ENGINE" "${@:4}" | tail -1)"
     used="$(grep -c SetEnvironmentVariables "$3/applicationHost.xdt" || true)"
     if [[ "$got" == "$2" && ( ( "$2" == custom && "$used" -gt 0 ) || ( "$2" == standard && "$used" == 0 ) ) ]]; then
         echo "ok   $1 -> $got"
@@ -31,3 +31,5 @@ d=$(setup); rm "$d/vTEST/Datadog.AzureAppServices.DotNet.Xdt.dll"; check "DLL mi
 d=$(setup); printf 'not a dll' > "$d/vTEST/Datadog.AzureAppServices.DotNet.Xdt.dll"; check "DLL corrupt" standard "$d"
 d=$(setup); sed -i.bak 's|<add name="DD_AZURE_APP_SERVICES" value="1" />|<add name="DD_AZURE_APP_SERVICES" value="0" />|' "$d/applicationHost.custom.xdt"; check "one-step file differs from standard" standard "$d"
 d=$(setup); sed -i.bak 's|SetEnvironmentVariables|SetEnvironmentVariablez|' "$d/applicationHost.custom.xdt"; check "unknown transform name" standard "$d"
+d=$(setup); check "turned off" standard "$d" -StandardOnly
+d=$(setup); check "one-step first" custom "$d"; check "turned off on the next install" standard "$d" -StandardOnly
