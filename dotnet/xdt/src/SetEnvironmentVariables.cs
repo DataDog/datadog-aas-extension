@@ -1,23 +1,21 @@
 // One XDT operation that sets the Datadog .NET extension's IIS environment variables on the main site.
 //
-// Why it exists: App Service applies every site extension's applicationHost.xdt in one run at each
-// worker start, and drops all of them if that run passes about 60 s (SVLS-9057). Today's
-// file needs 66 operations; this needs one.
+// App Service applies every site extension's applicationHost.xdt in one run as part of startup.
+// This custom operation is faster than applying individual settings.
 //
 // Use it on <system.webServer xdt:Transform="SetEnvironmentVariables">, with these children:
 //   <add name="X" value="v" />           replace every add named X with this one (today's RemoveAll + Insert)
 //   <addIfMissing name="X" value="v" />  add only if no add named X exists (today's InsertIfMissing)
 //   <remove name="X" />                  remove every add named X (today's RemoveAll alone)
 //
-// Safety rules, because this code runs inside the platform's config step for every extension, and
-// any error there drops every extension's config:
-//   1. It never throws and never logs an error. Problems are logged as warnings, and the config is
-//      left exactly as it was, so only Datadog's settings are missing.
+// Safety rules:
+//   1. It never throws and never logs an error. Problems are logged as warnings.
 //   2. All or nothing. It checks every child first and builds the new <runtime> element on a copy.
 //      The live document changes in one step at the end.
-//   3. It only touches add elements with the names it was given, under the root
-//      system.webServer/runtime/environmentVariables. Everything else is kept as it is, in order.
-//   4. It depends only on mscorlib, System.Xml, and Microsoft.Web.XmlTransform (tests check this).
+//   3. It only touches add elements with the names it was given. Everything else is kept as it is, in order.
+//   4. It depends only on mscorlib, System.Xml, and Microsoft.Web.XmlTransform.
+// This code runs inside the platform's config step for every extension. any error drops every config
+// It is important for this code to be reliable.
 using System;
 using System.Collections.Generic;
 using System.Xml;

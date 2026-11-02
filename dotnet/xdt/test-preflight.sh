@@ -17,9 +17,9 @@ setup() {
 }
 check() {  # check LABEL EXPECTED DIR
     local got used
-    got="$(pwsh -NoProfile -File "$REPO/dotnet/content/preflight.ps1" -ExtensionPath "$3" -VersionFolder vTEST -EnginePath "$ENGINE" | tail -1)"
+    got="$(pwsh -NoProfile -File "$REPO/dotnet/content/preflight.ps1" -ExtensionPath "$3" -EnginePath "$ENGINE" | tail -1)"
     used="$(grep -c SetEnvironmentVariables "$3/applicationHost.xdt" || true)"
-    if [[ "$got" == "$2" && ( ( "$2" == custom && "$used" -gt 0 ) || ( "$2" == classic && "$used" == 0 ) ) ]]; then
+    if [[ "$got" == "$2" && ( ( "$2" == custom && "$used" -gt 0 ) || ( "$2" == standard && "$used" == 0 ) ) ]]; then
         echo "ok   $1 -> $got"
     else
         echo "FAIL $1: expected $2, got $got (one-step file in use: $used)"; exit 1
@@ -27,7 +27,7 @@ check() {  # check LABEL EXPECTED DIR
 }
 d=$(setup); check "everything in place" custom "$d"
 check "run again on the same folder" custom "$d"
-d=$(setup); rm "$d/vTEST/Datadog.AzureAppServices.DotNet.Xdt.dll"; check "DLL missing" classic "$d"
-d=$(setup); printf 'not a dll' > "$d/vTEST/Datadog.AzureAppServices.DotNet.Xdt.dll"; check "DLL corrupt" classic "$d"
-d=$(setup); sed -i.bak 's|<add name="DD_AZURE_APP_SERVICES" value="1" />|<add name="DD_AZURE_APP_SERVICES" value="0" />|' "$d/applicationHost.custom.xdt"; check "one-step file differs from classic" classic "$d"
-d=$(setup); sed -i.bak 's|SetEnvironmentVariables|SetEnvironmentVariablez|' "$d/applicationHost.custom.xdt"; check "unknown transform name" classic "$d"
+d=$(setup); rm "$d/vTEST/Datadog.AzureAppServices.DotNet.Xdt.dll"; check "DLL missing" standard "$d"
+d=$(setup); printf 'not a dll' > "$d/vTEST/Datadog.AzureAppServices.DotNet.Xdt.dll"; check "DLL corrupt" standard "$d"
+d=$(setup); sed -i.bak 's|<add name="DD_AZURE_APP_SERVICES" value="1" />|<add name="DD_AZURE_APP_SERVICES" value="0" />|' "$d/applicationHost.custom.xdt"; check "one-step file differs from standard" standard "$d"
+d=$(setup); sed -i.bak 's|SetEnvironmentVariables|SetEnvironmentVariablez|' "$d/applicationHost.custom.xdt"; check "unknown transform name" standard "$d"

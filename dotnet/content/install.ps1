@@ -11,7 +11,7 @@ function Log ([string] $text)
 Log("Beginning install")
 
 function SetPipe ([string] $file, [string] $pipePattern, [string] $pipeGuid)
-{ 
+{
 	if (Select-String -Path $file -Pattern $pipePattern -SimpleMatch -Quiet)
 	{
 		Log("Setting ${pipePattern} to ${pipeGuid} in ${file}")
@@ -87,26 +87,27 @@ Log("Detected .NET runtime: $dotnetRuntime")
 
 if ($dotnetRuntime -eq "Core") {
 	Log("Changing applicationHost.xdt to not set COR_ENABLE_PROFILING so that .NET Framework instrumentation is disabled by default in .NET Core applications.")
+	# Remove COR_ENABLE_PROFILING in the standard .xdt file
 	$xdtPath=".\applicationHost.xdt"
 	$xdtContent=Get-Content -Path $xdtPath -Raw
 	$xdtContent=$xdtContent -replace '\s*<add name="COR_ENABLE_PROFILING"[^>]*xdt:Transform="Insert"\s*\/>', ''
 	Set-Content -Path $xdtPath -Value $xdtContent
-	# The one-step file lists variables without xdt:Transform, so turn its add into a remove, which is what the classic file ends up doing.
+	# Remove COR_ENABLE_PROFILING in the custom transform .xdt file
 	$customPath=".\applicationHost.custom.xdt"
 	$customContent=Get-Content -Path $customPath -Raw
 	$customContent=$customContent -replace '<add name="COR_ENABLE_PROFILING" value="[^"]*" />', '<remove name="COR_ENABLE_PROFILING" />'
 	Set-Content -Path $customPath -Value $customContent
 }
 
-# Use the one-step applicationHost.xdt only if this instance can run it; otherwise keep the classic file.
-# App Service drops every extension's config when applying it takes more than about 60 s, and the
-# classic file's 68 operations can take that long on a busy instance (SVLS-9057).
+# Decide between standard and custom .xdt transform
+# Custom applies config faster, avoiding AAS startup deadlines
+# However, in the case of an error, we fall back to standard
 try {
-	$lines = @(& "$PSScriptRoot\preflight.ps1" -ExtensionPath $PSScriptRoot -VersionFolder "vFOLDERUNKNOWN")
+	$lines = @(& "$PSScriptRoot\preflight.ps1" -ExtensionPath $PSScriptRoot)
 	foreach ($line in $lines | Select-Object -SkipLast 1) { Log($line) }
 	Log("applicationHost.xdt: $($lines[-1])")
 } catch {
-	Log("Preflight failed, keeping the classic applicationHost.xdt: $_")
+	Log("Preflight failed, keeping the standard applicationHost.xdt: $_")
 }
 
 Log("Install complete")

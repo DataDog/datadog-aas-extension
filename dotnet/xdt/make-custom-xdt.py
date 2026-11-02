@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Turn a .NET extension applicationHost.xdt (RemoveAll + Insert lines) into the one-operation
+"""Turn a .NET extension applicationHost.xdt (RemoveAll + Insert config) into the one-operation
 custom-transform file that does the same thing through Datadog.AzureAppServices.DotNet.Xdt.dll.
 
     make-custom-xdt.py <applicationHost.xdt> <output.xdt> [--import-path PATH]

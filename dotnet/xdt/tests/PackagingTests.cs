@@ -43,7 +43,7 @@ public class PackagingTests
     public void PreflightLoadsExactlyTheEngineTheDllReferences()
     {
         // preflight.ps1 loads the engine from the GAC by full name. A wrong version or token makes it
-        // always fall back to the classic file (it did once, with the wrong public key token).
+        // always fall back to the standard file (it did once, with the wrong public key token).
         var md = Metadata(out var pe);
         using (pe)
         {
@@ -151,9 +151,9 @@ public class PackagingTests
         Assert.Contains("<remove name=\"COR_ENABLE_PROFILING\" />", custom);
         Assert.DoesNotContain("<add name=\"COR_ENABLE_PROFILING\"", custom);
 
-        var classic = CoreEdits(RepoXdt);
-        Assert.DoesNotMatch(@"<add name=""COR_ENABLE_PROFILING""[^>]*xdt:Transform=""Insert""", classic);
-        Assert.Contains("name=\"COR_ENABLE_PROFILING\" xdt:Locator=\"Match(name)\" xdt:Transform=\"RemoveAll\"", classic);
+        var standard = CoreEdits(RepoXdt);
+        Assert.DoesNotMatch(@"<add name=""COR_ENABLE_PROFILING""[^>]*xdt:Transform=""Insert""", standard);
+        Assert.Contains("name=\"COR_ENABLE_PROFILING\" xdt:Locator=\"Match(name)\" xdt:Transform=\"RemoveAll\"", standard);
     }
 
     [Fact]
