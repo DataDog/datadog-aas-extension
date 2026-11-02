@@ -81,6 +81,10 @@ sign-files:
   variables:
     CI_IMAGE_WIN_LTSC2022_X64_SUFFIX: ""
     ARCH: "x64"
+  # used by signFiles.bat to get the AWS credentials of the job's CI Identity
+  id_tokens:
+    CI_IDENTITIES_GITLAB_ID_TOKEN:
+      aud: ci-identities
   script:
     - >
       $coreimg = (((iwr -UseBasicParsing -DisableKeepAlive https://raw.githubusercontent.com/DataDog/datadog-agent/main/.gitlab-ci.yml).content  -split "`n"| select-string "CI_IMAGE_WIN_LTSC2022_X64:") -split ":")[1].Trim();
@@ -89,6 +93,10 @@ sign-files:
       --rm
       -v "$(Get-Location):c:\mnt"
       -e AWS_NETWORKING=true
+      -e CI_IDENTITIES_GITLAB_ID_TOKEN
+      -e CI_JOB_ID
+      -e CI_PROJECT_NAME
+      -e CI_JOB_NAME_SLUG
       registry.ddbuild.io/ci/datadog-agent-buildimages/windows_ltsc2022_${Env:ARCH}${Env:CI_IMAGE_WIN_LTSC2022_X64_SUFFIX}:${Env:CI_IMAGE_WIN_LTSC2022_X64}
       powershell -Command c:\mnt\node\scripts\signFiles.bat
   artifacts:
