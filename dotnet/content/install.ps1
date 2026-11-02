@@ -87,11 +87,14 @@ Log("Detected .NET runtime: $dotnetRuntime")
 
 if ($dotnetRuntime -eq "Core") {
 	Log("Changing applicationHost.xdt to not set COR_ENABLE_PROFILING so that .NET Framework instrumentation is disabled by default in .NET Core applications.")
-	# Remove COR_ENABLE_PROFILING in the standard .xdt file
-	$xdtPath=".\applicationHost.xdt"
-	$xdtContent=Get-Content -Path $xdtPath -Raw
-	$xdtContent=$xdtContent -replace '\s*<add name="COR_ENABLE_PROFILING"[^>]*xdt:Transform="Insert"\s*\/>', ''
-	Set-Content -Path $xdtPath -Value $xdtContent
+	# Remove COR_ENABLE_PROFILING in the standard .xdt file, and in the copy of it that an earlier
+	# install's preflight kept, which the preflight can put back
+	foreach ($xdtPath in @(".\applicationHost.xdt", ".\applicationHost.standard.xdt")) {
+		if (-not (Test-Path $xdtPath)) { continue }
+		$xdtContent=Get-Content -Path $xdtPath -Raw
+		$xdtContent=$xdtContent -replace '\s*<add name="COR_ENABLE_PROFILING"[^>]*xdt:Transform="Insert"\s*\/>', ''
+		Set-Content -Path $xdtPath -Value $xdtContent
+	}
 	# Remove COR_ENABLE_PROFILING in the custom transform .xdt file
 	$customPath=".\applicationHost.custom.xdt"
 	$customContent=Get-Content -Path $customPath -Raw
