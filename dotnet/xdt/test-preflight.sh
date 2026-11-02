@@ -10,8 +10,8 @@ setup() {
     local dir; dir="$(mktemp -d)"
     mkdir -p "$dir/vTEST"
     # Forward slashes in the import path, since this doesn't run on Windows.
-    sed 's|path="TEST_IMPORT"|path="%XDT_EXTENSIONPATH%/vTEST/Datadog.AzureAppServices.DotNet.Xdt.dll"|' "$REPO/dotnet/xdt/tests/inputs/custom-from-installed.xdt" > "$dir/applicationHost.custom.xdt"
-    cp "$REPO/dotnet/xdt/tests/inputs/installed.applicationHost.xdt" "$dir/applicationHost.xdt"
+    sed 's|<xdt:Import path="[^"]*"|<xdt:Import path="%XDT_EXTENSIONPATH%/vTEST/Datadog.AzureAppServices.DotNet.Xdt.dll"|' "$REPO/dotnet/content/applicationHost.custom.xdt" > "$dir/applicationHost.custom.xdt"
+    cp "$REPO/dotnet/content/applicationHost.xdt" "$dir/applicationHost.xdt"
     cp "$DLL" "$dir/vTEST/"
     echo "$dir"
 }

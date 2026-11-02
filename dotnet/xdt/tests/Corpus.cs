@@ -5,14 +5,15 @@ namespace Datadog.AzureAppServices.DotNet.Xdt.Tests;
 
 /// <summary>
 /// Input configs, built from an applicationhost.config downloaded from a test App Service, in the
-/// shapes a customer's worker can have before Datadog's step runs.
+/// shapes a customer's worker can have before Datadog's step runs. The file is trimmed to the root
+/// environment block and nearby elements that look like it.
 /// </summary>
 public static class Corpus
 {
     public static string Base => Files.Read("platform.applicationhost.config");
 
     public static readonly string[] OurNames = Regex
-        .Matches(Files.Today, "<add name=\"([^\"]+)\"")
+        .Matches(Files.Standard, "<add name=\"([^\"]+)\"")
         .Select(m => m.Groups[1].Value).Distinct().ToArray();
 
     public static IEnumerable<object[]> Shapes() => Builders.Keys.Select(k => new object[] { k });
@@ -62,7 +63,7 @@ public static class Corpus
             vars.AppendChild(vars.OwnerDocument.CreateComment(" another "));
         }),
         ["a lowercase copy of one of our names"] = () => Vars(("dd_azure_app_services", "1")),
-        ["already applied once"] = () => Run.Apply(Base, Files.Today).Text,
+        ["already applied once"] = () => Run.Apply(Base, Files.Standard).Text,
     };
 
     public static string Vars(params (string Name, string Value)[] vars) => Edit(ws =>

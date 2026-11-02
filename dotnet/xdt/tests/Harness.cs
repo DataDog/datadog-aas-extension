@@ -73,15 +73,20 @@ public static class Files
     public static string Dir => Path.Combine(Repo, "dotnet", "xdt", "tests", "inputs");
     public static string Read(string name) => File.ReadAllText(Path.Combine(Dir, name));
 
-    /// <summary>An installed .NET applicationHost.xdt (v3_56_000, values filled in by install.ps1, pipe GUIDs replaced).</summary>
-    public static string Today => Read("installed.applicationHost.xdt");
+    private static string Content(string name) => File.ReadAllText(Path.Combine(Repo, "dotnet", "content", name));
 
-    /// <summary>The custom file generated from today's file, importing the transform compiled into this test assembly.</summary>
+    /// <summary>The standard applicationHost.xdt, as the package ships it.</summary>
+    public static string Standard => Content("applicationHost.xdt");
+
+    /// <summary>The shipped applicationHost.custom.xdt, with its import path replaced by the given attribute.</summary>
+    public static string CustomImporting(string importAttribute) =>
+        new Regex("<xdt:Import path=\"[^\"]*\"").Replace(Content("applicationHost.custom.xdt"), "<xdt:Import " + importAttribute, 1);
+
+    /// <summary>The custom file, importing the transform compiled into this test assembly.</summary>
     public static string Custom => CustomWith(typeof(SetEnvironmentVariables));
 
     public static string CustomWith(Type transformType) =>
-        Read("custom-from-installed.xdt")
-            .Replace("path=\"TEST_IMPORT\"", $"assembly=\"{transformType.Assembly.GetName().Name}\"")
+        CustomImporting($"assembly=\"{transformType.Assembly.GetName().Name}\"")
             .Replace("namespace=\"Datadog.AzureAppServices.DotNet.Xdt\"", $"namespace=\"{transformType.Namespace}\"")
             .Replace("xdt:Transform=\"SetEnvironmentVariables\"", $"xdt:Transform=\"{transformType.Name}\"");
 }

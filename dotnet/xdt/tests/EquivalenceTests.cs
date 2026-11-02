@@ -13,7 +13,7 @@ public class EquivalenceTests
     public void SameVariablesAsTodaysFile(string shape)
     {
         var input = Corpus.Build(shape);
-        var today = Run.Apply(input, Files.Today);
+        var today = Run.Apply(input, Files.Standard);
         var custom = Run.Apply(input, Files.Custom);
 
         Assert.True(today.Ok, "today's file failed on this input, so the input is wrong");
@@ -45,7 +45,7 @@ public class EquivalenceTests
                 }
             });
 
-            var today = Run.Apply(input, Files.Today);
+            var today = Run.Apply(input, Files.Standard);
             var custom = Run.Apply(input, Files.Custom);
             Assert.True(custom.Ok, $"case {i}");
             Assert.Empty(custom.Errors);

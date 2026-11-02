@@ -137,10 +137,10 @@ public class PackagingTests
     [Fact]
     public void TheBuiltDllLoadsThroughAnAbsoluteImportPath()
     {
-        var xdt = Files.Read("custom-from-installed.xdt").Replace("TEST_IMPORT", BuiltDll);
+        var xdt = Files.CustomImporting($"path=\"{BuiltDll}\"");
         var run = Run.Apply(Corpus.Base, xdt);
         Assert.True(run.Ok, string.Join("; ", run.Errors));
-        Assert.Equal(Env.Multiset(Run.Apply(Corpus.Base, Files.Today).Document), Env.Multiset(run.Document));
+        Assert.Equal(Env.Multiset(Run.Apply(Corpus.Base, Files.Standard).Document), Env.Multiset(run.Document));
     }
 #endif
 }
