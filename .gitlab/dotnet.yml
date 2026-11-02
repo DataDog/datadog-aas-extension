@@ -14,3 +14,15 @@ dotnet-package:
     expire_in: 1 weeks
     paths:
       - package
+
+dotnet-xdt-tests:
+  tags: ["arch:amd64"]
+  image: registry.ddbuild.io/images/mirror/dotnet:sdk-8.0.100-1
+  rules:
+    - if: $RUNTIME != "node" && $RUNTIME != "java"
+  stage: build
+  script:
+    - dotnet build dotnet/xdt/src/Datadog.AzureAppServices.DotNet.Xdt.csproj -c Release
+    # 1.4.0 is the Microsoft.Web.XmlTransform in the App Service GAC; 3.1.0 is the current package.
+    - dotnet test dotnet/xdt/tests -p:XdtVersion=1.4.0
+    - dotnet test dotnet/xdt/tests -p:XdtVersion=3.1.0

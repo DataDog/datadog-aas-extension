@@ -26,3 +26,4 @@ java/dev
 ## visual studio files
 .vs/
 *.user
+/dotnet-xdt-build/

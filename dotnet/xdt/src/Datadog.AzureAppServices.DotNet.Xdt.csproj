@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net45</TargetFramework>
+    <AssemblyName>Datadog.AzureAppServices.DotNet.Xdt</AssemblyName>
+    <RootNamespace>Datadog.AzureAppServices.DotNet.Xdt</RootNamespace>
+    <LangVersion>7.3</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- The App Service instance GAC has Microsoft.Web.XmlTransform 1.4.0.0. -->
+    <PackageReference Include="Microsoft.Web.Xdt" Version="1.4.0" ExcludeAssets="runtime" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Datadog.AzureAppServices.DotNet.Xdt.Tests" />
+  </ItemGroup>
+</Project>

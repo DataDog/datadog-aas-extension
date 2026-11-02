@@ -31,14 +31,23 @@ echo "Versioning development files"
 sed -i "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" dotnet/content/Agent/datadog.yaml
 sed -i "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" dotnet/content/Agent/dogstatsd.yaml
 sed -i "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" dotnet/content/applicationHost.xdt
+sed -i "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" dotnet/content/applicationHost.custom.xdt
 sed -i "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" dotnet/content/install.cmd
 sed -i "s/vFOLDERUNKNOWN/v${DEVELOPMENT_VERSION_FILE}/g" dotnet/content/install.ps1
 sed -i "s/vUNKNOWN/v${DEVELOPMENT_VERSION}/g" dotnet/content/applicationHost.xdt
+sed -i "s/vUNKNOWN/v${DEVELOPMENT_VERSION}/g" dotnet/content/applicationHost.custom.xdt
 sed -i "s/vUNKNOWN/v${DEVELOPMENT_VERSION}/g" dotnet/content/install.cmd
 sed -i "s/vUNKNOWN/v${DEVELOPMENT_VERSION}/g" dotnet/content/install.ps1
 
 echo "Moving content to development versioned folder"
 mkdir $DEVELOPMENT_DIR
+
+echo "Building the one-step applicationHost.xdt transform"
+dotnet build dotnet/xdt/src/Datadog.AzureAppServices.DotNet.Xdt.csproj -c Release -o dotnet-xdt-build
+if [ $? -ne 0 ]; then
+    exit 1;
+fi
+cp dotnet-xdt-build/Datadog.AzureAppServices.DotNet.Xdt.dll $DEVELOPMENT_DIR/
 mv -v dotnet/content/Tracer $DEVELOPMENT_DIR/Tracer
 mv -v dotnet/content/Agent $DEVELOPMENT_DIR/Agent
 

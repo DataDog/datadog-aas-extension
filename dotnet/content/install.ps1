@@ -29,6 +29,8 @@ $statsPipeId=([guid]::NewGuid().ToString().ToUpper())
 
 SetPipe ".\applicationHost.xdt" "uniqueStatsPipeId" "${statsPipeId}"
 SetPipe ".\applicationHost.xdt" "uniqueTracePipeId" "${tracePipeId}"
+SetPipe ".\applicationHost.custom.xdt" "uniqueStatsPipeId" "${statsPipeId}"
+SetPipe ".\applicationHost.custom.xdt" "uniqueTracePipeId" "${tracePipeId}"
 SetPipe ".\scmApplicationHost.xdt" "uniqueStatsPipeId" "${statsPipeId}"
 SetPipe ".\scmApplicationHost.xdt" "uniqueTracePipeId" "${tracePipeId}"
 
@@ -89,6 +91,22 @@ if ($dotnetRuntime -eq "Core") {
 	$xdtContent=Get-Content -Path $xdtPath -Raw
 	$xdtContent=$xdtContent -replace '\s*<add name="COR_ENABLE_PROFILING"[^>]*xdt:Transform="Insert"\s*\/>', ''
 	Set-Content -Path $xdtPath -Value $xdtContent
+	# The one-step file lists variables without xdt:Transform, so turn its add into a remove, which is what the classic file ends up doing.
+	$customPath=".\applicationHost.custom.xdt"
+	$customContent=Get-Content -Path $customPath -Raw
+	$customContent=$customContent -replace '<add name="COR_ENABLE_PROFILING" value="[^"]*" />', '<remove name="COR_ENABLE_PROFILING" />'
+	Set-Content -Path $customPath -Value $customContent
+}
+
+# Use the one-step applicationHost.xdt only if this instance can run it; otherwise keep the classic file.
+# App Service drops every extension's config when applying it takes more than about 60 s, and the
+# classic file's 68 operations can take that long on a busy instance (SVLS-9057).
+try {
+	$lines = @(& "$PSScriptRoot\preflight.ps1" -ExtensionPath $PSScriptRoot -VersionFolder "vFOLDERUNKNOWN")
+	foreach ($line in $lines | Select-Object -SkipLast 1) { Log($line) }
+	Log("applicationHost.xdt: $($lines[-1])")
+} catch {
+	Log("Preflight failed, keeping the classic applicationHost.xdt: $_")
 }
 
 Log("Install complete")
