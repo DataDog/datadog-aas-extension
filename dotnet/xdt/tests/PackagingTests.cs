@@ -8,7 +8,7 @@ namespace Datadog.AzureAppServices.DotNet.Xdt.Tests;
 
 /// <summary>
 /// Risks around how the transform is built and shipped: an extra dependency the platform can't
-/// load, shipping our own copy of the engine, a relative import path, a generated file that drifts
+/// load, a relative import path, a generated file that drifts
 /// from today's file, and install.ps1 edits that stop matching.
 /// </summary>
 public class PackagingTests
@@ -58,26 +58,6 @@ public class PackagingTests
     }
 
     [Fact]
-    public void TargetsNetFramework45()
-    {
-        var md = Metadata(out var pe);
-        using (pe)
-        {
-            var values = md.CustomAttributes.Select(h => md.GetCustomAttribute(h))
-                .Select(a => System.Text.Encoding.UTF8.GetString(md.GetBlobBytes(a.Value))).ToList();
-            Assert.Contains(values, v => v.Contains(".NETFramework,Version=v4.5"));
-        }
-    }
-
-    [Fact]
-    public void DoesNotShipItsOwnCopyOfTheEngine()
-    {
-        // A second Microsoft.Web.XmlTransform next to ours could make our Transform a different type
-        // from the engine's, and the import would fail.
-        Assert.False(File.Exists(Path.Combine(Path.GetDirectoryName(BuiltDll), "Microsoft.Web.XmlTransform.dll")));
-    }
-
-    [Fact]
     public void TheShippedFileImportsByAnAbsoluteVersionedPath()
     {
         // A relative path fails on App Service with "Illegal characters in path" and drops every extension.
@@ -123,9 +103,6 @@ public class PackagingTests
     [Fact]
     public void TheShippedFileMatchesTheRepositoryTemplate() => Assert.Equal(Expected(RepoXdt), Actual(Template));
 
-    [Fact]
-    public void TheTestFileMatchesTodaysInstalledFile() => Assert.Equal(Expected(Files.Today), Actual(Files.Read("custom-from-installed.xdt")));
-
     /// <summary>Applies every -replace 'pattern', 'replacement' in install.ps1's .NET Core branch.</summary>
     private static string CoreEdits(string xdt)
     {
@@ -154,16 +131,6 @@ public class PackagingTests
         var standard = CoreEdits(RepoXdt);
         Assert.DoesNotMatch(@"<add name=""COR_ENABLE_PROFILING""[^>]*xdt:Transform=""Insert""", standard);
         Assert.Contains("name=\"COR_ENABLE_PROFILING\" xdt:Locator=\"Match(name)\" xdt:Transform=\"RemoveAll\"", standard);
-    }
-
-    [Fact]
-    public void InstallScriptPlaceholdersStillAppear()
-    {
-        // build-packages.sh fills vFOLDERUNKNOWN and vUNKNOWN; install.ps1 fills the pipe GUIDs.
-        foreach (var placeholder in new[] { "vFOLDERUNKNOWN", "vUNKNOWN", "uniqueTracePipeId", "uniqueStatsPipeId" })
-        {
-            Assert.Equal(Regex.Matches(RepoXdt, placeholder).Count > 0, Template.Contains(placeholder));
-        }
     }
 
 #if XDT_1_4

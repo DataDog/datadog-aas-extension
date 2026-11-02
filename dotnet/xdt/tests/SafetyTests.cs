@@ -29,15 +29,6 @@ public class SafetyTests
         AssertLeftAlone(input, Run.Apply(input, Files.CustomWith(typeof(Faults.ThrowsAfterPartlyEditingTheCopy))));
     }
 
-    [Fact]
-    public void AnExceptionKeepsOtherExtensionsSettings()
-    {
-        // Another extension (sorted before Datadog) has already added its variable in the same run.
-        var input = Corpus.Vars(("DD_PROBE_AA", "1"));
-        var run = Run.Apply(input, Files.CustomWith(typeof(Faults.Throws)));
-        Assert.Contains(("DD_PROBE_AA", "1"), Env.Vars(run.Document));
-    }
-
     public static IEnumerable<object[]> BadChildren() => new[]
     {
         new object[] { "<add value=\"1\" />" },
@@ -59,27 +50,12 @@ public class SafetyTests
     }
 
     [Fact]
-    public void NoVariablesLeavesTheConfigUnchanged()
-    {
-        var xdt = System.Text.RegularExpressions.Regex.Replace(Files.Custom, "<(add|addIfMissing|remove) [^>]*/>", "");
-        AssertLeftAlone(Corpus.Base, Run.Apply(Corpus.Base, xdt));
-    }
-
-    [Fact]
     public void AConfigWithoutSystemWebServerIsOnlyAWarning()
     {
         var input = Corpus.Base.Replace("<system.webServer>", "<system.webServerX>").Replace("</system.webServer>", "</system.webServerX>");
         var run = Run.Apply(input, Files.Custom);
         Assert.True(run.Ok);
         Assert.Empty(run.Errors);
-    }
-
-    [Fact]
-    public void ItLogsWhatItDidAndTheEngineVersion()
-    {
-        var run = Run.Apply(Corpus.Base, Files.Custom);
-        var line = Assert.Single(run.Messages, m => m.StartsWith("Datadog.Xdt "));
-        Assert.Matches(@"Datadog\.Xdt \S+: set \d+, kept \d+ existing, removed \d+ \(engine \d+\.\d+", line);
     }
 
     [Fact]

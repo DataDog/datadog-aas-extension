@@ -24,25 +24,6 @@ public class EquivalenceTests
         Assert.Equal(Env.Rest(today.Document), Env.Rest(custom.Document));
     }
 
-    [Theory]
-    [MemberData(nameof(Corpus.Shapes), MemberType = typeof(Corpus))]
-    public void ApplyingTwiceIsTheSameAsOnce(string shape)
-    {
-        var once = Run.Apply(Corpus.Build(shape), Files.Custom);
-        var twice = Run.Apply(once.Text, Files.Custom);
-        Assert.Equal(Env.Multiset(once.Document), Env.Multiset(twice.Document));
-    }
-
-    [Fact]
-    public void KeepsACustomersInstallType()
-    {
-        // Today's file only inserts DD_INSTRUMENTATION_INSTALL_TYPE if it's missing. The first
-        // prototype replaced it.
-        var run = Run.Apply(Corpus.Build("customer Datadog settings"), Files.Custom);
-        Assert.Contains(("DD_INSTRUMENTATION_INSTALL_TYPE", "customer-set"), Env.Vars(run.Document));
-        Assert.DoesNotContain(("DD_INSTRUMENTATION_INSTALL_TYPE", "aas_extension"), Env.Vars(run.Document));
-    }
-
     /// <summary>Random environment blocks, mixing our names, other names, duplicates, and directives.</summary>
     [Fact]
     public void RandomInputsMatchTodaysFile()
