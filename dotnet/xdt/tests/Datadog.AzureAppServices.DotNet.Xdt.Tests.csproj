@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <!-- CI uses the .NET 8 SDK image; let newer local runtimes run it too. -->
+    <RollForward>Major</RollForward>
+    <!-- Run once per engine: 1.4.0 is what the App Service GAC has; 3.1.0 is the current package. -->
+    <XdtVersion Condition="'$(XdtVersion)' == ''">1.4.0</XdtVersion>
+    <DefineConstants Condition="'$(XdtVersion)' == '1.4.0'">$(DefineConstants);XDT_1_4</DefineConstants>
+    <NoWarn>$(NoWarn);NU1701</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Web.Xdt" Version="$(XdtVersion)" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- The transform under test, compiled in so it runs against whichever engine version is referenced. -->
+    <Compile Include="../src/SetEnvironmentVariables.cs" Link="SetEnvironmentVariables.cs" />
+    <Compile Remove="bin/**;obj/**" />
+  </ItemGroup>
+</Project>

@@ -19,6 +19,7 @@ Fully stop your web app before installing, modifying, or removing a Datadog APM 
 ### IMPORTANT NOTICES:
 #### *Restart* recycles an Application Pool. The app must be *STOPPED* before any changes to this extension.
 #### *Beta users will need to uninstall the beta extension before installing the official release.*
+#### The .NET App Setting `DD_AAS_DOTNET_ONE_STEP_XDT_ENABLED` is experimental. Read [`dotnet/xdt/README.md`](dotnet/xdt/README.md) before turning it on.
 
 ### Documentation:
 

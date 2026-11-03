@@ -11,7 +11,7 @@ function Log ([string] $text)
 Log("Beginning install")
 
 function SetPipe ([string] $file, [string] $pipePattern, [string] $pipeGuid)
-{ 
+{
 	if (Select-String -Path $file -Pattern $pipePattern -SimpleMatch -Quiet)
 	{
 		Log("Setting ${pipePattern} to ${pipeGuid} in ${file}")
@@ -29,6 +29,8 @@ $statsPipeId=([guid]::NewGuid().ToString().ToUpper())
 
 SetPipe ".\applicationHost.xdt" "uniqueStatsPipeId" "${statsPipeId}"
 SetPipe ".\applicationHost.xdt" "uniqueTracePipeId" "${tracePipeId}"
+SetPipe ".\applicationHost.custom.xdt" "uniqueStatsPipeId" "${statsPipeId}"
+SetPipe ".\applicationHost.custom.xdt" "uniqueTracePipeId" "${tracePipeId}"
 SetPipe ".\scmApplicationHost.xdt" "uniqueStatsPipeId" "${statsPipeId}"
 SetPipe ".\scmApplicationHost.xdt" "uniqueTracePipeId" "${tracePipeId}"
 SetPipe ".\vFOLDERUNKNOWN\Agent\datadog.yaml" "uniqueTracePipeId" "${tracePipeId}"
@@ -86,10 +88,32 @@ Log("Detected .NET runtime: $dotnetRuntime")
 
 if ($dotnetRuntime -eq "Core") {
 	Log("Changing applicationHost.xdt to not set COR_ENABLE_PROFILING so that .NET Framework instrumentation is disabled by default in .NET Core applications.")
-	$xdtPath=".\applicationHost.xdt"
-	$xdtContent=Get-Content -Path $xdtPath -Raw
-	$xdtContent=$xdtContent -replace '\s*<add name="COR_ENABLE_PROFILING"[^>]*xdt:Transform="Insert"\s*\/>', ''
-	Set-Content -Path $xdtPath -Value $xdtContent
+	# Remove COR_ENABLE_PROFILING in the standard .xdt file, and in the copy of it that an earlier
+	# install's preflight kept, which the preflight can put back
+	foreach ($xdtPath in @(".\applicationHost.xdt", ".\applicationHost.standard.xdt")) {
+		if (-not (Test-Path $xdtPath)) { continue }
+		$xdtContent=Get-Content -Path $xdtPath -Raw
+		$xdtContent=$xdtContent -replace '\s*<add name="COR_ENABLE_PROFILING"[^>]*xdt:Transform="Insert"\s*\/>', ''
+		Set-Content -Path $xdtPath -Value $xdtContent
+	}
+	# Remove COR_ENABLE_PROFILING in the custom transform .xdt file
+	$customPath=".\applicationHost.custom.xdt"
+	$customContent=Get-Content -Path $customPath -Raw
+	$customContent=$customContent -replace '<add name="COR_ENABLE_PROFILING" value="[^"]*" />', '<remove name="COR_ENABLE_PROFILING" />'
+	Set-Content -Path $customPath -Value $customContent
+}
+
+# Decide between standard and custom .xdt transform
+# Custom applies config faster, avoiding AAS startup deadlines, but if the platform can't load its
+# DLL, every site extension's config is dropped. So it is off unless the app setting
+# DD_AAS_DOTNET_ONE_STEP_XDT_ENABLED is true, and on any error we fall back to standard
+$oneStep = $env:DD_AAS_DOTNET_ONE_STEP_XDT_ENABLED -in @("true", "1")
+try {
+	$lines = @(& "$PSScriptRoot\preflight.ps1" -ExtensionPath $PSScriptRoot -OneStep:$oneStep)
+	foreach ($line in $lines | Select-Object -SkipLast 1) { Log($line) }
+	Log("applicationHost.xdt: $($lines[-1])")
+} catch {
+	Log("Preflight failed, keeping the standard applicationHost.xdt: $_")
 }
 
 Log("Install complete")
