@@ -2,9 +2,19 @@
 enable_metadata_collection: false
 apm_config:
   enabled: true
+  ## install.ps1 sets the pipe GUID, the same one as DD_TRACE_PIPE_NAME in applicationHost.xdt
+  windows_pipe_name: datadogtrace-uniqueTracePipeId
+  ## 0 turns off the HTTP receiver, so overlapping workers' trace agents don't compete for a port
+  receiver_port: 0
   log_file: D:\home\LogFiles\datadog\vFOLDERUNKNOWN\trace-log.txt
   additional_profile_tags:
     _dd.origin: appservice
+## 0 makes the trace agent send its own metrics to DogStatsD over the pipe in DD_DOGSTATSD_PIPE_NAME;
+## with a port above 0 it uses UDP, where DogStatsD doesn't listen
+dogstatsd_port: 0
+## remote configuration isn't used in App Service
+remote_configuration:
+  enabled: false
 ## log_level: debug
 cloud_provider_metadata:
   - "azure"

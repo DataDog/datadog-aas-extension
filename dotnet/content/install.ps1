@@ -31,6 +31,7 @@ SetPipe ".\applicationHost.xdt" "uniqueStatsPipeId" "${statsPipeId}"
 SetPipe ".\applicationHost.xdt" "uniqueTracePipeId" "${tracePipeId}"
 SetPipe ".\scmApplicationHost.xdt" "uniqueStatsPipeId" "${statsPipeId}"
 SetPipe ".\scmApplicationHost.xdt" "uniqueTracePipeId" "${tracePipeId}"
+SetPipe ".\vFOLDERUNKNOWN\Agent\datadog.yaml" "uniqueTracePipeId" "${tracePipeId}"
 
 function DetectDotNetRuntime() {
 	$script:dotnetRuntimeResult = "Unknown"

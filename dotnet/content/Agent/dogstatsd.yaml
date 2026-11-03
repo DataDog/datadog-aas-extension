@@ -1,6 +1,8 @@
 ## disable sending the host metadata payload
 enable_metadata_collection: false
 use_dogstatsd: true
+## 0 turns off the UDP listener; DogStatsD listens on the pipe in DD_DOGSTATSD_PIPE_NAME
+dogstatsd_port: 0
 ## exit if no listener can be created, for example when another DogStatsD from an overlapping
 ## worker process still holds the named pipe, so the tracer starts a new one later
 dogstatsd_require_listener: true
