@@ -4,7 +4,13 @@
   <xdt:Import path="%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Datadog.AzureAppServices.DotNet.Xdt.dll" namespace="Datadog.AzureAppServices.DotNet.Xdt" />
   <system.webServer xdt:Transform="SetEnvironmentVariables">
     <remove name="DD_TRACE_LOG_PATH" />
+    <remove name="DD_PROFILING_LOG_DIR" />
+    <remove name="DD_TRACE_METRICS_ENABLED" />
+    <remove name="DD_APM_WINDOWS_PIPE_NAME" />
+    <remove name="DD_REMOTE_CONFIGURATION_ENABLED" />
     <remove name="DD_AGENT_HOST" />
+    <remove name="DD_DOGSTATSD_PORT" />
+    <remove name="DD_APM_RECEIVER_PORT" />
     <add name="COMPLUS_LoaderOptimization" value="1" />
     <add name="COR_ENABLE_PROFILING" value="1" />
     <add name="COR_PROFILER" value="{846F5F1C-F9AE-4B07-969E-05C26BC060D8}" />
@@ -16,26 +22,16 @@
     <add name="CORECLR_PROFILER_PATH_32" value="%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Tracer\win-x86\Datadog.Trace.ClrProfiler.Native.dll" />
     <add name="CORECLR_PROFILER_PATH_64" value="%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Tracer\win-x64\Datadog.Trace.ClrProfiler.Native.dll" />
     <add name="DD_DOTNET_TRACER_HOME" value="%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Tracer" />
-    <add name="DD_INTEGRATIONS" value="%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Tracer\integrations.json" />
     <add name="DD_TRACE_LOG_DIRECTORY" value="%HOME%\LogFiles\datadog\vFOLDERUNKNOWN\" />
-    <add name="DD_PROFILING_LOG_DIR" value="%HOME%\LogFiles\datadog\vFOLDERUNKNOWN\" />
     <add name="DD_AZURE_APP_SERVICES" value="1" />
     <add name="DD_TRACE_AGENT_PATH" value="%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Agent\datadog-trace-agent.exe" />
     <add name="DD_TRACE_AGENT_ARGS" value="--config %XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Agent\datadog.yaml" />
     <add name="DD_DOGSTATSD_PATH" value="%XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Agent\dogstatsd.exe" />
     <add name="DD_DOGSTATSD_ARGS" value="start -c %XDT_EXTENSIONPATH%\vFOLDERUNKNOWN\Agent" />
-    <add name="DD_TRACE_METRICS_ENABLED" value="0" />
     <add name="DD_PROFILER_EXCLUDE_PROCESSES" value="SnapshotUploader.exe;workerforwarder.exe;SnapshotUploader64.exe;Crashmon.exe" />
-    <add name="DD_TRACE_TRANSPORT" value="DATADOG-NAMED-PIPES" />
-    <add name="DD_APM_WINDOWS_PIPE_NAME" value="datadogtrace-uniqueTracePipeId" />
     <add name="DD_TRACE_PIPE_NAME" value="datadogtrace-uniqueTracePipeId" />
-    <add name="DD_APM_REMOTE_TAGGER" value="0" />
-    <add name="DD_REMOTE_CONFIGURATION_ENABLED" value="false" />
     <add name="DD_AGENT_PIPE_NAME" value="dogstatsd-uniqueStatsPipeId" />
     <add name="DD_DOGSTATSD_PIPE_NAME" value="dogstatsd-uniqueStatsPipeId" />
-    <add name="DD_DOGSTATSD_WINDOWS_PIPE_NAME" value="dogstatsd-uniqueStatsPipeId" />
-    <add name="DD_DOGSTATSD_PORT" value="0" />
-    <add name="DD_APM_RECEIVER_PORT" value="0" />
     <add name="DD_AAS_DOTNET_EXTENSION_VERSION" value="vUNKNOWN" />
     <addIfMissing name="DD_INSTRUMENTATION_INSTALL_TYPE" value="aas_extension" />
   </system.webServer>
