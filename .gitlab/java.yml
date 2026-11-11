@@ -48,7 +48,7 @@ update-self-monitoring-java-dev:
     AAS_EXTENSION_TYPE: "dev"
     ENVIRONMENT: "rc"
   trigger:
-    project: DataDog/serverless-init-self-monitoring
+    project: ddoghq/serverless-init-self-monitoring
     branch: $SELF_MONITORING_BRANCH
     strategy: depend
 
@@ -110,6 +110,6 @@ update-self-monitoring-java-prod:
     AAS_EXTENSION_TYPE: "prod"
     ENVIRONMENT: "prod"
   trigger:
-    project: DataDog/serverless-init-self-monitoring
+    project: ddoghq/serverless-init-self-monitoring
     branch: $SELF_MONITORING_BRANCH
     strategy: depend
