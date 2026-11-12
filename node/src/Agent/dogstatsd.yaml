@@ -1,5 +1,6 @@
-## disable sending the host metadata payload
-enable_metadata_collection: false
+## AAS inventory is app-opt-in; the AAS Agent graph excludes host metadata.
+enable_metadata_collection: true
+inventories_enabled: true
 use_dogstatsd: true
 log_file: D:\home\LogFiles\datadog\vFOLDERUNKNOWN\dogstatsd.txt
 ## log_level: debug

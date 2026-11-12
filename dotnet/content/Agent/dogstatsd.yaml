@@ -1,5 +1,6 @@
-## disable sending the host metadata payload
-enable_metadata_collection: false
+## AAS inventory is app-opt-in; the AAS Agent graph excludes host metadata.
+enable_metadata_collection: true
+inventories_enabled: true
 use_dogstatsd: true
 ## 0 turns off the UDP listener; DogStatsD listens on the pipe in DD_DOGSTATSD_PIPE_NAME
 dogstatsd_port: 0

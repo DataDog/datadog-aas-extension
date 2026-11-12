@@ -1,5 +1,5 @@
 DEVELOPMENT_VERSION="0.3.0-prerelease"
-AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.84.5-1-x86_64.zip"
+AGENT_DOWNLOAD_URL="https://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.87.0-devel.git.500.53d6364-1-x86_64.zip"
 TRACER_DOWNLOAD_URL="https://apmdotnetbuildstorage.blob.core.windows.net/apm-dotnet-ci-artifacts-master/INSTALL_SHA/windows-tracer-home.zip"
 
 
@@ -17,6 +17,7 @@ DEVELOPMENT_DIR=dotnet/content/v${DEVELOPMENT_VERSION_FILE}
 
 echo "Downloading agent from ${AGENT_DOWNLOAD_URL}"
 wget -O agent.zip $AGENT_DOWNLOAD_URL
+echo "75ead90248774b93995793cdceafb05673d3ce6e839e78369935697b82eb26f0  agent.zip" | sha256sum --check || exit 1
 if [ $? -ne 0 ]; then
     exit 1;
 fi
