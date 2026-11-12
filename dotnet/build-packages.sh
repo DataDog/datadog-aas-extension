@@ -1,5 +1,5 @@
-RELEASE_VERSION="3.57.000"
-AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.84.5-1-x86_64.zip"
+RELEASE_VERSION="3.58.00"
+AGENT_DOWNLOAD_URL="https://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-7.87.0-devel.git.500.53d6364-1-x86_64.zip"
 TRACER_DOWNLOAD_URL="https://github.com/DataDog/dd-trace-dotnet/releases/download/v3.57.0/windows-tracer-home.zip"
 
 echo "Downloading tracer from ${TRACER_DOWNLOAD_URL}"
@@ -19,6 +19,7 @@ RELEASE_DIR=$CI_PROJECT_DIR/dotnet/content/v${RELEASE_VERSION_FILE}
 
 echo "Downloading agent from ${AGENT_DOWNLOAD_URL}"
 wget -O agent.zip $AGENT_DOWNLOAD_URL
+echo "75ead90248774b93995793cdceafb05673d3ce6e839e78369935697b82eb26f0  agent.zip" | sha256sum --check || exit 1
 unzip agent.zip -d dotnet-agent-extract
 
 echo "Moving agent executables"

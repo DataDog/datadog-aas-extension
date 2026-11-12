@@ -3,7 +3,7 @@ if [[ -z ${RELEASE_VERSION+x} ]] || [[ -z ${DEVELOPMENT_VERSION+x} ]]; then
     exit 1
 fi
 
-AGENT_VERSION="7.84.5"
+AGENT_VERSION="7.87.0-devel.git.500.53d6364"
 TRACER_VERSION="1.68.2"
 
 echo "Building version ${RELEASE_VERSION} for prod environment"
@@ -33,7 +33,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-AGENT_DOWNLOAD_URL="http://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-${AGENT_VERSION}-1-x86_64.zip"
+AGENT_DOWNLOAD_URL="https://s3.amazonaws.com/dsd6-staging/windows/agent7/buildpack/agent-binaries-${AGENT_VERSION}-1-x86_64.zip"
 
 echo "Downloading agent from ${AGENT_DOWNLOAD_URL}"
 curl -o $DOWNLOADS_DIR/agent.zip --create-dirs $AGENT_DOWNLOAD_URL
@@ -41,6 +41,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+echo "75ead90248774b93995793cdceafb05673d3ce6e839e78369935697b82eb26f0  $DOWNLOADS_DIR/agent.zip" | sha256sum --check || exit 1
 unzip -o $DOWNLOADS_DIR/agent.zip -d $DOWNLOADS_DIR/java-agent-extract
 
 echo "Moving tracer jar"

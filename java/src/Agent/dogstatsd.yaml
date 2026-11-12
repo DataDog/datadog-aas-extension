@@ -1,5 +1,6 @@
-## disable sending the host metadata payload, required for serverless
-enable_metadata_collection: false
+## AAS inventory is app-opt-in; the AAS Agent graph excludes host metadata.
+enable_metadata_collection: true
+inventories_enabled: true
 use_dogstatsd: true
 ## exit if no listener can be created, for example when another DogStatsD from an overlapping
 ## worker process still holds the named pipe, so the tracer starts a new one later
